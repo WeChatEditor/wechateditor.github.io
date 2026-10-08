@@ -19,7 +19,7 @@ const snippets = [
 function appendSnippet(markdown: string): void {
   const value = [props.ending.markdown.trimEnd(), markdown].filter(Boolean).join('\n\n')
   if (value.length <= 500000) {
-    emit('change', { markdown: value })
+    emit('change', { markdown: value, enabled: true })
   }
 }
 </script>
@@ -97,7 +97,7 @@ function appendSnippet(markdown: string): void {
       >
     </div>
     <p class="note">
-      片段追加到现有结尾，不会自动启用。请替换示例名称；往期链接请在公众号编辑器内手动添加。头尾修改即预览，设置即时保存到当前浏览器。
+      片段追加到现有结尾并自动启用。请替换示例名称；往期链接请在公众号编辑器内手动添加。头尾修改即预览，设置即时保存到当前浏览器。
     </p>
   </div>
 </template>

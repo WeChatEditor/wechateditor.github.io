@@ -142,7 +142,7 @@ const controls = [
     </button>
     <el-button
       class="copy-button"
-      type="primary"
+      :type="copyState === 'success' ? 'success' : 'primary'"
       :disabled="disabled"
       :loading="copyState === 'preparing' || copyState === 'copying'"
       @click="emit('copy')"
@@ -224,7 +224,10 @@ const controls = [
   font-size: 13px;
   border-radius: 6px;
   box-shadow: 0 3px 10px #2563eb20;
-  transition: background-color 0.15s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 .save-status {
   max-width: 190px;

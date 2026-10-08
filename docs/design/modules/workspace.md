@@ -24,6 +24,8 @@ Pinia命令编排、覆盖抽屉、拖拽双栏、保存状态、配置localStor
 
 界面props/events → workspace命令 → 本模块公共服务/模型 → 预览/输出或持久化端口。私有workspace.service、子组件和adapters不对外。未知格式/配额/权限/事务冲突暂停对应写入；多页面writeId检查防止覆盖；恢复期间禁用编辑。
 
+私有workspace-scroll-sync协调原稿与预览滚动百分比，requestAnimationFrame平滑追随并抑制自身写入产生的回环；关闭/专注/恢复/卸载取消，布局变化重新对齐。开关默认关闭且不持久化。复制成功2500ms计时由store拥有，再次复制/内容失效/卸载清理，不影响权限重试。
+
 ## 验证
 
 格式、Lint、TypeScript、生产构建、modules:check；功能手工验收，不新增或运行前端自动化。完整流程见[产品](../jlab-wechat-editor.md)、[UI](../jlab-wechat-editor-ui.md)、[存储](../jlab-wechat-editor-storage.md)。

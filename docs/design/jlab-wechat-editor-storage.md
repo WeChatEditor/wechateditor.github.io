@@ -14,13 +14,13 @@ owner: project maintainers
 
 workspace拥有仓储编排，draft-storage.port为公共端口；adapters、workspace.service与历史面板私有。无服务端，无跨库原子事务。
 
-| 数据                                              | 存储                                                         | 更新                              |
-| ------------------------------------------------- | ------------------------------------------------------------ | --------------------------------- |
-| 配色/章节/字号间距/字体/结尾/比例/预览/局部色偏好 | localStorage jlab-wechat-editor:settings，格式1              | 同步覆盖，无历史                  |
-| 最近色                                            | localStorage jlab-wechat-editor:recent-colors                | 最多8色，可丢弃偏好               |
-| ArticleDocument/标注/必要Blob                     | IndexedDB jlab-wechat-editor版本2，drafts/current，草稿格式2 | 450ms防抖串行保存，事务完成才成功 |
-| 主动文章版本                                      | 同库versions，毫秒数字键                                     | 不可变文章快照，无配置/结尾       |
-| Range/抽屉/focus/复制结果/历史预览                | 内存                                                         | 不持久化                          |
+| 数据                                                     | 存储                                                         | 更新                              |
+| -------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------- |
+| 配色/章节/字号间距/字体/结尾/比例/预览/局部色偏好        | localStorage jlab-wechat-editor:settings，格式1              | 同步覆盖，无历史                  |
+| 最近色                                                   | localStorage jlab-wechat-editor:recent-colors                | 最多8色，可丢弃偏好               |
+| ArticleDocument/标注/必要Blob                            | IndexedDB jlab-wechat-editor版本2，drafts/current，草稿格式2 | 450ms防抖串行保存，事务完成才成功 |
+| 主动文章版本                                             | 同库versions，毫秒数字键                                     | 不可变文章快照，无配置/结尾       |
+| Range/抽屉/focus/复制结果/历史预览/手机缩放模式/同步滚动 | 内存                                                         | 不持久化                          |
 
 ## 保存和恢复
 

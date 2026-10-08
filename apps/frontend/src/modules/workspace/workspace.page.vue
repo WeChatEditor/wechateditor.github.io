@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useWorkspaceStore } from './workspace.store'
 import { clampRatio, splitBounds } from './workspace.service'
+import { useScrollSync } from './workspace-scroll-sync'
 import WorkspaceToolbar from './workspace-toolbar.vue'
 import WorkspaceFeedback from './workspace-feedback.vue'
 import './workspace-theme.css'
@@ -18,6 +19,16 @@ const split = ref<HTMLElement>()
 const fileInput = ref<HTMLInputElement>()
 const selection = ref<TextSelection>()
 const previewComponent = ref<InstanceType<typeof ArticlePreview>>()
+const editorComponent = ref<InstanceType<typeof ArticleEditor>>()
+const syncScroll = ref(false)
+const canSyncScroll = computed(
+  () => syncScroll.value && store.ready && !store.focus && !store.restoring,
+)
+const scrollSync = useScrollSync(
+  canSyncScroll,
+  () => editorComponent.value?.getScrollElement(),
+  () => previewComponent.value?.getScrollElement(),
+)
 function captureSelection(): void {
   previewComponent.value?.captureSelection()
 }
@@ -221,10 +232,12 @@ onBeforeUnmount(function cleanup() {
       <div ref="split" class="split-workspace" :style="gridStyle">
         <ArticleEditor
           v-if="!store.focus"
+          ref="editorComponent"
           :markdown="store.article.markdown"
           :disabled="!store.ready || store.restoring"
           @change="store.updateMarkdown"
           @import="fileInput?.click()"
+          @scroll="scrollSync.scrolled"
         />
         <div
           v-if="!store.focus"
@@ -262,6 +275,10 @@ onBeforeUnmount(function cleanup() {
           :disabled="!store.ready || store.restoring"
           :accent="store.config.colors.accent"
           :local-color="store.localColor"
+          :sync-scroll="syncScroll"
+          @sync-scroll="syncScroll = $event"
+          @scroll="scrollSync.scrolled"
+          @scroll-layout="scrollSync.align"
           @mode="store.previewMode = $event"
           @focus="store.focus = !store.focus"
           @selection="selection = $event"

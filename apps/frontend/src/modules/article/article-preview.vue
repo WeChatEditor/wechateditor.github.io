@@ -11,6 +11,7 @@ const props = defineProps<{
   disabled: boolean
   accent: string
   localColor: string
+  syncScroll: boolean
 }>()
 const emit = defineEmits<{
   selection: [value: TextSelection | undefined]
@@ -19,12 +20,19 @@ const emit = defineEmits<{
   focus: []
   color: [color: string]
   clear: []
+  syncScroll: [value: boolean]
+  scroll: [element: HTMLElement]
+  scrollLayout: []
 }>()
 const root = ref<HTMLElement>()
 const pane = ref<HTMLElement>()
 const paper = ref<HTMLElement>()
 const stage = ref<HTMLElement>()
+const outerScroll = ref<HTMLElement>()
+const readerContent = ref<HTMLElement>()
 const frameScale = ref(1)
+const scaleMode = ref<'fit' | 'actual'>('fit')
+const phoneScale = computed(() => (scaleMode.value === 'actual' ? 1 : frameScale.value))
 const readerTitle = computed(() => {
   const content = document.createElement('div')
   content.innerHTML = props.html
@@ -41,6 +49,24 @@ const quickColors = computed(() => [
   ...new Set([props.accent, '#b7791f', '#c2410c', '#0f766e', '#30323d']),
 ])
 let observer: ResizeObserver | undefined
+function getScrollElement(): HTMLElement | undefined {
+  return showFrame.value ? readerContent.value : outerScroll.value
+}
+function scrolled(event: Event): void {
+  closeSelection()
+  if (event.target === getScrollElement()) {
+    emit('scroll', event.target as HTMLElement)
+  }
+}
+function measureFrame(): void {
+  if (stage.value && stage.value.clientWidth > 0 && stage.value.clientHeight > 0) {
+    frameScale.value = Math.min(1, stage.value.clientWidth / 440, stage.value.clientHeight / 956)
+  }
+  closeSelection()
+  void nextTick(function layoutChanged() {
+    emit('scrollLayout')
+  })
+}
 function closeSelection(): void {
   bubbleOpen.value = false
   emit('selection', undefined)
@@ -119,22 +145,22 @@ function clearColor(): void {
   bubbleOpen.value = false
 }
 watch(() => [props.html, props.revision, props.mode, props.focus, props.disabled], closeSelection)
+watch([showFrame, scaleMode, () => props.mode, () => props.focus], measureFrame, { flush: 'post' })
 onMounted(function listen() {
   document.addEventListener('selectionchange', changedSelection)
   document.addEventListener('pointerdown', outsidePointer)
   document.addEventListener('keydown', keydown)
-  observer = new ResizeObserver(function measure() {
-    if (stage.value) {
-      frameScale.value = Math.min(1, stage.value.clientWidth / 440, stage.value.clientHeight / 956)
-    }
-    closeSelection()
-  })
+  observer = new ResizeObserver(measureFrame)
   if (paper.value) {
     observer.observe(paper.value)
   }
   if (stage.value) {
     observer.observe(stage.value)
   }
+  if (root.value) {
+    observer.observe(root.value)
+  }
+  measureFrame()
 })
 onBeforeUnmount(function unlisten() {
   observer?.disconnect()
@@ -142,7 +168,7 @@ onBeforeUnmount(function unlisten() {
   document.removeEventListener('pointerdown', outsidePointer)
   document.removeEventListener('keydown', keydown)
 })
-defineExpose({ captureSelection })
+defineExpose({ captureSelection, getScrollElement })
 </script>
 <template>
   <section ref="pane" class="preview-pane">
@@ -165,9 +191,34 @@ defineExpose({ captureSelection })
         公众号预览
       </span>
       <div class="preview-actions">
+        <button
+          class="ui-button"
+          :class="{ active: syncScroll }"
+          :aria-pressed="syncScroll"
+          :disabled="disabled"
+          @click="emit('syncScroll', !syncScroll)"
+        >
+          🔄 同步滚动
+        </button>
         <label class="frame-toggle"
           ><input v-model="showFrame" type="checkbox" @change="closeSelection" />阅读外壳</label
         >
+        <template v-if="showFrame && mode === 'phone'">
+          <span class="scale-status" role="status">
+            [ 缩放 {{ Math.round(phoneScale * 100) }}% ({{
+              scaleMode === 'fit' ? '适应视窗' : '真实像素'
+            }}) ]
+          </span>
+          <select
+            v-model="scaleMode"
+            class="scale-select"
+            aria-label="手机外壳缩放"
+            :disabled="disabled"
+          >
+            <option value="fit">适应屏幕 (全貌)</option>
+            <option value="actual">1:1 真实像素 (壳内正常纵向滚动)</option>
+          </select>
+        </template>
         <el-radio-group
           :model-value="mode"
           size="small"
@@ -224,13 +275,21 @@ defineExpose({ captureSelection })
         </button>
       </div>
     </div>
-    <div class="preview-scroll" :class="{ framed: showFrame }" @scroll="closeSelection">
+    <div
+      ref="outerScroll"
+      class="preview-scroll"
+      :class="{
+        framed: showFrame,
+        'actual-pixels': showFrame && mode === 'phone' && scaleMode === 'actual',
+      }"
+      @scroll="scrolled"
+    >
       <div ref="stage" class="frame-stage">
         <div
           ref="paper"
           class="paper"
           :class="[mode, { 'without-frame': !showFrame }]"
-          :style="showFrame && mode === 'phone' ? { zoom: frameScale } : undefined"
+          :style="showFrame && mode === 'phone' ? { zoom: phoneScale } : undefined"
         >
           <template v-if="showFrame">
             <div v-if="mode === 'phone'" class="phone-status" aria-hidden="true">
@@ -246,7 +305,7 @@ defineExpose({ captureSelection })
               <span class="window-controls">···&#x3000;−&#x3000;□&#x3000;×</span>
             </div>
           </template>
-          <div class="reader-content" @scroll="closeSelection">
+          <div ref="readerContent" class="reader-content" @scroll="scrolled">
             <div v-if="showFrame" class="reader-meta">
               <span class="original">原创</span><span class="account">公众号名称</span
               ><small>模拟阅读信息</small>
@@ -363,6 +422,19 @@ defineExpose({ captureSelection })
   gap: 4px;
   white-space: nowrap;
   cursor: pointer;
+}
+.scale-status {
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+.scale-select {
+  max-width: 210px;
+  padding: 5px 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font: inherit;
 }
 .paper {
   margin: 0 auto;
@@ -538,6 +610,16 @@ article :deep(::selection) {
     0 0 0 1px #e2e8f0,
     0 8px 24px #0f172a0a;
   border-radius: 58px;
+}
+.preview-scroll.actual-pixels {
+  overflow: auto;
+}
+.actual-pixels .frame-stage {
+  min-width: 440px;
+}
+.actual-pixels .paper.phone {
+  height: 100%;
+  max-height: 956px;
 }
 .framed .paper.desktop {
   height: 100%;

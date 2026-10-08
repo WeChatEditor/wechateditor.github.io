@@ -22,6 +22,8 @@ Markdown 解析、正文位置映射、结构化颜色标注、快捷格式与�
 
 界面props/events → workspace命令 → 本模块公共服务/模型 → 预览/输出或持久化端口。无效混合选区整体拒绝；改稿歧义标注失效；IME、撤销、长文与跨强调/链接选区由人类验收。
 
+编辑器/预览组件通过scroll事件及getScrollElement公开当前滚动元素，预览通过scrollLayout报告容器/尺寸变化；协调逻辑归workspace，不互相引用组件。手机外壳支持适应视窗与1:1 CSS像素，顶部显示缩放比例；开壳取reader-content、关壳取preview-scroll。缩放模式为临时UI状态，无存储格式变化。
+
 ## 验证
 
 格式、Lint、TypeScript、生产构建、modules:check；功能手工验收，不新增或运行前端自动化。完整流程见[产品](../jlab-wechat-editor.md)、[UI](../jlab-wechat-editor-ui.md)、[存储](../jlab-wechat-editor-storage.md)。

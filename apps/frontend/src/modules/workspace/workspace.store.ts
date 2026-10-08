@@ -73,6 +73,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const urls = ref(new Map<string, string>())
   const storage = createDraftStorage()
   let timer: ReturnType<typeof setTimeout> | undefined
+  let copyResetTimer: ReturnType<typeof setTimeout> | undefined
   let saveQueue = Promise.resolve()
   let generation = 0
   let articleGeneration = 0
@@ -220,7 +221,12 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
 
+  function clearCopyReset(): void {
+    clearTimeout(copyResetTimer)
+    copyResetTimer = undefined
+  }
   function changed(): void {
+    clearCopyReset()
     generation++
     exportResult.value = undefined
     copyState.value = 'idle'
@@ -520,6 +526,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     if (copyState.value === 'preparing' || copyState.value === 'copying') {
       return
     }
+    clearCopyReset()
     copyState.value = 'preparing'
     message.value = ''
     const current = generation
@@ -545,15 +552,30 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   async function copyPrepared(): Promise<void> {
-    if (!exportResult.value) {
+    if (!exportResult.value || copyState.value === 'copying') {
       return
     }
+    clearCopyReset()
+    const current = generation
+    const result = exportResult.value
     copyState.value = 'copying'
     try {
-      await copyRichText(exportResult.value)
+      await copyRichText(result)
+      if (current !== generation) {
+        return
+      }
       copyState.value = 'success'
+      copyResetTimer = setTimeout(function resetCopyFeedback() {
+        copyResetTimer = undefined
+        if (copyState.value === 'success') {
+          copyState.value = 'idle'
+        }
+      }, 2500)
       message.value = '已复制图文，请到公众号编辑器粘贴，并检查保存后的效果。'
     } catch (error) {
+      if (current !== generation) {
+        return
+      }
       copyState.value = 'ready'
       message.value =
         error instanceof Error && error.message.startsWith('富文本复制需要')
@@ -562,6 +584,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function dispose(): void {
+    generation++
+    exportGeneration++
+    clearCopyReset()
     if (timer) {
       clearTimeout(timer)
     }

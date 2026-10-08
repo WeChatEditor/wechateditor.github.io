@@ -2,8 +2,12 @@
 import { ref } from 'vue'
 
 const props = defineProps<{ markdown: string; disabled: boolean }>()
-const emit = defineEmits<{ change: [value: string]; import: [] }>()
+const emit = defineEmits<{ change: [value: string]; import: []; scroll: [element: HTMLElement] }>()
 const input = ref<HTMLTextAreaElement>()
+function getScrollElement(): HTMLElement | undefined {
+  return input.value
+}
+defineExpose({ getScrollElement })
 const formats = [
   ['h1', 'H1', '一级标题'],
   ['h2', 'H2', '章节标题'],
@@ -129,6 +133,7 @@ function tab(event: KeyboardEvent): void {
       @compositionstart="composing = true"
       @compositionend="compositionEnd"
       @keydown="tab"
+      @scroll="emit('scroll', $event.target as HTMLElement)"
     />
   </section>
 </template>
