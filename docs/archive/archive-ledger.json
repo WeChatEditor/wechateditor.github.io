@@ -1,10 +1,14 @@
 {
   "schemaVersion": 1,
   "baseline": {
-    "commit": "b86bf90444a12ae7560eecc2ae03f7b65a6b3ff0",
-    "reviewedAt": "2026-10-08T06:14:10.819Z",
-    "acceptedAdrIds": [],
-    "completedPlanIds": [],
+    "commit": "e8332edf5885c91a9b8546c60cc47cd2c4b7298b",
+    "reviewedAt": "2026-10-08T06:29:07.463Z",
+    "acceptedAdrIds": [
+      "decisions/ADR-20261004-jlab-wechat-editor-standalone-app.md",
+      "decisions/ADR-20261005-jlab-local-storage-history.md",
+      "decisions/ADR-20261008-jlab-independent-repository.md"
+    ],
+    "completedPlanIds": ["archive/plans/2026-10-08-migration-archive-review.md"],
     "acknowledgedTriggerIds": []
   }
 }

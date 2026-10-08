@@ -19,7 +19,7 @@ owner: project maintainers
 - [x] 迁入六模块、配置/组装和业务依赖，首开空原稿。
 - [x] 注册模块、适配独立origin、补全README/部署说明。
 - [x] 严格peer与冻结安装；格式/Lint/类型/构建/模块/文档/治理测试通过。
-- [ ] 完成文档归档复核、真实基线与带模型trailer的技术提交。
+- [x] 完成文档归档复核、真实基线与带模型trailer的技术提交。
 - [ ] 维护者人工验收完整桌面功能、存储失败/并发、复制与公众号效果。
 - [ ] 验收后归档本计划和日志，更新来源交接。
 
@@ -42,3 +42,5 @@ owner: project maintainers
 仅Windows本地实际执行；Windows/Linux CI矩阵保留并严格peer安装，未推送，因此远端CI未执行。桌面UI、存储交互、公众号复制/保存/明暗等维护者人工验收待执行，域名与正式发布待定。
 
 归档复核已检查并归档，技术提交后登记真实基线并更新该步骤。详见[技术验证](../../reference/migration-validation.md)。
+
+技术交付提交及真实归档基线：`e8332edf5885c91a9b8546c60cc47cd2c4b7298b`。正常docs:archive:check:ci为NOT_DUE；21项治理测试与所有允许静态验证通过。功能/公众号验收仍未执行，计划保持pending_human_acceptance。
