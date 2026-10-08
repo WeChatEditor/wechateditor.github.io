@@ -42,3 +42,9 @@ owner: project maintainers
 修订采用现有Element Plus radio注册/样式。手机模型上方控件行独立于zoom，横排且窄栏可横向滚动，占用高度自动从画板空间扣除；原始比例和同步算法不变。同步与外壳无图标/checkbox，专注补active，共用ui-button及预览radio已选状态在hover时保留。当前已提交favicon原样保留，无依赖、配置或存储改动。
 
 2026-10-08 Windows Node24.18.0/pnpm10.26.0：format/format:check、Lint零error/221条warning（较上一轮减少4条）、TypeScript、生产构建、模块/文档检查与diff检查通过；归档CI为NOT_DUE。JS534.39kB/gzip192.54kB，保留既有500kB提示。不运行前端自动化；仅UI/样式修改，无治理脚本变更，无需重复治理测试。人工验收状态保持pending_human_acceptance；关联技术提交由本文件Git历史定位，提交推送后核验真实trailer与远端SHA。
+
+## 缩放选项文案修订
+
+2026-10-08：维护者要求手机阅读外壳的比例切换文案改为「自适应 / 原始大小」。起始工作区与暂存区为空，归档检查NOT_DUE。仅替换两个选项文字并同步现行设计与前端说明，fit/actual值、显示条件及缩放行为不变。属于机械文案修订，继续现有计划与日志；原计划的人工验收状态保持不变。
+
+文案修订验证：Lint、类型检查、生产构建、文档检查及归档CI通过；Lint保留既有warning，构建保留既有包体积提示。未执行前端自动化，界面由人类验收。关联提交由本文件Git历史定位。

@@ -286,8 +286,8 @@ defineExpose({ captureSelection, getScrollElement })
             :disabled="disabled"
             aria-label="手机外壳缩放"
           >
-            <el-radio-button value="fit">自适应屏幕</el-radio-button>
-            <el-radio-button value="actual">原始比例</el-radio-button>
+            <el-radio-button value="fit">自适应</el-radio-button>
+            <el-radio-button value="actual">原始大小</el-radio-button>
           </el-radio-group>
           <span class="scale-status" role="status">
             当前缩放比例: {{ Math.round(phoneScale * 100) }}%

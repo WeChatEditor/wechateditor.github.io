@@ -22,7 +22,7 @@ Markdown 解析、正文位置映射、结构化颜色标注、快捷格式与�
 
 界面props/events → workspace命令 → 本模块公共服务/模型 → 预览/输出或持久化端口。无效混合选区整体拒绝；改稿歧义标注失效；IME、撤销、长文与跨强调/链接选区由人类验收。
 
-编辑器/预览组件通过scroll事件及getScrollElement公开当前滚动元素，预览通过scrollLayout报告容器/尺寸变化；协调逻辑归workspace，不互相引用组件。开壳且手机模式时，模型上方独立横排“自适应屏幕 / 原始比例”radio button与“当前缩放比例: N%”，原始比例为1:1 CSS像素；开壳取reader-content、关壳取preview-scroll。同步/外壳/专注按钮使用统一active背景及aria-pressed。缩放模式为临时UI状态，无存储格式变化。
+编辑器/预览组件通过scroll事件及getScrollElement公开当前滚动元素，预览通过scrollLayout报告容器/尺寸变化；协调逻辑归workspace，不互相引用组件。开壳且手机模式时，模型上方独立横排“自适应 / 原始大小”radio button与“当前缩放比例: N%”，原始大小为1:1 CSS像素；开壳取reader-content、关壳取preview-scroll。同步/外壳/专注按钮使用统一active背景及aria-pressed。缩放模式为临时UI状态，无存储格式变化。
 
 ## 验证
 

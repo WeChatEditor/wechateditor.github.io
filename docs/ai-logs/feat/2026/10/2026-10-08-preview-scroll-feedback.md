@@ -28,3 +28,9 @@ article编辑器/预览公开当前滚动元素和滚动事件；预览观测画
 article-preview将缩放下拉框/比例迁入模型上方独立横排行，改现有radio button，文案与可见条件按指令；不进入zoom，ResizeObserver自动依据剩余stage高度算缩放。外壳改ui-button、disabled/aria-pressed与active，同步无图标，专注补active；手机/电脑及缩放radio使用浅蓝active/主色文字、同一hover逻辑，共用ui-button选中hover保留高亮。滚动算法/外壳逻辑尺寸/配置默认值不变。源码搜索确认旧checkbox/图标/select样式均移除；一次PowerShell正则转义搜索失败，改固定字符串搜索后确认。
 
 format/format:check、Lint零error/221条warning、TypeScript、生产构建、模块/文档和diff检查通过；归档CI为NOT_DUE。JS534.39kB/gzip192.54kB，保留原500kB提示。未改治理脚本，无需重复治理测试，未执行前端自动化；人工确认手机上方布局、条件显示、窄栏/键盘/active/缩放效果。关联提交由Git历史定位，提交后核验真实GPT-6 trailer与远端SHA。
+
+## 缩放选项文案修订
+
+2026-10-08：维护者要求手机阅读外壳的比例切换文案改为「自适应 / 原始大小」。起始工作区与暂存区为空，归档检查NOT_DUE。仅替换两个选项文字并同步现行设计与前端说明，fit/actual值、显示条件及缩放行为不变。属于机械文案修订，继续现有计划与日志；原计划的人工验收状态保持不变。
+
+文案修订验证：Lint、类型检查、生产构建、文档检查及归档CI通过；Lint保留既有warning，构建保留既有包体积提示。未执行前端自动化，界面由人类验收。关联提交由本文件Git历史定位。
