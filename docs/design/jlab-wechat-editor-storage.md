@@ -30,6 +30,8 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 ## 兼容与失败
 
+标题配置chapterDecorationTight默认true、chapterAlignment默认left，仍用配置格式1即时保存，不写文章版本。旧记录缺失字段时补默认值；存在但类型/枚举错误则拒绝。已移除box/overline/quote仅作为读取兼容值，规范化为bar；其他未知样式继续拒绝，不以回退掩盖损坏记录。
+
 旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，opening仅扩展配置可选字段，不变更IndexedDB文章协议。
 
 文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。配置storage事件检测变化并暂停本页写入，提示备份/刷新；失败保留编辑和重试。新字段缺失补默认值，但损坏字段不默认覆盖。旧超限配色完整读，写入严格总计1至9。

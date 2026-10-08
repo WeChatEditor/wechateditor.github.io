@@ -63,6 +63,10 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
     ) &&
     (draft.config.chapterNumberEnabled === undefined ||
       typeof draft.config.chapterNumberEnabled === 'boolean') &&
+    (draft.config.chapterDecorationTight === undefined ||
+      typeof draft.config.chapterDecorationTight === 'boolean') &&
+    (draft.config.chapterAlignment === undefined ||
+      ['left', 'center', 'right'].includes(draft.config.chapterAlignment)) &&
     (draft.config.palettes === undefined ||
       (Array.isArray(draft.config.palettes) &&
         draft.config.palettes.length >= 1 &&
@@ -81,7 +85,8 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
               isColor(p.colors?.[role as keyof typeof p.colors]),
             ),
         ))) &&
-    chapterStyles.some(([id]) => id === draft.config.chapterStyle) &&
+    (chapterStyles.some(([id]) => id === draft.config.chapterStyle) ||
+      ['box', 'overline', 'quote'].includes(draft.config.chapterStyle)) &&
     [
       draft.config.fontSize,
       draft.config.lineHeight,

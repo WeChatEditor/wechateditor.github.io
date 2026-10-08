@@ -16,7 +16,7 @@ owner: project maintainers
 
 左Markdown原稿 → article受控解析/序列化局部标注 → typesetting公共规则与ending片段 → article预览 → assets准备 → wechat-export清洗/内联 → HTML和纯文字剪贴板。workspace编排命令并拥有草稿仓储；App/main只组装。原始HTML禁用并显示为文本，不将输入直接插入预览。
 
-保留UTF-8单个.md/.txt导入（2MB/50万字符）、Markdown快捷格式/IME/撤销、实时预览、正文/局部颜色、九种标题样式/独立编号、字号/间距/字体、六组默认/总计1至9配色、固定头尾、双栏比例/专注/阅读宽度、历史和保存诊断。数学、Mermaid、复杂SVG、插图和下载、文章包、IP/提色/教程、账号/云同步/AI排版不在范围。
+保留UTF-8单个.md/.txt导入（2MB/50万字符）、Markdown快捷格式/IME/撤销、实时预览、正文/局部颜色、八种标题样式/独立编号、字号/间距/字体、六组默认/总计1至9配色、固定头尾、双栏比例/专注/阅读宽度、历史和保存诊断。数学、Mermaid、复杂SVG、插图和下载、文章包、IP/提色/教程、账号/云同步/AI排版不在范围。
 
 ## 布局和存储
 

@@ -194,6 +194,31 @@ function resetText(): void {
         />
       </label>
       <p class="settings-intro">序号按正文章节顺序自动添加；下方样式只控制标题装饰。</p>
+      <label class="setting-label chapter-number">
+        紧贴标题
+        <el-switch
+          :model-value="config.chapterDecorationTight"
+          aria-label="紧贴标题"
+          @update:model-value="emit('change', { chapterDecorationTight: Boolean($event) })"
+        />
+      </label>
+      <p class="settings-intro">开启时装饰紧贴标题，关闭时装饰位于行边；两种下划线不受影响。</p>
+      <div class="chapter-alignment" role="group" aria-label="标题对齐方式">
+        <button
+          v-for="[value, label] in [
+            ['left', '左对齐'],
+            ['center', '居中对齐'],
+            ['right', '右对齐'],
+          ] as const"
+          :key="value"
+          class="ui-button bordered"
+          :class="{ active: config.chapterAlignment === value }"
+          :aria-pressed="config.chapterAlignment === value"
+          @click="emit('change', { chapterAlignment: value })"
+        >
+          {{ label }}
+        </button>
+      </div>
       <div class="chapter-list" role="group" aria-label="标题样式">
         <button
           v-for="item in chapters"
@@ -211,7 +236,6 @@ function resetText(): void {
       </div>
     </template>
     <template v-else>
-      <p class="settings-intro">看看标题、正文与引用如何相处。</p>
       <section>
         <div class="palette-header">
           <h3 class="palette-heading">
@@ -433,6 +457,14 @@ function resetText(): void {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.chapter-alignment {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.chapter-alignment button {
+  flex: 1;
 }
 .chapter-option {
   display: block;

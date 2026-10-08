@@ -134,6 +134,11 @@ export function normalizeTypesetting(config: TypesettingConfig): TypesettingConf
   return {
     ...config,
     chapterNumberEnabled: config.chapterNumberEnabled ?? false,
+    chapterDecorationTight: config.chapterDecorationTight ?? true,
+    chapterAlignment: config.chapterAlignment ?? 'left',
+    chapterStyle: ['box', 'overline', 'quote'].includes(config.chapterStyle)
+      ? 'bar'
+      : config.chapterStyle,
     palettes: config.palettes ?? defaultPalettes(),
   }
 }
@@ -144,6 +149,8 @@ export function defaultTypesetting(): TypesettingConfig {
     colors: { ...presets.find((preset) => preset.id === 'clear-blue')!.colors },
     chapterStyle: 'bar',
     chapterNumberEnabled: false,
+    chapterDecorationTight: true,
+    chapterAlignment: 'left',
     palettes: defaultPalettes(),
     fontSize: 16,
     lineHeight: 1.9,
@@ -167,60 +174,70 @@ export function contrastRatio(first: string, second: string): number {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
 }
 
+function chapterDecoration(style: ChapterStyle, accent: string, trailing = false): HTMLElement {
+  const decoration = document.createElement('span')
+  decoration.dataset.decoration = 'true'
+  decoration.style.cssText = `display:inline-block;flex-shrink:0;color:${accent};font-weight:bold;line-height:1;`
+  if (style === 'bar' || style === 'thick-bar') {
+    decoration.style.cssText += `width:${style === 'bar' ? 4 : 8}px;height:1.2em;background-color:${accent};`
+  } else if (style === 'dots') {
+    decoration.style.width = '13px'
+    for (let row = 0; row < 3; row++) {
+      const line = document.createElement('span')
+      line.style.cssText = `display:block;line-height:0;${row ? 'margin-top:3px;' : ''}`
+      for (let column = 0; column < 2; column++) {
+        const dot = document.createElement('span')
+        dot.style.cssText = `display:inline-block;width:5px;height:5px;border-radius:50%;background-color:${accent};${column ? 'margin-left:3px;' : ''}`
+        line.append(dot)
+      }
+      decoration.append(line)
+    }
+  } else {
+    decoration.textContent =
+      style === 'slash' ? '//' : style === 'bracket' ? (trailing ? ']' : '[') : '◎'
+  }
+  return decoration
+}
+
 function decorateChapter(
   heading: HTMLElement,
   style: ChapterStyle,
   number: number,
   config: TypesettingConfig,
 ): void {
-  const { accent, heading: color } = config.colors
-  const decoration = document.createElement('span')
-  decoration.dataset.decoration = 'true'
-  decoration.style.cssText = `color:${accent};font-size:14px;line-height:24px;font-weight:bold;`
-  const label = config.chapterNumberEnabled ? String(number).padStart(2, '0') + '  ' : ''
-  switch (style) {
-    case 'underline':
-      heading.style.borderBottom = `2px solid ${accent}`
-      break
-    case 'bar':
-      heading.style.borderLeft = `4px solid ${accent}`
-      heading.style.paddingLeft = '12px'
-      break
-    case 'box':
-      heading.style.border = `1px solid ${accent}`
-      heading.style.padding = '12px'
-      break
-    case 'slash':
-      decoration.textContent = '//  '
-      break
-    case 'bracket':
-      decoration.textContent = label ? `[${label.trim()}]  ` : '[ ]  '
-      break
-    case 'circles':
-      decoration.textContent = '◎ ◎  '
-      break
-    case 'dots':
-      decoration.textContent = '● ● ●  '
-      break
-    case 'overline':
-      decoration.textContent = '—'
-      decoration.style.display = 'block'
-      break
-    case 'quote':
-      decoration.textContent = '“  '
-      decoration.style.color = color
-      break
-  }
-  if (label && style !== 'bracket') {
+  const { accent } = config.colors
+  heading.style.textAlign = config.chapterAlignment
+  const content = document.createElement('span')
+  content.style.cssText = 'display:block;min-width:0;overflow-wrap:anywhere;'
+  content.append(...heading.childNodes)
+  if (config.chapterNumberEnabled) {
     const sequence = document.createElement('span')
     sequence.dataset.decoration = 'true'
-    sequence.textContent = label
+    sequence.textContent = String(number).padStart(2, '0')
     sequence.style.color = accent
-    heading.prepend(sequence)
+    sequence.style.marginRight = '0.5em'
+    content.prepend(sequence)
   }
-  if (decoration.textContent) {
-    heading.prepend(decoration)
+  if (style === 'underline' || style === 'thick-underline') {
+    heading.style.borderBottom = `${style === 'underline' ? 2 : 5}px solid ${accent}`
+    heading.append(content)
+    return
   }
+  const group = document.createElement('span')
+  group.style.cssText =
+    'display:inline-flex;align-items:center;gap:12px;max-width:100%;vertical-align:middle;box-sizing:border-box;'
+  if (!config.chapterDecorationTight) {
+    group.style.width = '100%'
+    content.style.flex = '1'
+  }
+  if (style !== 'slash') {
+    group.append(chapterDecoration(style, accent))
+  }
+  group.append(content)
+  if (['slash', 'bracket', 'circles', 'dots'].includes(style)) {
+    group.append(chapterDecoration(style, accent, true))
+  }
+  heading.append(group)
 }
 
 export function chapterPreview(style: ChapterStyle, config: TypesettingConfig): string {

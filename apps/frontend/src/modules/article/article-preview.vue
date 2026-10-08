@@ -422,17 +422,17 @@ defineExpose({ captureSelection, getScrollElement })
   color: var(--ui-muted);
 }
 .preview-pane :deep(.el-radio-button) {
-  --el-radio-button-checked-bg-color: var(--ui-active);
-  --el-radio-button-checked-text-color: var(--ui-primary);
-  --el-radio-button-checked-border-color: var(--ui-border);
+  --el-radio-button-checked-bg-color: var(--ui-primary);
+  --el-radio-button-checked-text-color: #fff;
+  --el-radio-button-checked-border-color: var(--ui-primary);
 }
 .preview-pane :deep(.el-radio-button:not(.is-disabled) .el-radio-button__inner:hover) {
   background: var(--ui-hover);
   color: var(--ui-text);
 }
 .preview-pane :deep(.el-radio-button.is-active:not(.is-disabled) .el-radio-button__inner) {
-  background: var(--ui-active);
-  color: var(--ui-primary);
+  background: var(--ui-primary);
+  color: #fff;
 }
 .preview-scroll {
   flex: 1;
