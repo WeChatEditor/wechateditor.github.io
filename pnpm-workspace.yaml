@@ -4,9 +4,8 @@ packages:
 engineStrict: true
 savePrefix: '^'
 
-allowBuilds:
-  '@nestjs/core': false
-  esbuild: true
-  vue-demi: true
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi
 
 minimumReleaseAge: 1440

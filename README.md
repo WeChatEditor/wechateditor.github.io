@@ -4,7 +4,7 @@ JLab WeChat Editor：纯前端桌面Markdown公众号排版工具。Vue、Pinia�
 
 ## 运行
 
-兼容Node ^22.13.0 || >=24.0.0（推荐24），pnpm >=11.13.1 <13。
+兼容Node >=22.13.0（推荐22），pnpm >=10.26.0。
 
 ```sh
 pnpm install --frozen-lockfile --strict-peer-dependencies

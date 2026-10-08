@@ -5,8 +5,8 @@
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": "^22.13.0 || >=24.0.0",
-    "pnpm": ">=11.13.1 <13"
+    "node": ">=22.13.0",
+    "pnpm": ">=10.26.0"
   },
   "scripts": {
     "prepare": "node scripts/git/install-hooks.mjs",

@@ -30,7 +30,7 @@ owner: project maintainers
 
 ## 工程兼容适配
 
-Pinia2依赖vue-demi0.14.10。已读取postinstall/utils：仅按实际Vue版本复制自身lib中的适配文件，无下载或应用数据操作；在pnpm allowBuilds显式允许该包，其他策略保留。
+Pinia2依赖vue-demi0.14.10。已读取postinstall/utils：仅按实际Vue版本复制自身lib中的适配文件，无下载或应用数据操作；在pnpm onlyBuiltDependencies显式允许该包与esbuild，其他依赖不执行构建脚本。
 
 workspace私有CSS通过相对import引入。目标模块检查器应将存在的.css文件纳入同一模块归属/公开文件/依赖方向检查，而不是误报为无法解析的代码；新增治理测试覆盖合法同模块样式、跨模块私有拒绝、公开允许及缺失路径拒绝。它是工具测试，不是前端自动化。
 

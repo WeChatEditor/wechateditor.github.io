@@ -10,8 +10,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         toolchain:
-          - { node: '22.13.0', pnpm: '11.13.1' }
-          - { node: '24', pnpm: '12' }
+          - { node: '22.13.0', pnpm: '10.26.0' }
+          - { node: '22', pnpm: '10' }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
