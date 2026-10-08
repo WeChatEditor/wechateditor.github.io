@@ -1,4 +1,10 @@
 {
   "schemaVersion": 1,
-  "baseline": null
+  "baseline": {
+    "commit": "b86bf90444a12ae7560eecc2ae03f7b65a6b3ff0",
+    "reviewedAt": "2026-10-08T06:14:10.819Z",
+    "acceptedAdrIds": [],
+    "completedPlanIds": [],
+    "acknowledgedTriggerIds": []
+  }
 }
