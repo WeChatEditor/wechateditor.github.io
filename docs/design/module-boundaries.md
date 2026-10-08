@@ -17,3 +17,5 @@ owner: project maintainers
 有 API 契约包时以 Zod Schema 为唯一结构来源，类型通过 z.infer 推导，先改契约，再更新调用方；请求、查询和路径参数由后端运行时校验。没有现实外部互操作需求时不维护第二份手写 OpenAPI。health 无输入，不预装未使用的输入校验或 Swagger 基础设施。
 
 成功业务响应为 `{ status: 0, data?: T }`，失败为 `{ status: 非零错误码, err: string }`。未认证、资源不存在、内部异常分别使用 HTTP 401、404、500，其他业务失败使用 HTTP 200。未来分页接受可选 pageNum/pageSize，默认 1/10，返回 `{ status, list, total, err? }`。错误码须在 docs/reference 登记，禁止散落无说明数字。前端共享拦截器若引入，统一处理 401/404/500；非零业务 status 由发起模块处理。空工程不预装拦截器。
+
+相对导入的CSS也按模块归属、公开文件和依赖方向检查；同模块私有样式可用，跨模块私有CSS不能绕过门禁。文件必须存在；治理测试覆盖这些边界。

@@ -127,3 +127,22 @@ test('applications cannot import another application even with matching capabili
   )
   assert.ok(checkModules(root).some((error) => error.includes('another application')))
 })
+
+test('CSS imports respect existence, module privacy and declared public files', function (t) {
+  const { root, registry } = fixture(t)
+  put(root, 'apps/backend/src/modules/a/a.css', '.a { color: red }')
+  put(root, 'apps/backend/src/modules/a/a.api.ts', "import './a.css'\nexport const a = true\n")
+  assert.deepEqual(checkModules(root), [])
+  put(root, 'apps/backend/src/modules/b/b.css', '.b { color: blue }')
+  put(root, 'apps/backend/src/modules/a/a.api.ts', "import '../b/b.css'\nexport const a = true\n")
+  assert.ok(checkModules(root).some((error) => error.includes('Private cross-module')))
+  registry.modules[1].publicFiles.push('apps/backend/src/modules/b/b.css')
+  putJson(root, '.module-boundaries.json', registry)
+  assert.deepEqual(checkModules(root), [])
+  put(
+    root,
+    'apps/backend/src/modules/a/a.api.ts',
+    "import './missing.css'\nexport const a = true\n",
+  )
+  assert.ok(checkModules(root).some((error) => error.includes('Unresolved local import')))
+})

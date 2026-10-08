@@ -54,7 +54,7 @@ function existingSource(path) {
     join(path, 'index.ts'),
   ]
   return paths.find(
-    (candidate) => existsSync(candidate) && /\.(?:[cm]?[jt]sx?|vue)$/.test(candidate),
+    (candidate) => existsSync(candidate) && /\.(?:[cm]?[jt]sx?|vue|css)$/.test(candidate),
   )
 }
 

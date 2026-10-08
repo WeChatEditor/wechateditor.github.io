@@ -1,0 +1,127 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  --ui-bg: #f8fafc;
+  --ui-surface: #ffffff;
+  --ui-text: #1e293b;
+  --ui-muted: #64748b;
+  --ui-border: #e2e8f0;
+  --ui-hover: #f1f5f9;
+  --ui-primary: #2563eb;
+  --ui-active: #eff6ff;
+  --ui-warning: #a16207;
+  --ui-success: #15803d;
+  --ui-radius-sm: 4px;
+  --ui-radius: 8px;
+  --ui-radius-lg: 12px;
+  --ui-radius-xl: 16px;
+  --ui-shadow: 0 6px 24px #0f172a0d;
+  --ui-shadow-float: 0 8px 28px #0f172a1a;
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #6695f1;
+  --el-color-primary-light-5: #93b5f5;
+  --el-color-primary-light-7: #bed3fa;
+  --el-color-primary-light-9: #eff6ff;
+  --el-color-primary-dark-2: #1d4ed8;
+  --el-text-color-primary: #1e293b;
+  --el-text-color-regular: #475569;
+  --el-border-color: #e2e8f0;
+  --el-font-size-base: 13px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 800px;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+}
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
+}
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-muted);
+  padding: 6px 10px;
+  border-radius: var(--ui-radius-sm);
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.ui-button:hover:not(:disabled) {
+  background: var(--ui-hover);
+  color: var(--ui-text);
+}
+.ui-button.active {
+  background: var(--ui-active);
+  color: var(--ui-primary);
+}
+.ui-button.bordered {
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+}
+.ui-caption {
+  color: var(--ui-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.jlab-color-palette .el-color-predefine::before {
+  content: '常用与最近使用';
+  display: block;
+  width: 100%;
+  color: var(--ui-muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.jlab-color-palette .el-color-predefine {
+  display: block;
+}
+.jlab-color-palette .el-color-predefine__colors {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.jlab-color-palette .el-color-predefine__color-selector {
+  margin: 0;
+}
+.jlab-color-palette .el-color-dropdown__value input:focus-visible {
+  outline: none;
+}
+.jlab-color-palette .el-color-dropdown__value .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--ui-primary) inset;
+}
+
+.action-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  vertical-align: -3px;
+}
+.el-button .action-icon,
+.el-radio-button .action-icon {
+  margin-right: 6px;
+}

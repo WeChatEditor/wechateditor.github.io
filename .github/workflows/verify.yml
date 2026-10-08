@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.toolchain.node }}
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --strict-peer-dependencies
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck

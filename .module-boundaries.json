@@ -3,14 +3,69 @@
   "assembly": [
     "apps/frontend/src/main.ts",
     "apps/frontend/src/App.vue",
-    "apps/frontend/src/env.d.ts"
+    "apps/frontend/src/env.d.ts",
+    "apps/frontend/src/app.config.ts"
   ],
   "modules": [
     {
-      "name": "introduction",
-      "design": "docs/design/modules/introduction.md",
-      "publicFiles": ["apps/frontend/src/modules/introduction/introduction.vue"],
+      "name": "article",
+      "design": "docs/design/modules/article.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/article/article.model.ts",
+        "apps/frontend/src/modules/article/article.service.ts",
+        "apps/frontend/src/modules/article/article-editor.vue",
+        "apps/frontend/src/modules/article/article-preview.vue"
+      ],
+      "dependencies": ["typesetting"]
+    },
+    {
+      "name": "typesetting",
+      "design": "docs/design/modules/typesetting.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/typesetting/typesetting.model.ts",
+        "apps/frontend/src/modules/typesetting/typesetting.service.ts",
+        "apps/frontend/src/modules/typesetting/typesetting-panel.vue",
+        "apps/frontend/src/modules/typesetting/typesetting-color-picker.vue"
+      ],
       "dependencies": []
+    },
+    {
+      "name": "ending",
+      "design": "docs/design/modules/ending.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/ending/ending.model.ts",
+        "apps/frontend/src/modules/ending/ending.service.ts",
+        "apps/frontend/src/modules/ending/ending-panel.vue"
+      ],
+      "dependencies": ["article"]
+    },
+    {
+      "name": "assets",
+      "design": "docs/design/modules/assets.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/assets/assets.model.ts",
+        "apps/frontend/src/modules/assets/assets.service.ts"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "wechat-export",
+      "design": "docs/design/modules/wechat-export.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/wechat-export/wechat-export.model.ts",
+        "apps/frontend/src/modules/wechat-export/wechat-export.service.ts"
+      ],
+      "dependencies": ["article", "typesetting", "ending", "assets"]
+    },
+    {
+      "name": "workspace",
+      "design": "docs/design/modules/workspace.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/workspace/workspace.store.ts",
+        "apps/frontend/src/modules/workspace/draft-storage.port.ts",
+        "apps/frontend/src/modules/workspace/workspace.page.vue"
+      ],
+      "dependencies": ["article", "typesetting", "ending", "assets", "wechat-export"]
     }
   ]
 }

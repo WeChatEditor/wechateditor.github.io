@@ -7,5 +7,6 @@ savePrefix: '^'
 allowBuilds:
   '@nestjs/core': false
   esbuild: true
+  vue-demi: true
 
 minimumReleaseAge: 1440

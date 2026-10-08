@@ -1,9 +1,22 @@
-# jlab-wechat-editor
+# 桀士排版·公众号助手
 
-由 CoAIForge 组合生成的独立启动工程。先阅读 [AGENTS.md](AGENTS.md) 和 [文档入口](docs/README.md)。
+JLab WeChat Editor：纯前端桌面Markdown公众号排版工具。Vue、Pinia、Element Plus；本地草稿、主动文章版本、固定结尾、九种章节与HTML/纯文字复制。由CoAIForge0.2.0工程迁入，保留2026 JTLab MIT声明。
 
-使用兼容 Node（^22.13.0 || >=24.0.0，推荐 24）和 pnpm（>=11.13.1 <13），执行 pnpm install --frozen-lockfile。直接依赖使用兼容版本范围；pnpm update -r 更新后重新检查并提交锁文件。工程只包含选择的应用，根 package.json 列出适用开发命令。pnpm typecheck、pnpm build、pnpm test 和 pnpm lint 执行实际 workspace 的检查，前端功能仍由人类验收。
+## 运行
 
-初始归档台账未登记。按[启动指南](docs/guides/getting-started.md)完成首提交前结构验证、真实首提交和显式基线登记；没有基线时 CI 会明确失败。
+兼容Node ^22.13.0 || >=24.0.0（推荐24），pnpm >=11.13.1 <13。
 
-项目没有预置业务、数据库或管理功能。MIT 来源声明见 LICENSE；后续升级通过版本说明与显式迁移，不覆盖现有项目。
+```sh
+pnpm install --frozen-lockfile --strict-peer-dependencies
+pnpm dev:frontend
+pnpm build
+pnpm --filter @jlab-wechat-editor/frontend preview
+```
+
+开发127.0.0.1:5175，预览4175，严格端口；源站5174/4174数据不读取或清理。新origin首次空原稿与默认配色/排版。配置localStorage、文章IndexedDB，浏览器清理可能丢失；无账号、云同步或后端。
+
+## 文档与交付
+
+[协作规则](AGENTS.md)、[文档入口](docs/README.md)、[功能与人工验收清单](apps/frontend/README.md)、[迁移来源](docs/reference/migration-provenance.md)、[静态部署](docs/guides/static-deployment.md)。
+
+功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。生产平台/域名未确定，尚未正式发布。
