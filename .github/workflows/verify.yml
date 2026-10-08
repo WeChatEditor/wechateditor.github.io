@@ -1,0 +1,36 @@
+name: Verify project
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        toolchain:
+          - { node: '22.13.0', pnpm: '11.13.1' }
+          - { node: '24', pnpm: '12' }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: ${{ matrix.toolchain.pnpm }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.toolchain.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm modules:check
+      - run: pnpm docs:check
+      - run: pnpm build
+      - run: pnpm test
+      - run: pnpm docs:archive:check:ci
+      - run: pnpm commits:check

@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+.generated
+.git
+pnpm-lock.yaml
+templates/locks

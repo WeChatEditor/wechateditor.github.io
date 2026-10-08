@@ -1,0 +1,11 @@
+packages:
+  - 'apps/frontend'
+
+engineStrict: true
+savePrefix: '^'
+
+allowBuilds:
+  '@nestjs/core': false
+  esbuild: true
+
+minimumReleaseAge: 1440

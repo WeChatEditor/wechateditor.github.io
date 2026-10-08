@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "assembly": [
+    "apps/frontend/src/main.ts",
+    "apps/frontend/src/App.vue",
+    "apps/frontend/src/env.d.ts"
+  ],
+  "modules": [
+    {
+      "name": "introduction",
+      "design": "docs/design/modules/introduction.md",
+      "publicFiles": ["apps/frontend/src/modules/introduction/introduction.vue"],
+      "dependencies": []
+    }
+  ]
+}

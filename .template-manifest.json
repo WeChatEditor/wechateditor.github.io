@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "template": "CoAIForge",
+  "templateVersion": "0.2.0",
+  "cliVersion": "0.2.0",
+  "sourceCommit": "d07a9fcac33cbc1d40e57ab2c9de46cfaa8c80f9",
+  "preset": "frontend",
+  "parameters": {
+    "projectName": "jlab-wechat-editor",
+    "packageScope": "@jlab-wechat-editor"
+  },
+  "generatedAt": "2026-10-08T06:05:46.917Z"
+}

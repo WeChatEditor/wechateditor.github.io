@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "thresholds": { "effectiveCommits": 20, "acceptedAdrs": 3, "completedPlans": 3, "days": 30 },
+  "immediatePaths": [".module-boundaries.json", "docs/design/module-boundaries.md"]
+}

@@ -1,0 +1,2 @@
+#!/bin/sh
+node scripts/git/commit-message.mjs "$1"
