@@ -19,4 +19,4 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 [协作规则](AGENTS.md)、[文档入口](docs/README.md)、[功能与人工验收清单](apps/frontend/README.md)、[迁移来源](docs/reference/migration-provenance.md)、[静态部署](docs/guides/static-deployment.md)。
 
-功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。生产平台/域名未确定，尚未正式发布。
+功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。GitHub Pages 工作流在 master 推送后自动检查、构建和部署，也支持手动触发。地址为 [在线应用](https://tanghaojie.github.io/JLabWeChatEditor/)，首次启用与执行状态见[静态部署](docs/guides/static-deployment.md)。

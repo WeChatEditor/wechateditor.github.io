@@ -10,3 +10,4 @@
 - [开发流程](developer-workflow.md)
 - [依赖升级](dependency-lifecycle.md)
 - [验证策略](validation.md)
+- [GitHub Pages 自动部署](github-pages-deployment.md)
