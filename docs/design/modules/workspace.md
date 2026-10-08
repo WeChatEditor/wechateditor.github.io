@@ -25,3 +25,7 @@ Pinia命令编排、覆盖抽屉、拖拽双栏、保存状态、配置localStor
 ## 验证
 
 格式、Lint、TypeScript、生产构建、modules:check；功能手工验收，不新增或运行前端自动化。完整流程见[产品](../jlab-wechat-editor.md)、[UI](../jlab-wechat-editor-ui.md)、[存储](../jlab-wechat-editor-storage.md)。
+
+## 首次原稿
+
+无本地current时，article以app.config中的原版exampleMarkdown初始化；有current时恢复已保存内容，空正文也属于有效草稿。默认配置、存储格式、保存时机和历史规则保持原有语义。

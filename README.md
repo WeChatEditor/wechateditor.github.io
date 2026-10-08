@@ -13,7 +13,7 @@ pnpm build
 pnpm --filter @jlab-wechat-editor/frontend preview
 ```
 
-开发127.0.0.1:5175，预览4175，严格端口；源站5174/4174数据不读取或清理。新origin首次空原稿与默认配色/排版。配置localStorage、文章IndexedDB，浏览器清理可能丢失；无账号、云同步或后端。
+开发127.0.0.1:5175，预览4175，严格端口；源站5174/4174数据不读取或清理。新origin无本地草稿时显示原版示例稿与默认配色/排版；已有草稿（包括空稿）优先恢复。配置localStorage、文章IndexedDB，浏览器清理可能丢失；无账号、云同步或后端。
 
 ## 文档与交付
 

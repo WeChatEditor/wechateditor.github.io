@@ -22,7 +22,7 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 ## 保存和恢复
 
-启动配置先校验再current，新origin首开正文空、无历史标注素材，默认设置保留。文章schemaVersion1，草稿schemaVersion2含writeId，配置schemaVersion1。修改配置不写current/历史；正文不写配置。主动新增版本同事务写current与versions，只含正文引用素材；同毫秒或时钟回退使用已有最大键加一，add避免覆盖。列表本地时区倒序；读取失败不冒充空列表。
+启动配置先校验再current，新origin无current时加载原版示例稿“把想法，排成好文章”，无历史标注素材，默认设置保留；已有current（包括空正文）优先恢复，不以正文是否为空判断首次打开。示例稿沿用修改后自动保存规则，初始化不主动创建历史版本。文章schemaVersion1，草稿schemaVersion2含writeId，配置schemaVersion1。修改配置不写current/历史；正文不写配置。主动新增版本同事务写current与versions，只含正文引用素材；同毫秒或时钟回退使用已有最大键加一，add避免覆盖。列表本地时区倒序；读取失败不冒充空列表。
 
 恢复/删除需确认；恢复替换正文/标注/旧素材，保持当前配置和结尾，不自动创建版本；合并结尾仍引用的必要素材。恢复期间禁用编辑、旧选区失效，失败保留内存文章；删除不改current。关闭页补保存是尽力操作，不保证浏览器退出前事务完成。
 

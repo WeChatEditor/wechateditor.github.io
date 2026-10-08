@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import { maxMarkdownLength } from '../../app.config'
+import { exampleMarkdown, maxMarkdownLength } from '../../app.config'
 import type { ArticleDocument, TextSelection } from '../article/article.model'
 import {
   addAnnotation,
@@ -39,7 +39,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const article = ref<ArticleDocument>({
     schemaVersion: 1,
     id: crypto.randomUUID(),
-    markdown: '',
+    markdown: exampleMarkdown,
     revision: 0,
     updatedAt: Date.now(),
     annotations: [],

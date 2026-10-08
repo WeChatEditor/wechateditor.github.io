@@ -14,7 +14,7 @@ owner: project maintainers
 
 完整保留当前产品功能/UI，六模块进入apps/frontend/src/modules；app.config.ts为登记的组装配置，App/main只组装。替换模板introduction示例。采用模板Vue/Vite/TypeScript工具链，迁入实际业务依赖，逐项严格peer/类型/构建验证。无后台、契约、Router或Forge同步关系。
 
-首开空原稿，默认配色/排版和结尾启停规则保留；历史/标注/素材/最近色为空。不搬旧数据，不清除源origin存储，开发/预览使用127.0.0.1:5175/4175 strictPort；生产平台/域名待定，仅交付相对base静态产物。
+首次无本地草稿时加载原版示例稿“把想法，排成好文章”，默认配色/排版和结尾启停规则保留；历史/标注/素材/最近色为空。不搬旧数据，不清除源origin存储，开发/预览使用127.0.0.1:5175/4175 strictPort；生产平台/域名待定，仅交付相对base静态产物。
 
 ## 文档和来源
 
@@ -36,4 +36,4 @@ workspace私有CSS通过相对import引入。目标模块检查器应将存在�
 
 ## 最终实现与技术边界
 
-六模块与产品文档已迁入，模板introduction已移除，app.config与组装注册齐备；首次原稿为空，默认设置与原存储规则保留。正式部署与人类验收未完成。[技术验证](../reference/migration-validation.md)记录实际结果及遗留，不继承来源通过结论。
+六模块与产品文档已迁入，模板introduction已移除，app.config与组装注册齐备；首次无本地草稿时使用原版示例稿，默认设置与原存储规则保留；已有草稿（包括空稿）优先恢复。正式部署与人类验收未完成。[技术验证](../reference/migration-validation.md)记录实际结果及遗留，不继承来源通过结论。

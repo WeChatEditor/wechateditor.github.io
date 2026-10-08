@@ -10,7 +10,7 @@ owner: project maintainers
 
 ## 产品和范围
 
-桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手”，顶栏“桀士排版”/“公众号助手”。完整保留源产品界面与能力，仅首开原稿从示例改为空；默认六组配色、排版与结尾启停规则沿用。
+桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手”，顶栏“桀士排版”/“公众号助手”。完整保留源产品界面与能力，首次无本地草稿时加载原版示例稿，已有草稿（包括空稿）优先恢复；默认六组配色、排版与结尾启停规则沿用。
 
 ## 工作流
 
