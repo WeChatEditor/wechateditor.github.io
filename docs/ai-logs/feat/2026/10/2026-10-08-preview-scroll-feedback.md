@@ -18,3 +18,5 @@ article编辑器/预览公开当前滚动元素和滚动事件；预览观测画
 2026-10-08 Windows Node24.18.0/pnpm10.26.0：冻结严格peer安装、format/format:check、Lint（零error/既有225条warning）、TypeScript、模块/文档检查、构建、21项治理测试、commits:check和diff检查通过；归档CI为NOT_DUE。JS536.02kB/gzip193.08kB，保留原500kB提示。pnpm10切换需要重建node_modules，首次非TTY安装拒绝；设置仅该进程CI=true后按原onlyBuiltDependencies完成，网络ECONNRESET自动重试成功。配置/锁文件无变更。
 
 未运行前端测试/浏览器自动化。视觉、滚动、刷新/复制与公众号人工验收待维护者，计划和日志保持pending_human_acceptance；百分比同步不保证段落对应，1:1指CSS像素而非系统物理像素。模型身份依据当前指令GPT-6，提交后核验trailer；关联提交由Git历史定位，维护者明确授权推送origin/master。
+
+技术提交`6d58462bffa15e9b532fbd97358ba96887a34959`已推送origin/master，git ls-remote确认远端同SHA且工作区干净；真实GPT-6 trailer已用git log -1 --format=full核验。沿用本仓库最近提交的维护者作者，仅单次git -c配置，不改全局/仓库作者配置。此文档补记单独提交推送，远端CI/Pages及人工功能验收另行区分。

@@ -13,7 +13,7 @@ owner: project maintainers
 - [x] 核对现行实现、活动计划、存储ADR、Git和文档门禁，先更新设计/计划/日志。
 - [x] 实现四项修改，保留模块边界与存储兼容。
 - [x] 执行格式、Lint、类型、模块/文档、生产构建、治理测试、归档CI与diff检查。
-- [ ] 提交核验模型trailer，推送远端并核对SHA。
+- [x] 提交核验模型trailer，推送远端并核对SHA。
 - [ ] 人类确认界面、滚动、复制与公众号效果。
 
 ## 人工验收
@@ -27,3 +27,5 @@ owner: project maintainers
 2026-10-08 Windows Node24.18.0/pnpm10.26.0：冻结严格peer安装、format/format:check、Lint（零error/既有225条warning）、TypeScript、modules:check、docs:check、生产构建、21项治理测试、commits:check和diff检查通过；归档CI为NOT_DUE。最终JS536.02kB/gzip193.08kB，保留500kB体积提示。配置/锁文件无变更。
 
 实现使用临时缩放/同步状态、既有公共组件协议和workspace私有协调器，无新增依赖/模块。同步识别自身写入，防止回环；小于1px的尾差归到目标，减少动态效果时直接定位；布局改变重新对齐。复制定时器在重复复制、改稿、卸载清理，过期异步结果不重置新状态。成功追加结尾以单次patch同时启用，不修改开头。不新增或运行前端测试/浏览器自动化，技术检查不代替人工验收，计划保持pending_human_acceptance。关联提交通过本文件Git历史定位。
+
+技术提交`6d58462bffa15e9b532fbd97358ba96887a34959`已推送origin/master，git ls-remote返回同一SHA，工作区为空，git log -1 --format=full核验GPT-6 trailer通过。远端CI/Pages与人工功能验收是独立证据，不以推送成功替代。此补记单独作为文档提交推送。
