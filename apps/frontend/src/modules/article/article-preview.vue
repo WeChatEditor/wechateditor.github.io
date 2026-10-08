@@ -28,7 +28,10 @@ const frameScale = ref(1)
 const readerTitle = computed(() => {
   const content = document.createElement('div')
   content.innerHTML = props.html
-  return content.querySelector('h1')?.textContent || '微信文章'
+  const title = [...content.querySelectorAll('h1')].find(
+    (heading) => !heading.closest('[data-opening], [data-ending]'),
+  )
+  return title?.textContent || '微信文章'
 })
 const bubble = ref<HTMLElement>()
 const showFrame = ref(true)
@@ -318,11 +321,13 @@ defineExpose({ captureSelection })
   background: var(--ui-bg);
 }
 .preview-heading {
-  min-height: 48px;
-  padding: 8px 16px;
+  height: var(--ui-pane-heading-height);
+  padding: 0 16px;
   flex-shrink: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
@@ -333,12 +338,13 @@ defineExpose({ captureSelection })
 }
 .preview-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-shrink: 0;
   align-items: center;
   gap: 8px;
 }
 .preview-title {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 6px;
 }

@@ -60,8 +60,7 @@ function change(value: string | null): void {
       popper-class="jlab-color-palette"
       @change="change"
     />
-    <span v-if="!compact" class="color-label">{{ label }}</span
-    ><span v-if="!compact" class="color-hex">{{ color.toUpperCase() }}</span>
+    <span v-if="!compact" class="color-label">{{ label }}</span>
   </div>
 </template>
 <style scoped>
@@ -80,11 +79,6 @@ function change(value: string | null): void {
 .color-label {
   font-size: 13px;
   color: var(--ui-text);
-}
-.color-hex {
-  font-size: 11px;
-  color: var(--ui-muted);
-  font-variant-numeric: tabular-nums;
 }
 .compact {
   padding: 0;
@@ -107,10 +101,5 @@ function change(value: string | null): void {
 }
 :deep(.el-color-picker__icon) {
   display: none;
-}
-@media (max-width: 1200px) {
-  .color-hex {
-    display: none;
-  }
 }
 </style>

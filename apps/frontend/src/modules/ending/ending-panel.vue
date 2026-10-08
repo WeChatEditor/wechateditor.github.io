@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import type { FixedEnding } from './ending.model'
+import { computed } from 'vue'
+import type { FixedEnding, FixedOpening } from './ending.model'
+import { defaultOpening } from './ending.service'
 const props = defineProps<{ ending: FixedEnding }>()
 const emit = defineEmits<{ change: [patch: Partial<FixedEnding>] }>()
+const opening = computed(() => props.ending.opening ?? defaultOpening())
+function changeOpening(patch: Partial<FixedOpening>): void {
+  emit('change', { opening: { ...opening.value, ...patch } })
+}
 const snippets = [
   { name: '名片', markdown: '---\n\n**作者 / 公众号名称**\n\n在这里写一句介绍。' },
   { name: '关注提示', markdown: '---\n\n如果这篇文章对你有帮助，欢迎关注、点赞或分享。' },
@@ -20,7 +26,25 @@ function appendSnippet(markdown: string): void {
 
 <template>
   <div class="ending-body">
-    <p class="intro">留一个熟悉的结尾，每篇文章都可以用。</p>
+    <p class="intro">为每篇文章保留熟悉的开头和结尾，分别启用、随时修改。</p>
+    <section class="opening-section" aria-label="固定开头">
+      <label class="ending-switch"
+        >启用固定开头<el-switch
+          :model-value="opening.enabled"
+          @update:model-value="changeOpening({ enabled: Boolean($event) })"
+      /></label>
+      <label class="ending-label" for="opening-markdown">开头 Markdown</label>
+      <textarea
+        id="opening-markdown"
+        :value="opening.markdown"
+        maxlength="500000"
+        placeholder="例如：公众号介绍、栏目寄语…"
+        @input="changeOpening({ markdown: ($event.target as HTMLTextAreaElement).value })"
+      />
+      <div class="ending-actions">
+        <el-button size="small" @click="changeOpening({ markdown: '' })">清空开头</el-button>
+      </div>
+    </section>
     <label class="ending-switch"
       >启用固定结尾<el-switch
         :model-value="ending.enabled"
@@ -73,7 +97,7 @@ function appendSnippet(markdown: string): void {
       >
     </div>
     <p class="note">
-      片段追加到现有结尾，不会自动启用。请替换示例名称；往期链接请在公众号编辑器内手动添加。修改即预览，结尾设置即时保存到当前浏览器。
+      片段追加到现有结尾，不会自动启用。请替换示例名称；往期链接请在公众号编辑器内手动添加。头尾修改即预览，设置即时保存到当前浏览器。
     </p>
   </div>
 </template>
@@ -81,6 +105,11 @@ function appendSnippet(markdown: string): void {
 <style scoped>
 .ending-body {
   padding: 22px;
+}
+.opening-section {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--ui-border);
 }
 .intro,
 .note {
@@ -106,7 +135,7 @@ function appendSnippet(markdown: string): void {
 }
 textarea {
   width: 100%;
-  height: 300px;
+  height: 200px;
   resize: vertical;
   border: 1px solid var(--ui-border);
   border-radius: 8px;

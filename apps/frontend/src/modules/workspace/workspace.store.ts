@@ -15,7 +15,7 @@ import {
   maxPalettes,
 } from '../typesetting/typesetting.service'
 import type { TypesettingConfig } from '../typesetting/typesetting.model'
-import { defaultEnding } from '../ending/ending.service'
+import { defaultEnding, normalizeEnding } from '../ending/ending.service'
 import type { PreparedAsset } from '../assets/assets.model'
 import { createAssetUrls, releaseAssetUrls } from '../assets/assets.service'
 import { previewArticle, exportArticle, copyRichText } from '../wechat-export/wechat-export.service'
@@ -118,7 +118,13 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   )
   const statistics = computed(function measureArticle() {
     return articleStatistics(
-      article.value.markdown + (ending.value.enabled ? '\n\n' + ending.value.markdown : ''),
+      [
+        ending.value.opening?.enabled ? ending.value.opening.markdown : '',
+        article.value.markdown,
+        ending.value.enabled ? ending.value.markdown : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
     )
   })
 
@@ -185,7 +191,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     return {
       schemaVersion: 1,
       config: JSON.parse(JSON.stringify(config.value)),
-      ending: { ...ending.value },
+      ending: normalizeEnding(ending.value),
       ratio: ratio.value,
       previewMode: previewMode.value,
       localColor: localColor.value,
@@ -193,7 +199,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
   function applySettings(settings: WorkspaceSettings): void {
     config.value = normalizeTypesetting(settings.config)
-    ending.value = settings.ending
+    ending.value = normalizeEnding(settings.ending)
     ratio.value = settings.ratio
     previewMode.value = settings.previewMode
     localColor.value = settings.localColor
@@ -389,7 +395,8 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       }
       const endingAssets = assets.value.filter(
         (asset) =>
-          ending.value.markdown.includes(`asset:${asset.id}`) &&
+          (ending.value.markdown.includes(`asset:${asset.id}`) ||
+            ending.value.opening?.markdown.includes(`asset:${asset.id}`)) &&
           !draft.assets.some((item) => item.id === asset.id),
       )
       draft.assets = [...draft.assets, ...endingAssets]
@@ -404,7 +411,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       }
       articleGeneration++
       changed()
-      message.value = '已恢复到当前文章，排版设置与固定结尾保持当前配置。'
+      message.value = '已恢复到当前文章，排版设置与固定头尾保持当前配置。'
     })
     restoring.value = false
     if (articleDirty.value && !saveBlocked.value) {
@@ -444,7 +451,11 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     pruneAssets()
   }
   function pruneAssets(): void {
-    const markdown = article.value.markdown + '\n' + ending.value.markdown
+    const markdown = [
+      article.value.markdown,
+      ending.value.markdown,
+      ending.value.opening?.markdown ?? '',
+    ].join('\n')
     const used = assets.value.filter((asset) => markdown.includes(`asset:${asset.id}`))
     if (used.length !== assets.value.length) {
       assets.value = used

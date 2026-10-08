@@ -184,7 +184,7 @@ export function readSelection(root: HTMLElement, revision: number): TextSelectio
     return undefined
   }
   for (const forbidden of root.querySelectorAll(
-    'code, pre, img, [data-decoration], [data-ending]',
+    'code, pre, img, [data-decoration], [data-opening], [data-ending]',
   )) {
     if (range.intersectsNode(forbidden)) {
       throw new Error('选区包含代码、图片或章节装饰，请只选择正文文字。')

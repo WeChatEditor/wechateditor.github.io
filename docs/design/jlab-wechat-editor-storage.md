@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 桀士排版数据存储与文章版本
 
+固定头尾扩展沿用格式1和ending旧enabled/markdown结尾字段，增加可选opening（enabled/markdown）。缺失补空且关闭；已有但损坏或超过50万字符的opening拒绝读写。开头与结尾均属于localStorage配置，不进入current/主动文章版本；恢复历史保留当前头尾及引用的必要素材。见[决策](../decisions/ADR-20261008-fixed-head-tail.md)。
+
 ## 数据所有权和键
 
 workspace拥有仓储编排，draft-storage.port为公共端口；adapters、workspace.service与历史面板私有。无服务端，无跨库原子事务。
@@ -28,7 +30,7 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 ## 兼容与失败
 
-旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，也不改模型协议。
+旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，opening仅扩展配置可选字段，不变更IndexedDB文章协议。
 
 文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。配置storage事件检测变化并暂停本页写入，提示备份/刷新；失败保留编辑和重试。新字段缺失补默认值，但损坏字段不默认覆盖。旧超限配色完整读，写入严格总计1至9。
 

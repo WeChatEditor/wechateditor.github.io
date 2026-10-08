@@ -30,7 +30,8 @@ const drawerSize = computed(() => {
   const available = wide
     ? containerWidth.value - 40
     : Math.floor(containerWidth.value * displayedRatio.value)
-  return `${Math.min(wide ? 520 : 320, available)}px`
+  const maximum = store.drawer === 'colors' ? 640 : wide ? 520 : 320
+  return `${Math.min(maximum, available)}px`
 })
 function toggleDrawer(kind: NonNullable<typeof store.drawer>): void {
   store.focus = false
@@ -48,8 +49,8 @@ const drawerTitle = computed(
     ({
       text: '文字设置',
       colors: '配色',
-      ending: '固定结尾',
-      chapters: '章节样式',
+      ending: '固定头尾',
+      chapters: '标题样式',
       history: '历史版本',
     })[store.drawer || 'text'],
 )
@@ -279,7 +280,7 @@ onBeforeUnmount(function cleanup() {
       />
     </div>
     <footer class="status-bar">
-      <span title="排版文字的非空白字符数，含已启用的固定结尾；阅读时长按 600 字/分钟估算">
+      <span title="排版文字的非空白字符数，含已启用的固定头尾；阅读时长按 600 字/分钟估算">
         {{ store.statistics.characters.toLocaleString() }} 字
         <span class="status-dot">/</span>
         预计阅读 {{ store.statistics.readingMinutes }} 分钟

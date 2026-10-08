@@ -1,5 +1,7 @@
 # 有效决策
 
+- [固定头尾的兼容与配置存储](ADR-20261008-fixed-head-tail.md)
+
 - [独立纯前端应用](ADR-20261004-jlab-wechat-editor-standalone-app.md)
 - [配置与主动文章版本](ADR-20261005-jlab-local-storage-history.md)
 - [独立仓库与工具链](ADR-20261008-jlab-independent-repository.md)

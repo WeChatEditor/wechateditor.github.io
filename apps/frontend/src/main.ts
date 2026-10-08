@@ -10,6 +10,7 @@ import {
   ElSelect,
   ElSlider,
   ElSwitch,
+  ElTooltip,
 } from 'element-plus'
 import 'element-plus/theme-chalk/base.css'
 import 'element-plus/theme-chalk/el-button.css'
@@ -38,4 +39,5 @@ createApp(App)
   .use(ElSelect)
   .use(ElSlider)
   .use(ElSwitch)
+  .use(ElTooltip)
   .mount('#app')

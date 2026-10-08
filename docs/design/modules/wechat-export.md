@@ -12,6 +12,8 @@ owner: project maintainers
 
 接受显式只读快照，构建受控HTML、内联样式、DOMPurify清洗及HTML/纯文字剪贴板输出。
 
+预览与导出共用articleDom，正文先排版编号，再prepend固定开头、append固定结尾；头尾单独应用排版且不编号，分别标记data-opening/data-ending以拒绝局部标注。HTML/纯文字都包含启用头尾，沿用图片处理和受控清洗。
+
 非目标：本模块不增加账号、云存储或服务端API，不访问其他模块私有文件。当前文件位于apps/frontend/src/modules/wechat-export。
 
 ## 公共接口与依赖

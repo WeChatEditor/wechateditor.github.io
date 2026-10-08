@@ -144,7 +144,7 @@ function tab(event: KeyboardEvent): void {
 }
 .pane-heading {
   flex-shrink: 0;
-  height: 48px;
+  height: var(--ui-pane-heading-height);
   padding: 0 24px;
   display: flex;
   align-items: center;

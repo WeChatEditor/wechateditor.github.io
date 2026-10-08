@@ -8,6 +8,7 @@ import { isColor } from '../article/article.service'
 import { normalizeTypesetting, maxPalettes } from '../typesetting/typesetting.service'
 import { chapterStyles } from '../typesetting/typesetting.model'
 import { maxMarkdownLength } from '../../app.config'
+import { normalizeEnding } from '../ending/ending.service'
 
 function validArticle(value: unknown): boolean {
   const draft = value as WorkspaceDraft | undefined
@@ -101,6 +102,11 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
     typeof draft.ending.enabled === 'boolean' &&
     typeof draft.ending.markdown === 'string' &&
     draft.ending.markdown.length <= maxMarkdownLength &&
+    (draft.ending.opening === undefined ||
+      (draft.ending.opening !== null &&
+        typeof draft.ending.opening.enabled === 'boolean' &&
+        typeof draft.ending.opening.markdown === 'string' &&
+        draft.ending.opening.markdown.length <= maxMarkdownLength)) &&
     Number.isFinite(draft.ratio) &&
     draft.ratio > 0 &&
     draft.ratio < 1 &&
@@ -115,7 +121,11 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
     }
     throw new Error('本地配置版本或数据异常，已暂停配置保存，原记录保留。请备份后处理。')
   }
-  return { ...draft, config: normalizeTypesetting(draft.config) }
+  return {
+    ...draft,
+    config: normalizeTypesetting(draft.config),
+    ending: normalizeEnding(draft.ending),
+  }
 }
 
 export function validateDraft(value: unknown): WorkspaceDraft {

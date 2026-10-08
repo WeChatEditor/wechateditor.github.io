@@ -19,14 +19,14 @@ const emit = defineEmits<{
   retry: []
 }>()
 const controls = [
-  ['chapters', '章节样式', 'M4 5h16M4 12h16M4 19h10'],
   ['text', '文字设置', 'M4 5h16M12 5v14M8 19h8'],
+  ['chapters', '标题样式', 'M4 5h16M4 12h16M4 19h10'],
   [
     'colors',
     '配色',
     'M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1-4 2 2 0 0 1 1-4h3a3 3 0 0 0 3-3 9 9 0 0 0-9-7ZM7 8h.01M12 6h.01M17 8h.01M6 13h.01',
   ],
-  ['ending', '固定结尾', 'M5 3h10l4 4v14H5ZM9 12h6M9 16h6M15 3v4h4'],
+  ['ending', '固定头尾', 'M5 3h10l4 4v14H5ZM9 12h6M9 16h6M15 3v4h4'],
 ] as const
 </script>
 <template>

@@ -14,6 +14,7 @@
   --ui-radius: 8px;
   --ui-radius-lg: 12px;
   --ui-radius-xl: 16px;
+  --ui-pane-heading-height: 48px;
   --ui-shadow: 0 6px 24px #0f172a0d;
   --ui-shadow-float: 0 8px 28px #0f172a1a;
   --el-color-primary: #2563eb;
@@ -108,11 +109,16 @@ textarea:focus-visible,
 .jlab-color-palette .el-color-predefine__color-selector {
   margin: 0;
 }
-.jlab-color-palette .el-color-dropdown__value input:focus-visible {
+.jlab-color-palette .el-input__inner:focus,
+.jlab-color-palette .el-input__inner:focus-visible {
   outline: none;
+  box-shadow: none;
 }
-.jlab-color-palette .el-color-dropdown__value .el-input__wrapper.is-focus {
+.jlab-color-palette .el-input__wrapper.is-focus {
   box-shadow: 0 0 0 1px var(--ui-primary) inset;
+}
+.jlab-color-palette .el-color-predefine__color-selector.selected:focus-visible {
+  outline: none;
 }
 
 .action-icon {

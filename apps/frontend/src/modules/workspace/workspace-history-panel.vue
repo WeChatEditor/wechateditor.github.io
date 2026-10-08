@@ -23,7 +23,7 @@ function versionTime(timestamp: number): string {
 function restore(timestamp: number): void {
   if (
     window.confirm(
-      '恢复将替换当前文章。需要保留当前内容时，请先新增版本。排版配置和固定结尾继续使用当前设置。',
+      '恢复将替换当前文章。需要保留当前内容时，请先新增版本。排版配置和固定头尾继续使用当前设置。',
     )
   ) {
     emit('restore', timestamp)
@@ -39,7 +39,7 @@ function remove(timestamp: number): void {
 <template>
   <section class="history-panel" :aria-busy="busy">
     <p class="hint">
-      文章自动保存到当前草稿。只有主动新增版本才会保留历史；版本不包含排版配置和固定结尾。
+      文章自动保存到当前草稿。只有主动新增版本才会保留历史；版本不包含排版配置和固定头尾。
     </p>
     <div class="history-actions">
       <el-button :disabled="busy || blocked" @click="emit('create')"

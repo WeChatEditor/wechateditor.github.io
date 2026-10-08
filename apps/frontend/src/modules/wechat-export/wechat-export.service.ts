@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify'
 import { renderMarkdown } from '../article/article.service'
 import { styleArticle } from '../typesetting/typesetting.service'
-import { renderEnding } from '../ending/ending.service'
+import { renderEnding, renderOpening } from '../ending/ending.service'
 import { prepareExportImages, resolvePreviewImages } from '../assets/assets.service'
 import type { ExportSnapshot, ExportResult, Diagnostic } from './wechat-export.model'
 
@@ -40,6 +40,14 @@ function articleDom(snapshot: ExportSnapshot): HTMLElement {
   const root = document.createElement('section')
   root.innerHTML = renderMarkdown(snapshot.article.markdown, snapshot.article.annotations).html
   styleArticle(root, snapshot.config)
+  const openingHtml = renderOpening(snapshot.ending)
+  if (openingHtml) {
+    const opening = document.createElement('section')
+    opening.dataset.opening = 'true'
+    opening.innerHTML = openingHtml
+    styleArticle(opening, snapshot.config, false)
+    root.prepend(opening)
+  }
   const endingHtml = renderEnding(snapshot.ending)
   if (endingHtml) {
     const ending = document.createElement('section')

@@ -194,7 +194,7 @@ function resetText(): void {
         />
       </label>
       <p class="settings-intro">序号按正文章节顺序自动添加；下方样式只控制标题装饰。</p>
-      <div class="chapter-list" role="group" aria-label="章节样式">
+      <div class="chapter-list" role="group" aria-label="标题样式">
         <button
           v-for="item in chapters"
           :key="item.id"
@@ -262,67 +262,76 @@ function resetText(): void {
               >
             </button>
             <div class="palette-actions">
-              <button
-                class="ui-button"
-                :aria-label="'用当前颜色更新配色：' + preset.name"
-                @click="updatePalette(preset)"
-              >
-                <svg
-                  class="action-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  focusable="false"
+              <el-tooltip content="用当前颜色更新配色" placement="top" :show-after="250">
+                <button
+                  class="ui-button"
+                  :aria-label="'用当前颜色更新配色：' + preset.name"
+                  @click="updatePalette(preset)"
                 >
-                  <path d="M4 3h14l3 3v15H3V3ZM7 3v6h10V3M7 21v-8h10v8" />
-                </svg>
-                更新颜色
-              </button>
-              <button
-                class="ui-button"
-                :aria-label="'修改配色名称：' + preset.name"
-                @click="renamePalette(preset)"
-              >
-                <svg
-                  class="action-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  focusable="false"
+                  <svg
+                    class="action-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d="M4 3h14l3 3v15H3V3ZM7 3v6h10V3M7 21v-8h10v8" />
+                  </svg>
+                </button>
+              </el-tooltip>
+              <el-tooltip content="修改配色名称" placement="top" :show-after="250">
+                <button
+                  class="ui-button"
+                  :aria-label="'修改配色名称：' + preset.name"
+                  @click="renamePalette(preset)"
                 >
-                  <path d="m15 4 5 5M4 20l4-1L20 7a2 2 0 0 0-4-4L4 15ZM4 20h16" />
-                </svg>
-                修改名称
-              </button>
-              <button
-                class="ui-button"
-                :disabled="config.palettes.length <= 1"
-                :aria-label="'删除配色：' + preset.name"
-                @click="deletePalette(preset)"
+                  <svg
+                    class="action-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d="m15 4 5 5M4 20l4-1L20 7a2 2 0 0 0-4-4L4 15ZM4 20h16" />
+                  </svg>
+                </button>
+              </el-tooltip>
+              <el-tooltip
+                :content="config.palettes.length <= 1 ? '至少保留一个配色' : '删除配色'"
+                placement="top"
+                :show-after="250"
               >
-                <svg
-                  class="action-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
-                </svg>
-                删除
-              </button>
+                <span class="palette-delete">
+                  <button
+                    class="ui-button"
+                    :disabled="config.palettes.length <= 1"
+                    :aria-label="'删除配色：' + preset.name"
+                    @click="deletePalette(preset)"
+                  >
+                    <svg
+                      class="action-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+                    </svg>
+                  </button>
+                </span>
+              </el-tooltip>
             </div>
           </div>
         </div>
@@ -457,14 +466,14 @@ function resetText(): void {
 }
 .preset-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 .preset-card {
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
   border-radius: var(--ui-radius);
-  padding: 12px 10px;
+  padding: 42px 10px 12px;
   text-align: left;
   min-width: 0;
 }
@@ -530,6 +539,7 @@ function resetText(): void {
 }
 .palette-entry {
   min-width: 0;
+  position: relative;
 }
 .palette-entry .preset-card {
   width: 100%;
@@ -541,16 +551,34 @@ function resetText(): void {
   gap: 8px;
 }
 .palette-actions {
-  flex-wrap: wrap;
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.15s;
+}
+.palette-actions .ui-button {
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  background: var(--ui-surface);
+  border-color: var(--ui-border);
+}
+.palette-actions .ui-button:hover:not(:disabled) {
+  background: var(--ui-hover);
+}
+.palette-delete {
+  display: inline-flex;
 }
 .palette-entry:hover .palette-actions,
 .palette-entry:focus-within .palette-actions {
   opacity: 1;
   pointer-events: auto;
 }
-.palette-actions,
 .palette-save {
   display: flex;
   gap: 6px;
