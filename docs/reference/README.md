@@ -1,5 +1,7 @@
 # 参考资料
 
+- [网站图标源图与生成提示词](brand/README.md)
+
 - [依赖与许可](dependencies.md)
 - [迁移来源](migration-provenance.md)
 - [公众号兼容研究](wechat-editor-wechat-compatibility.md)
