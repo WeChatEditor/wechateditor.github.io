@@ -29,3 +29,16 @@ owner: project maintainers
 实现使用临时缩放/同步状态、既有公共组件协议和workspace私有协调器，无新增依赖/模块。同步识别自身写入，防止回环；小于1px的尾差归到目标，减少动态效果时直接定位；布局改变重新对齐。复制定时器在重复复制、改稿、卸载清理，过期异步结果不重置新状态。成功追加结尾以单次patch同时启用，不修改开头。不新增或运行前端测试/浏览器自动化，技术检查不代替人工验收，计划保持pending_human_acceptance。关联提交通过本文件Git历史定位。
 
 技术提交`6d58462bffa15e9b532fbd97358ba96887a34959`已推送origin/master，git ls-remote返回同一SHA，工作区为空，git log -1 --format=full核验GPT-6 trailer通过。远端CI/Pages与人工功能验收是独立证据，不以推送成功替代。此补记单独作为文档提交推送。
+
+## 控件布局与交互修订
+
+维护者继续要求：缩放改radio button，文案“自适应屏幕 / 原始比例”；比例文案“当前缩放比例: N%”；两项横排放手机模型上方，仅阅读外壳开启且手机模式显示；同步去掉图标，外壳由checkbox改active按钮，统一预览按钮选中/hover/disabled/键盘逻辑。开始工作区/暂存区为空，归档NOT_DUE，保留已提交的网站favicon内容。继续本计划与日志，不改变存储或滚动算法。
+
+- [x] 同步现行设计并准备修订记录。
+- [x] 实现模型上方横排radio和比例提示，以及统一active按钮。
+- [x] 运行格式、Lint、类型、生产构建、模块/文档检查，准备技术交付记录。
+- [ ] 人工确认窄/宽栏、手机/电脑、外壳/专注、radio键盘操作与实际缩放提示。
+
+修订采用现有Element Plus radio注册/样式。手机模型上方控件行独立于zoom，横排且窄栏可横向滚动，占用高度自动从画板空间扣除；原始比例和同步算法不变。同步与外壳无图标/checkbox，专注补active，共用ui-button及预览radio已选状态在hover时保留。当前已提交favicon原样保留，无依赖、配置或存储改动。
+
+2026-10-08 Windows Node24.18.0/pnpm10.26.0：format/format:check、Lint零error/221条warning（较上一轮减少4条）、TypeScript、生产构建、模块/文档检查与diff检查通过；归档CI为NOT_DUE。JS534.39kB/gzip192.54kB，保留既有500kB提示。不运行前端自动化；仅UI/样式修改，无治理脚本变更，无需重复治理测试。人工验收状态保持pending_human_acceptance；关联技术提交由本文件Git历史定位，提交推送后核验真实trailer与远端SHA。

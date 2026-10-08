@@ -75,7 +75,8 @@ textarea:focus-visible,
   background: var(--ui-hover);
   color: var(--ui-text);
 }
-.ui-button.active {
+.ui-button.active,
+.ui-button.active:hover:not(:disabled) {
   background: var(--ui-active);
   color: var(--ui-primary);
 }

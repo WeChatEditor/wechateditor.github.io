@@ -20,3 +20,11 @@ article编辑器/预览公开当前滚动元素和滚动事件；预览观测画
 未运行前端测试/浏览器自动化。视觉、滚动、刷新/复制与公众号人工验收待维护者，计划和日志保持pending_human_acceptance；百分比同步不保证段落对应，1:1指CSS像素而非系统物理像素。模型身份依据当前指令GPT-6，提交后核验trailer；关联提交由Git历史定位，维护者明确授权推送origin/master。
 
 技术提交`6d58462bffa15e9b532fbd97358ba96887a34959`已推送origin/master，git ls-remote确认远端同SHA且工作区干净；真实GPT-6 trailer已用git log -1 --format=full核验。沿用本仓库最近提交的维护者作者，仅单次git -c配置，不改全局/仓库作者配置。此文档补记单独提交推送，远端CI/Pages及人工功能验收另行区分。
+
+## 控件布局与交互修订
+
+维护者要求缩放radio button及精简文案、与比例提示横排放手机上方，仅开壳手机显示；同步去掉图标，外壳改active按钮，统一预览按钮交互。开始工作区/暂存区为空，NOT_DUE；先读活动计划/现行设计。记忆提示Radio子组件需显式注册，当前main.ts已确认具备组件注册和样式。设计/本计划/日志先行，保留新增favicon已提交内容，沿用本会话提交推送授权，前端人工验收保留。
+
+article-preview将缩放下拉框/比例迁入模型上方独立横排行，改现有radio button，文案与可见条件按指令；不进入zoom，ResizeObserver自动依据剩余stage高度算缩放。外壳改ui-button、disabled/aria-pressed与active，同步无图标，专注补active；手机/电脑及缩放radio使用浅蓝active/主色文字、同一hover逻辑，共用ui-button选中hover保留高亮。滚动算法/外壳逻辑尺寸/配置默认值不变。源码搜索确认旧checkbox/图标/select样式均移除；一次PowerShell正则转义搜索失败，改固定字符串搜索后确认。
+
+format/format:check、Lint零error/221条warning、TypeScript、生产构建、模块/文档和diff检查通过；归档CI为NOT_DUE。JS534.39kB/gzip192.54kB，保留原500kB提示。未改治理脚本，无需重复治理测试，未执行前端自动化；人工确认手机上方布局、条件显示、窄栏/键盘/active/缩放效果。关联提交由Git历史定位，提交后核验真实GPT-6 trailer与远端SHA。

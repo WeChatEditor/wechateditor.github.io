@@ -192,33 +192,25 @@ defineExpose({ captureSelection, getScrollElement })
       </span>
       <div class="preview-actions">
         <button
+          type="button"
           class="ui-button"
           :class="{ active: syncScroll }"
           :aria-pressed="syncScroll"
           :disabled="disabled"
           @click="emit('syncScroll', !syncScroll)"
         >
-          🔄 同步滚动
+          同步滚动
         </button>
-        <label class="frame-toggle"
-          ><input v-model="showFrame" type="checkbox" @change="closeSelection" />阅读外壳</label
+        <button
+          type="button"
+          class="ui-button"
+          :class="{ active: showFrame }"
+          :aria-pressed="showFrame"
+          :disabled="disabled"
+          @click="showFrame = !showFrame"
         >
-        <template v-if="showFrame && mode === 'phone'">
-          <span class="scale-status" role="status">
-            [ 缩放 {{ Math.round(phoneScale * 100) }}% ({{
-              scaleMode === 'fit' ? '适应视窗' : '真实像素'
-            }}) ]
-          </span>
-          <select
-            v-model="scaleMode"
-            class="scale-select"
-            aria-label="手机外壳缩放"
-            :disabled="disabled"
-          >
-            <option value="fit">适应屏幕 (全貌)</option>
-            <option value="actual">1:1 真实像素 (壳内正常纵向滚动)</option>
-          </select>
-        </template>
+          阅读外壳
+        </button>
         <el-radio-group
           :model-value="mode"
           size="small"
@@ -254,7 +246,9 @@ defineExpose({ captureSelection, getScrollElement })
             >电脑</el-radio-button
           ></el-radio-group
         ><button
+          type="button"
           class="ui-button"
+          :class="{ active: focus }"
           :disabled="disabled"
           :aria-pressed="focus"
           @click="emit('focus')"
@@ -284,6 +278,22 @@ defineExpose({ captureSelection, getScrollElement })
       }"
       @scroll="scrolled"
     >
+      <div v-if="showFrame && mode === 'phone'" class="phone-scale-toolbar">
+        <div class="phone-scale-controls">
+          <el-radio-group
+            v-model="scaleMode"
+            size="small"
+            :disabled="disabled"
+            aria-label="手机外壳缩放"
+          >
+            <el-radio-button value="fit">自适应屏幕</el-radio-button>
+            <el-radio-button value="actual">原始比例</el-radio-button>
+          </el-radio-group>
+          <span class="scale-status" role="status">
+            当前缩放比例: {{ Math.round(phoneScale * 100) }}%
+          </span>
+        </div>
+      </div>
       <div ref="stage" class="frame-stage">
         <div
           ref="paper"
@@ -407,8 +417,22 @@ defineExpose({ captureSelection, getScrollElement })
   align-items: center;
   gap: 6px;
 }
-.preview-actions :deep(.el-radio-button__inner) {
+.preview-pane :deep(.el-radio-button__inner) {
   padding: 6px 10px;
+  color: var(--ui-muted);
+}
+.preview-pane :deep(.el-radio-button) {
+  --el-radio-button-checked-bg-color: var(--ui-active);
+  --el-radio-button-checked-text-color: var(--ui-primary);
+  --el-radio-button-checked-border-color: var(--ui-border);
+}
+.preview-pane :deep(.el-radio-button:not(.is-disabled) .el-radio-button__inner:hover) {
+  background: var(--ui-hover);
+  color: var(--ui-text);
+}
+.preview-pane :deep(.el-radio-button.is-active:not(.is-disabled) .el-radio-button__inner) {
+  background: var(--ui-active);
+  color: var(--ui-primary);
 }
 .preview-scroll {
   flex: 1;
@@ -416,25 +440,25 @@ defineExpose({ captureSelection, getScrollElement })
   overflow: auto;
   padding: 20px 18px 16px;
 }
-.frame-toggle {
+.phone-scale-toolbar {
+  flex-shrink: 0;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+.phone-scale-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
+  width: max-content;
+  margin: 0 auto;
   white-space: nowrap;
-  cursor: pointer;
+}
+.phone-scale-controls :deep(.el-radio-group) {
+  flex-shrink: 0;
 }
 .scale-status {
   color: var(--ui-muted);
   font-size: 12px;
-}
-.scale-select {
-  max-width: 210px;
-  padding: 5px 6px;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-sm);
-  background: var(--ui-surface);
-  color: var(--ui-text);
-  font: inherit;
 }
 .paper {
   margin: 0 auto;
