@@ -4,7 +4,7 @@ import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 const locale = {
   ...zhCn,
-  el: { ...zhCn.el, colorpicker: { ...zhCn.el.colorpicker, clear: '清除', confirm: '确定' } },
+  el: { ...zhCn.el, colorpicker: { ...zhCn.el.colorpicker, clear: '取消', confirm: '确定' } },
 }
 </script>
 
