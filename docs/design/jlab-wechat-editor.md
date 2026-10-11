@@ -14,7 +14,7 @@ owner: project maintainers
 
 ## 工作流
 
-2026-10-11维护者确认可选的[Chrome轻量传稿插件路线](wechat-transfer-extension.md)，当前仅有设计与实施计划，尚无插件或Web传稿入口。目标是自动新建图文并插入文字排版，用户手动保存；含图片文章提示既有复制流程。Web保持文章、配置和主动历史的数据所有者，不迁移到插件、不引入官方HTTP草稿API或服务端。现行复制流程和下列运行时事实保持当前实现。
+2026-10-12已实现可选的[Chrome轻量传稿插件](wechat-transfer-extension.md)及Web发送入口，独立工程、文字快照、保守新建/官方正文适配和安装包已准备；真实公众号尚待人类验收，不能将构建当作插入/保存证明。生产Web由维护者确认为https://wechateditor.github.io/。目标是自动新建图文并插入文字排版，用户手动保存；含图片文章提示既有复制流程。Web保持文章、配置和主动历史的数据所有者，不迁移到插件、不引入官方HTTP草稿API或服务端。
 
 左Markdown原稿 → article受控解析/序列化局部标注 → typesetting公共规则与ending片段 → article预览 → assets准备 → wechat-export清洗/内联 → HTML和纯文字剪贴板。workspace编排命令并拥有草稿仓储；App/main只组装。原始HTML禁用并显示为文本，不将输入直接插入预览。
 

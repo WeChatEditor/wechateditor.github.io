@@ -2,11 +2,13 @@
 title: 模块与 API 边界
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-12
 owner: project maintainers
 ---
 
 # 模块与 API 边界
+
+当前注册schemaVersion2按workspace:name识别同名跨层模块；同workspace依赖可简写name，跨workspace必须完整键并通过package exports。检查器兼容旧schemaVersion1，跨层同名也必须检查公共文件/声明依赖，不能视为模块内部导入。新治理测试覆盖该边界。
 
 能力进入各 workspace 的 src/modules/<module>/，同一能力跨层同名。空应用不创建业务模块。入口只组装。每个模块设计说明职责、非目标、公共文件、依赖、数据流、失败模式和适用验证。
 

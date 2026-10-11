@@ -36,6 +36,8 @@ jobs:
       - run: pnpm docs:archive:check:ci
       - run: pnpm commits:check
       - run: pnpm build
+      - run: pnpm package:extension
+      - run: pnpm extension:check
       - uses: actions/upload-pages-artifact@v4
         with:
           path: apps/frontend/dist

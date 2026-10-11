@@ -1,6 +1,6 @@
 # 活动计划
 
-- [Web 与 Chrome 轻量传稿插件实施计划](2026-10-11-wechat-transfer-extension.md)：设计已准备，实现待授权；自动新建插入文字、用户手动保存。
+- [Web 与 Chrome 轻量传稿插件实施计划](2026-10-11-wechat-transfer-extension.md)：工程实现与安装包已准备，实际公众号/Chrome待人类验收；文字首版、手动保存。
 
 - [原稿固定头尾显示配置](2026-10-11-editor-fixed-fragments.md)：独立控制左侧只读块并保存偏好。
 

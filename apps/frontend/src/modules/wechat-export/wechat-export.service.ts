@@ -124,6 +124,36 @@ export async function exportArticle(snapshot: ExportSnapshot): Promise<ExportRes
   diagnostics.push(
     ...images.map((d) => ({ rule: 'image-export', level: 'error' as const, message: d.message })),
   )
+  return finishExport(root, snapshot, diagnostics, 'wechat-clipboard@0.1-candidate')
+}
+
+export function preflightTextArticle(snapshot: ExportSnapshot): {
+  title: string
+  hasImages: boolean
+} {
+  const root = articleDom(snapshot)
+  const article = document.createElement('section')
+  article.innerHTML = renderMarkdown(snapshot.article.markdown, snapshot.article.annotations).html
+  const hasImages =
+    Boolean(root.querySelector('img,svg,video,audio,iframe,object,embed,picture,source')) ||
+    [...root.querySelectorAll('[style]')].some(function imageStyle(element) {
+      return /url\s*\(|image-set\s*\(/i.test(element.getAttribute('style') || '')
+    })
+  return { title: article.querySelector('h1')?.textContent?.trim() || '', hasImages }
+}
+
+export function exportTextArticle(snapshot: ExportSnapshot): ExportResult {
+  if (preflightTextArticle(snapshot).hasImages)
+    throw new Error('这篇文章含图片，请使用“复制到公众号”，在后台粘贴并检查图片')
+  return finishExport(articleDom(snapshot), snapshot, [], 'wechat-editor-text@1-candidate')
+}
+
+function finishExport(
+  root: HTMLElement,
+  snapshot: ExportSnapshot,
+  diagnostics: Diagnostic[],
+  profile: string,
+): ExportResult {
   for (const link of root.querySelectorAll<HTMLAnchorElement>('a')) {
     const url = link.getAttribute('href') || ''
     if (!/^https:\/\/mp\.weixin\.qq\.com\//i.test(url)) {
@@ -191,7 +221,7 @@ export async function exportArticle(snapshot: ExportSnapshot): Promise<ExportRes
     html,
     plainText,
     revision: snapshot.article.revision,
-    profile: 'wechat-clipboard@0.1-candidate',
+    profile,
     diagnostics,
     bytes,
   }

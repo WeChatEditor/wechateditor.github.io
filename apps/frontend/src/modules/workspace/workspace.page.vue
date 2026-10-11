@@ -12,6 +12,7 @@ import ArticleEditor from '../article/article-editor.vue'
 import ArticlePreview from '../article/article-preview.vue'
 import TypesettingPanel from '../typesetting/typesetting-panel.vue'
 import EndingPanel from '../ending/ending-panel.vue'
+import TransferPanel from '../wechat-transfer/wechat-transfer-panel.vue'
 import type { TextSelection } from '../article/article.model'
 import { maxMarkdownLength } from '../../app.config'
 
@@ -97,6 +98,7 @@ const drawerTitle = computed(
       ending: '固定头尾',
       chapters: '标题样式',
       history: '历史版本',
+      transfer: '发送到公众号',
     })[store.drawer || 'text'],
 )
 function updatePointer(event: PointerEvent): void {
@@ -215,12 +217,14 @@ onBeforeUnmount(function cleanup() {
       :config="store.config"
       :drawer="store.drawer"
       :copy-state="store.copyState"
+      :transfer-busy="store.transferState.busy"
       :disabled="disabled"
       :save-state="store.saveState"
       :save-blocked="store.saveBlocked || store.settingsBlocked"
       @config="store.setConfig"
       @drawer="toggleDrawer"
       @copy="copy"
+      @transfer="store.openTransfer"
       @retry="store.saveNow"
     />
     <input
@@ -242,7 +246,12 @@ onBeforeUnmount(function cleanup() {
       @update:model-value="!$event && (store.drawer = undefined)"
     >
       <TypesettingPanel
-        v-if="store.drawer && store.drawer !== 'ending' && store.drawer !== 'history'"
+        v-if="
+          store.drawer &&
+          store.drawer !== 'ending' &&
+          store.drawer !== 'history' &&
+          store.drawer !== 'transfer'
+        "
         :kind="store.drawer"
         :config="store.config"
         @change="store.setConfig"
@@ -267,6 +276,21 @@ onBeforeUnmount(function cleanup() {
         @view="store.viewVersion"
         @restore="store.restoreVersion"
         @delete="store.deleteVersion"
+      />
+      <TransferPanel
+        v-if="store.drawer === 'transfer'"
+        :title="store.transferTitle"
+        :state="store.transferState"
+        :disabled="disabled || ['preparing', 'copying'].includes(store.copyState)"
+        :warning="store.transferWarning"
+        :replace="store.transferReplace"
+        @title="store.transferTitle = $event"
+        @replace="store.transferReplace = $event"
+        @submit="store.submitTransfer"
+        @connect="store.connectTransfer"
+        @retry="store.retryTransfer"
+        @cancel="store.cancelTransfer"
+        @copy="copy"
       />
     </el-drawer>
     <div class="content-row">

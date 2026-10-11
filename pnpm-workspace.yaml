@@ -1,5 +1,7 @@
 packages:
   - 'apps/frontend'
+  - 'apps/extension'
+  - 'packages/wechat-transfer-contract'
 
 engineStrict: true
 savePrefix: '^'
@@ -11,4 +13,5 @@ onlyBuiltDependencies:
 minimumReleaseAge: 1440
 
 allowBuilds:
+  esbuild: true
   vue-demi: true

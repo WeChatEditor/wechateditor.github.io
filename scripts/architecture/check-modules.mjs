@@ -6,6 +6,18 @@ import { filesUnder, isMain, projectRoot, readJson, relativePath } from '../lib/
 function owner(path) {
   return /^(?:apps|packages)\/[^/]+\/src\/modules\/([^/]+)\//.exec(path)?.[1]
 }
+function registrationKey(entry) {
+  return entry.workspace ? `${entry.workspace}:${entry.name}` : entry.name
+}
+function sourceOwner(path, modules) {
+  const name = owner(path)
+  if (!name) return undefined
+  const scoped = `${path.split('/').slice(0, 2).join('/')}:${name}`
+  return modules.has(scoped) ? scoped : name
+}
+function dependencyKey(entry, name) {
+  return entry.workspace && !name.includes(':') ? `${entry.workspace}:${name}` : name
+}
 
 function importedSpecifiers(file, text, errors) {
   if (file.endsWith('.vue'))
@@ -71,16 +83,19 @@ export function checkModules(root) {
   try {
     const registry = readJson(join(root, '.module-boundaries.json'))
     if (
-      registry.schemaVersion !== 1 ||
+      ![1, 2].includes(registry.schemaVersion) ||
       !Array.isArray(registry.assembly) ||
       !Array.isArray(registry.modules)
     )
       return ['Invalid module registry']
     const modules = new Map()
     for (const entry of registry.modules) {
+      const key = registrationKey(entry)
       if (
         !/^[a-z][a-z0-9-]*$/.test(entry.name) ||
-        modules.has(entry.name) ||
+        modules.has(key) ||
+        (registry.schemaVersion === 2 && !entry.workspace) ||
+        (entry.workspace && !/^(?:apps|packages)\/[a-z][a-z0-9-]*$/.test(entry.workspace)) ||
         !Array.isArray(entry.publicFiles) ||
         !Array.isArray(entry.dependencies) ||
         !entry.design ||
@@ -89,9 +104,13 @@ export function checkModules(root) {
         errors.push(`Invalid module registration ${entry.name}`)
         continue
       }
-      modules.set(entry.name, entry)
+      modules.set(key, entry)
       for (const path of entry.publicFiles) {
-        if (owner(path) !== entry.name || !existsSync(join(root, path)))
+        if (
+          owner(path) !== entry.name ||
+          (entry.workspace && !path.startsWith(`${entry.workspace}/`)) ||
+          !existsSync(join(root, path))
+        )
           errors.push(`Invalid public file ${path}`)
         if (/(?:^|\/)index\.[jt]s$/.test(path) && !entry.allowBarrels?.includes(path))
           errors.push(`Undeclared barrel exception ${path}`)
@@ -99,7 +118,10 @@ export function checkModules(root) {
     }
     for (const entry of modules.values())
       for (const dependency of entry.dependencies)
-        if (!modules.has(dependency) || dependency === entry.name)
+        if (
+          !modules.has(dependencyKey(entry, dependency)) ||
+          dependencyKey(entry, dependency) === registrationKey(entry)
+        )
           errors.push(`Invalid dependency ${entry.name} -> ${dependency}`)
     const allFiles = filesUnder(root)
     const packageFiles = allFiles.filter((file) =>
@@ -115,7 +137,7 @@ export function checkModules(root) {
     for (const file of allFiles) {
       const name = relativePath(root, file)
       if (!/^(?:apps|packages)\/[^/]+\/src\/.*\.(?:[cm]?[jt]sx?|vue)$/.test(name)) continue
-      const from = owner(name)
+      const from = sourceOwner(name, modules)
       if (from && !modules.has(from)) {
         errors.push(`Undeclared module in ${name}`)
         continue
@@ -170,7 +192,7 @@ export function checkModules(root) {
         }
         if (!target) continue
         const destination = relativePath(root, target)
-        const to = owner(destination)
+        const to = sourceOwner(destination, modules)
         if (!to) continue
         const sameWorkspace =
           name.split('/').slice(0, 2).join('/') === destination.split('/').slice(0, 2).join('/')
@@ -183,7 +205,14 @@ export function checkModules(root) {
         if (!registration?.publicFiles.includes(destination))
           errors.push(`${name}: Private cross-module import ${destination}`)
         if (from && from !== to) {
-          if (!modules.get(from).dependencies.includes(to))
+          if (
+            !modules
+              .get(from)
+              .dependencies.map(function resolveDependency(name) {
+                return dependencyKey(modules.get(from), name)
+              })
+              .includes(to)
+          )
             errors.push(`${from}: Undeclared dependency on ${to}`)
           edges.get(from).add(to)
         }
@@ -198,7 +227,12 @@ export function checkModules(root) {
       }
       if (visited.has(name)) return
       visiting.add(name)
-      for (const dependency of new Set([...edges.get(name), ...modules.get(name).dependencies]))
+      for (const dependency of new Set([
+        ...edges.get(name),
+        ...modules.get(name).dependencies.map(function resolveDependency(dependency) {
+          return dependencyKey(modules.get(name), dependency)
+        }),
+      ]))
         if (modules.has(dependency)) visit(dependency, [...path, name])
       visiting.delete(name)
       visited.add(name)

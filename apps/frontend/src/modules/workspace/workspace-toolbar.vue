@@ -5,6 +5,7 @@ defineProps<{
   config: TypesettingConfig
   drawer?: string
   copyState: string
+  transferBusy: boolean
   disabled: boolean
   saveState: string
   saveBlocked: boolean
@@ -13,6 +14,7 @@ const emit = defineEmits<{
   config: [patch: Partial<TypesettingConfig>]
   drawer: [kind: 'text' | 'colors' | 'ending' | 'chapters' | 'history']
   copy: []
+  transfer: []
   retry: []
 }>()
 const controls = [
@@ -135,6 +137,23 @@ const controls = [
         <path d="M3 11a9 9 0 1 1 2 7M3 4v7h7M12 7v5l3 2" />
       </svg>
       历史版本
+    </button>
+    <button
+      class="ui-button"
+      :disabled="disabled || transferBusy || ['preparing', 'copying'].includes(copyState)"
+      @click="emit('transfer')"
+    >
+      <svg
+        class="action-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        aria-hidden="true"
+      >
+        <path d="m3 11 18-8-8 18-2-8-8-2Zm8 2 10-10" />
+      </svg>
+      发送到公众号
     </button>
     <el-button
       class="copy-button"

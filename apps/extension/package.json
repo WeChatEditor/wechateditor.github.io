@@ -1,0 +1,21 @@
+{
+  "name": "@jlab-wechat-editor/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --dev",
+    "package": "node scripts/build.mjs --zip"
+  },
+  "dependencies": {
+    "@jlab-wechat-editor/wechat-transfer-contract": "workspace:*",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "@types/chrome": "^0.3.5",
+    "fflate": "^0.8.2"
+  }
+}

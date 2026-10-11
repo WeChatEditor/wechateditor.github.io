@@ -1,8 +1,8 @@
 ---
 title: Web 与 Chrome 轻量传稿插件实施计划
-status: draft
+status: pending_human_acceptance
 created: 2026-10-11
-updated: 2026-10-11
+updated: 2026-10-12
 owner: project maintainers
 ---
 
@@ -10,11 +10,11 @@ owner: project maintainers
 
 ## 目标、授权与设计依据
 
-路线已确认，当前授权仅设计和实施计划，没有插件代码/安装/公众号操作/远端发布授权。未来实现需维护者新指令。依据[插件设计](../../design/wechat-transfer-extension.md)、[消息协议](../../reference/wechat-transfer-protocol.md)和[ADR](../../decisions/ADR-20261011-wechat-transfer-extension.md)。
+2026-10-12维护者授权执行整个实施计划，并确认目前仅设计通过、实际公众号验收尚未进行。先完成独立工程、Web连接、保守页面适配和可安装包；P0真实账号能力及P4前端功能保留人类验收，未获得前端自动化授权。依据[插件设计](../../design/wechat-transfer-extension.md)、[消息协议](../../reference/wechat-transfer-protocol.md)和[ADR](../../decisions/ADR-20261011-wechat-transfer-extension.md)。
 
 目标出口：Web保留原稿/配置/历史，插件自动进入草稿箱、新建图文、插入文字排版；用户检查后手动保存。含正文/头尾/排版图片的文章在发送前阻断并提示既有复制流程。不实现自动保存、图片上传、私有HTTP接口、发布、群发或插件内编辑器。
 
-设计阶段起点：工作区/暂存为空，无.codegraph，归档NOT_DUE，真实HEAD为`0dc7a9a7cb01cc823f9a66636ff679e6d38d5ea0`。下列P0至P5未执行。设计交付过程见[已完成设计计划](../../archive/plans/2026-10-11-wechat-transfer-extension-design.md)。
+设计阶段起点：工作区/暂存为空，无.codegraph，归档NOT_DUE，真实HEAD为`0dc7a9a7cb01cc823f9a66636ff679e6d38d5ea0`。当日P0至P5尚未执行；2026-10-12技术实施结果见文末。设计交付过程见[已完成设计计划](../../archive/plans/2026-10-11-wechat-transfer-extension-design.md)。
 
 ## P0：实际公众号能力与设计参数确认
 
@@ -24,36 +24,36 @@ owner: project maintainers
 - [ ] 确认草稿箱/新的创作/图文入口的真实路径和语义定位，已有非空文章保护及多账号识别方法。
 - [ ] 确认官方JSAPI所在文档/frame、invoke/回调/返回结构、isNew、set/get正文、标题写入进入真实编辑器状态。
 - [ ] 用含头尾、章节装饰、局部颜色、表格、列表、代码的文字样稿人工插入、手动保存、重开和阅读；记录差异。
-- [ ] 确认Chrome最低版本、标题限制、保护尺寸、超时、开发稳定ID和unpacked安装方式；不虚构商店ID。
+- [x] 已选择工程参数Chrome120/64码点/2MiB/24小时/30秒/10秒，生成真实稳定ID及安装方式；实际Chrome与账号兼容仍在P4验收，不宣称商店ID。
 
 退出条件：官方正文接口、导航/新建和标题操作有实际证据；未授权浏览器自动化时只由人类验证。官方JSAPI不可用、标题无法可靠写入、账号/目标无法确定时，记录阻断及复制退路，不能转用私有实例/HTTP接口继续。不能把未保存的DOM变化当完成证据。
 
 ## P1：独立工程、契约与边界
 
-- [ ] 按设计新增apps/extension和packages/wechat-transfer-contract，保持Web部署路径；先实现共享Zod Schema和显式exports。
-- [ ] 登记各workspace的src/modules能力、公共文件和单向依赖，同步.module-boundaries.json及模块设计。
-- [ ] 独立构建MV3worker/content/MAIN桥接/popup，不引入完整Web编辑器；接入格式/Lint/类型/build/模块检查。
-- [ ] 根据实际包审查依赖、许可、CSP、生产/开发来源、插件稳定ID和版本。
-- [ ] 如治理检查器需要扩展，增加适用治理脚本检查；不新增前端测试。
+- [x] 按设计新增apps/extension和packages/wechat-transfer-contract，保持Web部署路径；先实现共享Zod Schema和显式exports。
+- [x] 登记各workspace的src/modules能力、公共文件和单向依赖，同步.module-boundaries.json及模块设计。
+- [x] 独立构建MV3worker/content/MAIN桥接/popup，不引入完整Web编辑器；接入格式/Lint/类型/build/模块检查。
+- [x] 根据实际包审查依赖、许可、CSP、生产/开发来源、插件稳定ID和版本。
+- [x] 如治理检查器需要扩展，增加适用治理脚本检查；不新增前端测试。
 
 退出条件：Web原有静态检查继续通过，扩展与协议独立构建通过，跨模块/跨workspace边界可检查，生产包无localhost、敏感数据和远程执行代码；不修改既有数据协议/历史语义。
 
 ## P2：Web预检与传稿连接
 
-- [ ] wechat-export公共预检和文字传稿profile复用现有排版/清洗，不抓取不支持图片；正文/启用头尾/样式媒体完整阻断。
-- [ ] 顶栏“发送到公众号”、临时标题确认面板、插件握手/状态和手动复制退路。
-- [ ] sourceGeneration覆盖正文、标注、所有排版和头尾变化；准备/提交竞态拒绝迟到结果，现有冲突锁阻断发送。
-- [ ] Schema/digest/2MiB保护和来源路径检查；SUBMIT持久化后才应答，OPEN只打开固定后台。
+- [x] wechat-export公共预检和文字传稿profile复用现有排版/清洗，不抓取不支持图片；正文/启用头尾/样式媒体完整阻断。
+- [x] 顶栏“发送到公众号”、临时标题确认面板、插件握手/状态和手动复制退路。
+- [x] sourceGeneration覆盖正文、标注、所有排版和头尾变化；准备/提交竞态拒绝迟到结果，现有冲突锁阻断发送。
+- [x] Schema/digest/2MiB保护和来源路径检查；SUBMIT持久化后才应答，OPEN只打开固定后台。
 
 退出条件：人类确认无插件时编辑/复制仍正常、文字快照接收、图片在新建前阻断、输出修改不会误传旧结果、相同requestId重试不创建新任务。
 
 ## P3：插件单任务与公众号执行
 
-- [ ] 本地任务仓储、单写入者、TTL、去重、显式替换、租约、阶段预写与worker恢复。
-- [ ] 简洁插件面板和后台浮层；存在多个公众号时选择目标，单个目标也显示并确认账号。
-- [ ] 独立新建导航适配器，执行阶段/目标绑定，保护已有非空编辑页面；bounded就绪探测与超时。
-- [ ] 内置MAIN桥接调用官方正文接口，标题适配及规范化读回；结果不确定不自动重放。
-- [ ] 成功显示“已插入，请检查排版并手动保存”，清除载荷并保留短期去重回执。
+- [x] 本地任务仓储、单写入者、TTL、去重、显式替换、租约、阶段预写与worker恢复。
+- [x] 简洁插件面板和后台浮层；存在多个公众号时选择目标，单个目标也显示并确认账号。
+- [x] 独立新建导航适配器，执行阶段/目标绑定，保护已有非空编辑页面；bounded就绪探测与超时。
+- [x] 内置MAIN桥接调用官方正文接口，标题适配及规范化读回；结果不确定不自动重放。
+- [x] 成功显示“已插入，请检查排版并手动保存”，清除载荷并保留短期去重回执。
 
 退出条件：人类用真实公众号验证从待传任务到新建编辑器的完整流程；同一次任务不会因连点、刷新或回执丢失重复插入；已编辑内容、其他账号及未确认目标不被写入。所有写入只在显式用户操作后发生；插件不点击保存/发布或主动调用相应接口，公众号自身自动保存行为按P0实际记录。
 
@@ -74,7 +74,7 @@ owner: project maintainers
 
 ## P5：打包、记录与交接
 
-- [ ] 交付unpacked目录、ZIP、版本说明、实际ID、安装/更新/卸载指南、Web来源配置及故障说明。
+- [x] 交付unpacked目录、ZIP、版本说明、实际ID、安装/更新/卸载指南、Web来源配置及故障说明。
 - [ ] 执行format/format:check、Lint、类型、生产构建、模块/文档检查、适用契约/治理检查和docs:archive:check:ci。
 - [ ] 同步设计为最终事实、记录偏差和真实提交；技术验证通过按仓库规则自动提交，不默认为推送或上架。
 - [ ] 人类验收完成后将实施计划/AI记录标completed并归档、更新索引；未完成保留活动状态。
@@ -83,4 +83,8 @@ owner: project maintainers
 
 ## 实际结果、偏差、遗留与提交
 
-2026-10-11仅设计交付，P0能力验证和P1至P5实现未开始。路线、手动保存和文字首版已获维护者明确选择；设计中的参数、选择器/页面适配和Schema实现还没有实际功能验证。设计提交通过本文件Git历史定位，不把设计提交当作插件运行证明。
+2026-10-12已实现P1至P3代码及P5安装包：四workspace、Zod/parse5契约、Web预检/抽屉/握手/快照、MV3单任务去重/租约/恢复、popup/浮层及保守官方JSAPI适配。共享类型、模块/文档、生产和开发构建、22项治理及9项契约检查通过；Lint零错误、有现行Vue排版警告，Web构建保留大chunk提示。format/最终归档CI及提交按收尾记录更新。
+
+偏差：维护者明确设计通过而真实账号尚未验收，工程先交付以便P0/P4人工校准；没有把P0退出条件写为通过。入口/账号/标题是候选，顶层JSAPI、不同documentId的新建证据和空编辑器缺一则停止。浮层只打开可信popup，写入统一从popup确认。旧TARGET_READY/STEP_RESULT改为scripting直接返回；正常到期任务删除，uncertain过期保留匿名阻断直到人工丢弃。实际Web经维护者确认为https://wechateditor.github.io/，生产来源已同步收紧。
+
+遗留：P0真实页面/标题内部状态、Chrome安装及消息来源、P2/P3功能出口、P4全部验收。见[安装与验收指南](../../guides/wechat-transfer-extension.md)。本轮不运行前端自动化、不推送、不上架、不代为保存；计划和实现日志保持pending_human_acceptance。关联实现提交由本文件Git历史定位，不把静态检查或技术提交当公众号运行证明。

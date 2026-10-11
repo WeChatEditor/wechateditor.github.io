@@ -2,7 +2,7 @@
 title: wechat-export模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-12
 owner: project maintainers
 ---
 
@@ -11,6 +11,8 @@ owner: project maintainers
 ## 职责与边界
 
 接受显式只读快照，构建受控HTML、内联样式、DOMPurify清洗及HTML/纯文字剪贴板输出。
+
+公共preflightTextArticle/exportTextArticle使用相同articleDom和finishExport，正文及启用头尾含图片/媒体/CSS图片时整篇阻断；不调用prepareExportImages，不抓取图片。文字profile为wechat-editor-text@1-candidate；原剪贴板入口继续图片处理及原profile。
 
 预览与导出共用articleDom，正文先排版编号，再prepend固定开头、append固定结尾；头尾单独应用排版且不编号，分别标记data-opening/data-ending以拒绝局部标注。HTML/纯文字都包含启用头尾，沿用图片处理和受控清洗。
 

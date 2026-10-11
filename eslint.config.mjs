@@ -30,11 +30,20 @@ export default [
     },
   },
   {
-    files: ['apps/frontend/src/**/*.{ts,vue}'],
+    files: [
+      'apps/frontend/src/**/*.{ts,vue}',
+      'apps/extension/src/**/*.ts',
+      'packages/wechat-transfer-contract/**/*.ts',
+    ],
     languageOptions: {
       globals: Object.fromEntries(
         [
           'window',
+          'chrome',
+          '__DEVELOPMENT__',
+          'location',
+          'setInterval',
+          'clearInterval',
           'Event',
           'CompositionEvent',
           'KeyboardEvent',

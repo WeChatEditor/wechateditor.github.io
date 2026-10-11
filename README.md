@@ -19,4 +19,6 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 [协作规则](AGENTS.md)、[文档入口](docs/README.md)、[功能与人工验收清单](apps/frontend/README.md)、[迁移来源](docs/reference/migration-provenance.md)、[静态部署](docs/guides/static-deployment.md)。
 
-功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。GitHub Pages 工作流在 master 推送后自动检查、构建和部署，也支持手动触发。地址为 [在线应用](https://tanghaojie.github.io/JLabWeChatEditor/)，首次启用与执行状态见[静态部署](docs/guides/static-deployment.md)。
+功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。源码同步到组织仓库后，GitHub Pages工作流自动检查并部署Web。维护者确认地址为[在线应用](https://wechateditor.github.io/)，执行边界见[静态部署](docs/guides/static-deployment.md)。
+
+可选Chrome轻量传稿插件已提供Web发送入口、单文字快照、独立新建插入和恢复保护，用户检查后手动保存；含图沿用复制。执行`pnpm package:extension`得到安装目录和ZIP，详见[安装与人工验收](docs/guides/wechat-transfer-extension.md)。真实公众号尚未验收，本次实现尚未推送或部署。

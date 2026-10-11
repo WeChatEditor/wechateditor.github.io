@@ -18,7 +18,14 @@ import type { TypesettingConfig } from '../typesetting/typesetting.model'
 import { defaultEnding, normalizeEnding } from '../ending/ending.service'
 import type { PreparedAsset } from '../assets/assets.model'
 import { createAssetUrls, releaseAssetUrls } from '../assets/assets.service'
-import { previewArticle, exportArticle, copyRichText } from '../wechat-export/wechat-export.service'
+import {
+  previewArticle,
+  exportArticle,
+  copyRichText,
+  exportTextArticle,
+  preflightTextArticle,
+} from '../wechat-export/wechat-export.service'
+import { createTransferConnection } from '../wechat-transfer/wechat-transfer.service'
 import type { ExportResult, ExportSnapshot, Diagnostic } from '../wechat-export/wechat-export.model'
 import type {
   WorkspaceDraft,
@@ -51,7 +58,12 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const previewMode = ref<'phone' | 'desktop'>('phone')
   const localColor = ref('#c44b77')
   const showFixedFragments = ref(true)
-  const drawer = ref<'text' | 'colors' | 'ending' | 'chapters' | 'history' | undefined>()
+  const drawer = ref<
+    'text' | 'colors' | 'ending' | 'chapters' | 'history' | 'transfer' | undefined
+  >()
+  const transfer = createTransferConnection()
+  const transferTitle = ref('')
+  const transferReplace = ref(false)
   const focus = ref(false)
   const ready = ref(false)
   const articleDirty = ref(false)
@@ -123,6 +135,64 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       config: JSON.parse(JSON.stringify(config.value)),
       ending: JSON.parse(JSON.stringify(ending.value)),
       assets: assets.value.map((a) => ({ ...a, blob: a.blob })),
+    }
+  }
+  const transferWarning = computed(function transferPreflight() {
+    if (drawer.value !== 'transfer') return ''
+    return preflightTextArticle(snapshot()).hasImages
+      ? '这篇文章含图片，请使用“复制到公众号”，在后台粘贴并检查图片'
+      : ''
+  })
+  function openTransfer(): void {
+    if (['preparing', 'copying'].includes(copyState.value)) return
+    if (!ready.value || restoring.value || conflictReason.value || transfer.state.busy) return
+    transferTitle.value = preflightTextArticle(snapshot()).title
+    transferReplace.value = false
+    focus.value = false
+    drawer.value = 'transfer'
+  }
+  async function connectTransfer(): Promise<void> {
+    try {
+      await transfer.connect()
+    } catch (error) {
+      transfer.state.message = error instanceof Error ? error.message : '插件未连接'
+    }
+  }
+  async function submitTransfer(): Promise<void> {
+    if (['preparing', 'copying'].includes(copyState.value)) return
+    if (
+      !ready.value ||
+      restoring.value ||
+      conflictReason.value ||
+      transfer.state.busy ||
+      transferWarning.value
+    )
+      return
+    const currentGeneration = generation
+    const source = snapshot()
+    try {
+      const result = exportTextArticle(source)
+      await transfer.submit(
+        {
+          sourceArticleId: source.article.id,
+          sourceRevision: source.article.revision,
+          sourceGeneration: currentGeneration,
+          title: transferTitle.value,
+          html: result.html,
+          plainText: result.plainText,
+        },
+        function current() {
+          return (
+            ready.value &&
+            !restoring.value &&
+            !conflictReason.value &&
+            currentGeneration === generation
+          )
+        },
+        transferReplace.value ? transfer.state.task?.id : undefined,
+      )
+    } catch (error) {
+      transfer.state.message = error instanceof Error ? error.message : '无法准备传稿快照'
     }
   }
   const preview = computed(function renderPreview() {
@@ -543,7 +613,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       updatedAt: Date.now(),
     }
   }
-  function toggleDrawer(kind: 'text' | 'colors' | 'ending' | 'chapters' | 'history'): void {
+  function toggleDrawer(
+    kind: 'text' | 'colors' | 'ending' | 'chapters' | 'history' | 'transfer',
+  ): void {
     if (conflictReason.value) {
       return
     }
@@ -680,6 +752,15 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     invalidAnnotations,
     statistics,
     snapshot,
+    transferState: transfer.state,
+    transferTitle,
+    transferReplace,
+    transferWarning,
+    openTransfer,
+    connectTransfer,
+    submitTransfer,
+    retryTransfer: transfer.retryReceipt,
+    cancelTransfer: transfer.cancel,
     initialize,
     saveNow,
     refreshHistory,

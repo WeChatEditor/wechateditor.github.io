@@ -24,7 +24,10 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "build": "pnpm -r --if-present build",
     "test": "node --test scripts/**/*.test.mjs && pnpm -r --if-present test",
-    "dev:frontend": "pnpm --filter @jlab-wechat-editor/frontend dev"
+    "dev:frontend": "pnpm --filter @jlab-wechat-editor/frontend dev",
+    "build:extension:dev": "pnpm --filter @jlab-wechat-editor/extension build:dev",
+    "package:extension": "pnpm --filter @jlab-wechat-editor/extension package",
+    "extension:check": "node scripts/extension/check-package.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

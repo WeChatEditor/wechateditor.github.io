@@ -1,5 +1,7 @@
 # 历史归档
 
+- [2026-10-12轻量插件跨工作区模块复核](plans/2026-10-12-extension-archive-review.md)：当前契约、模块、权限、组织来源及实现文档已复核；[协作记录](ai-logs/docs/2026/10/2026-10-12-extension-archive-review.md)，实际公众号实施计划仍待人类验收。
+
 - [2026-10-11轻量传稿插件设计交付](plans/2026-10-11-wechat-transfer-extension-design.md)：只完成设计和实施计划；[协作记录](ai-logs/docs/2026/10/2026-10-11-wechat-transfer-extension-design.md)已归档，未来代码实施仍在活动计划。
 
 - [2026-10-11工作台UI与存储冲突文档复核](plans/2026-10-11-ui-storage-archive-review.md)：复核手机档位、冲突锁、头尾与字号等当前事实，人工验收计划继续活动；基线按真实已提交内容登记。

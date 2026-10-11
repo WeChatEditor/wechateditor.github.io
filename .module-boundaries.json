@@ -1,14 +1,19 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "assembly": [
     "apps/frontend/src/main.ts",
     "apps/frontend/src/App.vue",
     "apps/frontend/src/env.d.ts",
-    "apps/frontend/src/app.config.ts"
+    "apps/frontend/src/app.config.ts",
+    "apps/extension/src/worker.ts",
+    "apps/extension/src/popup.ts",
+    "apps/extension/src/content.ts",
+    "apps/extension/src/env.d.ts"
   ],
   "modules": [
     {
       "name": "article",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/article.md",
       "publicFiles": [
         "apps/frontend/src/modules/article/article.model.ts",
@@ -20,6 +25,7 @@
     },
     {
       "name": "typesetting",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/typesetting.md",
       "publicFiles": [
         "apps/frontend/src/modules/typesetting/typesetting.model.ts",
@@ -31,6 +37,7 @@
     },
     {
       "name": "ending",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/ending.md",
       "publicFiles": [
         "apps/frontend/src/modules/ending/ending.model.ts",
@@ -41,6 +48,7 @@
     },
     {
       "name": "assets",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/assets.md",
       "publicFiles": [
         "apps/frontend/src/modules/assets/assets.model.ts",
@@ -50,6 +58,7 @@
     },
     {
       "name": "wechat-export",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/wechat-export.md",
       "publicFiles": [
         "apps/frontend/src/modules/wechat-export/wechat-export.model.ts",
@@ -59,13 +68,68 @@
     },
     {
       "name": "workspace",
+      "workspace": "apps/frontend",
       "design": "docs/design/modules/workspace.md",
       "publicFiles": [
         "apps/frontend/src/modules/workspace/workspace.store.ts",
         "apps/frontend/src/modules/workspace/draft-storage.port.ts",
         "apps/frontend/src/modules/workspace/workspace.page.vue"
       ],
-      "dependencies": ["article", "typesetting", "ending", "assets", "wechat-export"]
+      "dependencies": [
+        "article",
+        "typesetting",
+        "ending",
+        "assets",
+        "wechat-export",
+        "wechat-transfer"
+      ]
+    },
+    {
+      "name": "wechat-transfer",
+      "workspace": "packages/wechat-transfer-contract",
+      "design": "docs/design/modules/wechat-transfer.md",
+      "publicFiles": [
+        "packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts"
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "wechat-transfer",
+      "workspace": "apps/frontend",
+      "design": "docs/design/modules/wechat-transfer.md",
+      "publicFiles": [
+        "apps/frontend/src/modules/wechat-transfer/wechat-transfer.model.ts",
+        "apps/frontend/src/modules/wechat-transfer/wechat-transfer.service.ts",
+        "apps/frontend/src/modules/wechat-transfer/wechat-transfer-panel.vue"
+      ],
+      "dependencies": ["packages/wechat-transfer-contract:wechat-transfer"]
+    },
+    {
+      "name": "wechat-transfer",
+      "workspace": "apps/extension",
+      "design": "docs/design/modules/wechat-transfer.md",
+      "publicFiles": [
+        "apps/extension/src/modules/wechat-transfer/wechat-transfer.model.ts",
+        "apps/extension/src/modules/wechat-transfer/wechat-transfer.service.ts"
+      ],
+      "dependencies": ["packages/wechat-transfer-contract:wechat-transfer", "wechat-page"]
+    },
+    {
+      "name": "wechat-page",
+      "workspace": "apps/extension",
+      "design": "docs/design/modules/wechat-page.md",
+      "publicFiles": [
+        "apps/extension/src/modules/wechat-page/wechat-page.model.ts",
+        "apps/extension/src/modules/wechat-page/wechat-page.service.ts"
+      ],
+      "dependencies": ["packages/wechat-transfer-contract:wechat-transfer"]
+    },
+    {
+      "name": "extension-shell",
+      "workspace": "apps/extension",
+      "design": "docs/design/modules/extension-shell.md",
+      "publicFiles": ["apps/extension/src/modules/extension-shell/extension-shell.service.ts"],
+      "dependencies": ["wechat-transfer", "packages/wechat-transfer-contract:wechat-transfer"]
     }
   ]
 }

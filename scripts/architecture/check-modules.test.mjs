@@ -3,6 +3,67 @@ import { test } from 'node:test'
 import { checkModules } from './check-modules.mjs'
 import { document, put, putJson, temporaryProject, removeTemporary } from '../lib/testing.mjs'
 
+test('workspace scoped modules enforce public package exports even for the same name', function (t) {
+  const root = temporaryProject()
+  t.after(function cleanup() {
+    removeTemporary(root)
+  })
+  put(root, 'docs/design/transfer.md', document('Transfer'))
+  put(root, 'packages/contract/src/modules/transfer/schema.ts', 'export const schema = true\n')
+  put(root, 'packages/contract/src/modules/transfer/private.ts', 'export const hidden = true\n')
+  put(
+    root,
+    'apps/frontend/src/modules/transfer/service.ts',
+    "import { schema } from '@test/contract'\nexport const use = schema\n",
+  )
+  putJson(root, 'packages/contract/package.json', {
+    name: '@test/contract',
+    exports: {
+      '.': './src/modules/transfer/schema.ts',
+      './private': './src/modules/transfer/private.ts',
+    },
+  })
+  const registry = {
+    schemaVersion: 2,
+    assembly: [],
+    modules: [
+      {
+        name: 'transfer',
+        workspace: 'apps/frontend',
+        design: 'docs/design/transfer.md',
+        publicFiles: ['apps/frontend/src/modules/transfer/service.ts'],
+        dependencies: ['packages/contract:transfer'],
+      },
+      {
+        name: 'transfer',
+        workspace: 'packages/contract',
+        design: 'docs/design/transfer.md',
+        publicFiles: ['packages/contract/src/modules/transfer/schema.ts'],
+        dependencies: [],
+      },
+    ],
+  }
+  putJson(root, '.module-boundaries.json', registry)
+  assert.deepEqual(checkModules(root), [])
+  put(
+    root,
+    'apps/frontend/src/modules/transfer/service.ts',
+    "import { hidden } from '@test/contract/private'\nexport const use = hidden\n",
+  )
+  assert.ok(
+    checkModules(root).some(function privateImport(error) {
+      return error.includes('Private cross-module')
+    }),
+  )
+  registry.modules[0].dependencies = []
+  putJson(root, '.module-boundaries.json', registry)
+  assert.ok(
+    checkModules(root).some(function missingDependency(error) {
+      return error.includes('Undeclared dependency')
+    }),
+  )
+})
+
 function fixture(t) {
   const root = temporaryProject()
   t.after(function cleanup() {

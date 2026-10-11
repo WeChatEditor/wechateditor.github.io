@@ -1,0 +1,21 @@
+---
+title: wechat-page模块
+status: accepted
+created: 2026-10-12
+updated: 2026-10-12
+owner: project maintainers
+---
+
+# wechat-page模块
+
+apps/extension/src/modules/wechat-page隔离公众号适配，公共service/model，私有bridge由scripting序列化到MAIN。仅依赖共享wechat-transfer契约，不读取任务仓储。固定操作probe/drafts/create/article/apply；消息不能传任意代码。入口只组装。
+
+账号候选选择器、标题候选和草稿箱/新的创作/图文语义入口均为保守候选，尚未在维护者账号验证；缺失、不唯一或来源不符阻断。只识别顶层文档，不能访问真实能力所在frame时阻断，不遍历所有frame写入。选择后台首页/草稿箱后打开独立标签，绑定账号、tab/document和本次新建证据；不复用已有编辑页。
+
+正文调用官方对象参数invoke(apiName/apiParam/sucCb/errCb)，get_isready要求isReady及isNew（新编辑器版本标识，不能替代新建证据）。get_content重新确认正文/媒体为空及标题为空；标题原生setter派发input/change，再get_content复核无编辑活动，set_content后核对账号、标题、规范化文本和主要结构数量。不调用私有实例、HTTP、保存或发布。
+
+页面导航/就绪30秒，JSAPI调用10秒；超时可能已产生新建/写入，停止自动操作，由人类检查并丢弃后重送。主要风险为候选入口改变、标题实际状态、格式保真与后台自身自动保存；读回不是持久化/视觉验收。静态检查允许，前端自动化需维护者明确授权。
+
+公众号content入口报告可信pointerdown/keydown/input活动，worker按tab/document匹配当前执行任务并转uncertain，失效租约阻断后续写入。MAIN也检测写入中的可信input，无法排除竞态时保持uncertain。
+
+新建需从create点击文档进入不同documentId的空编辑器；同document的SPA流程尚无实际证据，保守阻断并交人类校准。读回还确认没有媒体。任何活动执行租约存在时均禁止取消/清空，避免检查期间仍有迟到写入。

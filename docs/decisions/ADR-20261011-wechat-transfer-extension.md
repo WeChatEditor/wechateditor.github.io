@@ -2,7 +2,7 @@
 title: 保留 Web 编辑器并通过 Chrome 轻量插件传稿
 status: accepted
 created: 2026-10-11
-updated: 2026-10-11
+updated: 2026-10-12
 owner: project maintainers
 ---
 
@@ -36,3 +36,5 @@ Web与扩展共享显式版本的运行时Schema，来源及项目路径校验�
 本ADR补充[独立纯前端应用](ADR-20261004-jlab-wechat-editor-standalone-app.md)、[配置与文章版本](ADR-20261005-jlab-local-storage-history.md)及[Pages托管](ADR-20261008-github-pages-deployment.md)决策，不取代它们：Web保持纯前端、既有存储/版本语义和静态托管；新能力属于独立的浏览器连接器。本轮不改模块登记或现行运行时，不把接受路线写成实现完成。
 
 实现细节为[设计草案](../design/wechat-transfer-extension.md)，关联[实施计划](../plans/active/2026-10-11-wechat-transfer-extension.md)和[公开证据](../reference/wechat-transfer-research.md)。设计参数可在P0能力验证后修订；自动保存、图片、其他浏览器、完整插件编辑器或云能力需要再次评审。若实际页面无可用公开正文接口，保持手动复制，不静默扩大到私有接口。
+
+2026-10-12维护者授权执行实施计划并确认生产地址为https://wechateditor.github.io/；工程与保守适配已实现，真实公众号能力仍待人工确认。现行细节见上述设计；实现不改变本ADR的Web数据所有权、文字首版、手动保存或公开接口边界。

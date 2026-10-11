@@ -2,7 +2,7 @@
 title: GitHub Pages 自动部署
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-12
 owner: project maintainers
 ---
 
@@ -10,7 +10,7 @@ owner: project maintainers
 
 ## 当前事实与职责
 
-纯前端应用由 Vite 构建到 apps/frontend/dist，base 为 ./，支持 /JLabWeChatEditor/ 子路径。GitHub 仓库默认分支为 master，部署入口为 .github/workflows/pages.yml。用户授权添加自动部署；GitHub Pages 是当前静态托管平台，使用默认 HTTPS 地址，不配置自定义域名。
+纯前端Web由Vite构建到apps/frontend/dist，base为./。源码仓库master经已有sync-org工作流同步组织仓库WeChatEditor/wechateditor.github.io；pages.yml以组织仓库和master为条件部署。维护者2026-10-12确认https://wechateditor.github.io/为实际地址。本轮不改变源码同步方式或凭据，仅增加插件打包检查，Pages上传仍为frontend/dist。
 
 ## 依赖、数据流与失败模式
 
@@ -20,6 +20,6 @@ master 推送或在 master 手动运行触发独立部署工作流。Ubuntu 使�
 
 ## 浏览器数据与验收
 
-默认地址为 https://tanghaojie.github.io/JLabWeChatEditor/。浏览器存储按 origin 隔离，同一 tanghaojie.github.io 下其他项目会共享 origin；本项目既有存储键不变。维护者应避免在同一 origin 发布使用相同存储键的源应用。页面路径不能提供数据隔离。生产HTTPS支持剪贴板安全上下文，图片CORS仍受来源限制。
+实际地址为https://wechateditor.github.io/。浏览器存储按origin隔离，旧tanghaojie.github.io来源的数据不由插件迁移；本项目既有存储键不变。维护者应避免在同一origin发布使用相同存储键的应用，页面路径不能提供数据隔离。生产HTTPS支持剪贴板，图片CORS仍受来源限制。
 
 本地执行适用静态检查、构建、治理测试；远端部署与页面实际可访问性单独记录。应用交互、刷新恢复、复制和公众号接收由维护者人工验收，不运行前端自动化。执行方式见[部署指南](../guides/static-deployment.md)，长期选择见[决策](../decisions/ADR-20261008-github-pages-deployment.md)。

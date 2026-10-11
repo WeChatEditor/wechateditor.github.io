@@ -1,0 +1,17 @@
+{
+  "name": "@jlab-wechat-editor/wechat-transfer-contract",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/modules/wechat-transfer/wechat-transfer.schema.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "zod": "^4.6.5",
+    "parse5": "^8.0.1"
+  }
+}
