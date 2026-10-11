@@ -1,13 +1,80 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ markdown: string; disabled: boolean }>()
-const emit = defineEmits<{ change: [value: string]; import: []; scroll: [element: HTMLElement] }>()
+const emit = defineEmits<{
+  change: [value: string]
+  import: []
+  scroll: [element: HTMLElement]
+  scrollLayout: []
+}>()
 const input = ref<HTMLTextAreaElement>()
 function getScrollElement(): HTMLElement | undefined {
   return input.value
 }
-defineExpose({ getScrollElement })
+let observer: ResizeObserver | undefined
+let measurementKey = ''
+let lineTops: number[] = []
+function getScrollAnchors(lines: number[]): { line: number; top: number }[] {
+  const area = input.value
+  if (!area) {
+    return []
+  }
+  const style = window.getComputedStyle(area)
+  const key = `${area.clientWidth}|${style.font}|${style.padding}|${props.markdown}`
+  if (key !== measurementKey) {
+    const mirror = document.createElement('div')
+    Object.assign(mirror.style, {
+      position: 'fixed',
+      visibility: 'hidden',
+      pointerEvents: 'none',
+      left: '-100000px',
+      top: '0',
+      boxSizing: 'border-box',
+      width: `${area.clientWidth}px`,
+      padding: style.padding,
+      font: style.font,
+      letterSpacing: style.letterSpacing,
+      tabSize: style.tabSize,
+      whiteSpace: 'pre-wrap',
+      overflowWrap: 'break-word',
+      wordBreak: style.wordBreak,
+    })
+    const rows = props.markdown.split('\n').map(function row(text) {
+      const row = document.createElement('div')
+      row.textContent = text || '\u200b'
+      mirror.append(row)
+      return row
+    })
+    document.body.append(mirror)
+    try {
+      const origin = mirror.getBoundingClientRect().top
+      lineTops = rows.map((row) => row.getBoundingClientRect().top - origin)
+      measurementKey = key
+    } finally {
+      mirror.remove()
+    }
+  }
+  return lines.flatMap((line) =>
+    lineTops[line] === undefined ? [] : [{ line, top: lineTops[line] }],
+  )
+}
+function layoutChanged(): void {
+  measurementKey = ''
+  emit('scrollLayout')
+}
+watch(() => props.markdown, layoutChanged, { flush: 'post' })
+onMounted(function observeLayout() {
+  observer = new ResizeObserver(layoutChanged)
+  if (input.value) {
+    observer.observe(input.value)
+  }
+  void document.fonts.ready.then(layoutChanged)
+})
+onBeforeUnmount(function stopObserver() {
+  observer?.disconnect()
+})
+defineExpose({ getScrollElement, getScrollAnchors })
 const formats = [
   ['h1', 'H1', '一级标题'],
   ['h2', 'H2', '章节标题'],

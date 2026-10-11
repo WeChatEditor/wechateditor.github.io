@@ -3,7 +3,6 @@ import type { TypesettingConfig } from '../typesetting/typesetting.model'
 import ColorPicker from '../typesetting/typesetting-color-picker.vue'
 defineProps<{
   config: TypesettingConfig
-  localColor: string
   drawer?: string
   copyState: string
   disabled: boolean
@@ -12,8 +11,6 @@ defineProps<{
 }>()
 const emit = defineEmits<{
   config: [patch: Partial<TypesettingConfig>]
-  localColor: [color: string]
-  capture: []
   drawer: [kind: 'text' | 'colors' | 'ending' | 'chapters' | 'history']
   copy: []
   retry: []
@@ -57,11 +54,10 @@ const controls = [
       @change="emit('config', { preset: 'custom', colors: { ...config.colors, body: $event } })"
     />
     <ColorPicker
-      :color="localColor"
-      label="局部字色"
+      :color="config.colors.accent"
+      label="强调色"
       :disabled="disabled"
-      @open="emit('capture')"
-      @change="emit('localColor', $event)"
+      @change="emit('config', { preset: 'custom', colors: { ...config.colors, accent: $event } })"
     />
     <div class="toolbar-divider" />
     <nav aria-label="排版设置" class="toolbar-tools">

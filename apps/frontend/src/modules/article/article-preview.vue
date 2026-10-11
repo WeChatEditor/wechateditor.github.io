@@ -52,6 +52,31 @@ let observer: ResizeObserver | undefined
 function getScrollElement(): HTMLElement | undefined {
   return showFrame.value ? readerContent.value : outerScroll.value
 }
+function getScrollAnchors(): { line: number; top: number }[] {
+  const container = getScrollElement()
+  if (!container || !root.value) {
+    return []
+  }
+  const scale = showFrame.value && props.mode === 'phone' ? phoneScale.value : 1
+  const origin = container.getBoundingClientRect().top + container.clientTop * scale
+  const seen = new Set<number>()
+  return [...root.value.querySelectorAll<HTMLElement>('[data-source-line]')].flatMap(
+    function anchor(block) {
+      const line = Number(block.dataset.sourceLine)
+      if (
+        seen.has(line) ||
+        block.closest('[data-opening], [data-ending]') ||
+        !block.getClientRects().length
+      ) {
+        return []
+      }
+      seen.add(line)
+      return [
+        { line, top: (block.getBoundingClientRect().top - origin) / scale + container.scrollTop },
+      ]
+    },
+  )
+}
 function scrolled(event: Event): void {
   closeSelection()
   if (event.target === getScrollElement()) {
@@ -145,6 +170,7 @@ function clearColor(): void {
   bubbleOpen.value = false
 }
 watch(() => [props.html, props.revision, props.mode, props.focus, props.disabled], closeSelection)
+watch(() => props.html, measureFrame, { flush: 'post' })
 watch([showFrame, scaleMode, () => props.mode, () => props.focus], measureFrame, { flush: 'post' })
 onMounted(function listen() {
   document.addEventListener('selectionchange', changedSelection)
@@ -168,7 +194,7 @@ onBeforeUnmount(function unlisten() {
   document.removeEventListener('pointerdown', outsidePointer)
   document.removeEventListener('keydown', keydown)
 })
-defineExpose({ captureSelection, getScrollElement })
+defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
 </script>
 <template>
   <section ref="pane" class="preview-pane">
@@ -325,6 +351,7 @@ defineExpose({ captureSelection, getScrollElement })
               title="选中文字可局部改色"
               @pointerup="selectionFinished"
               @keyup="selectionFinished"
+              @load.capture="measureFrame"
               v-html="html"
             />
           </div>
@@ -353,13 +380,7 @@ defineExpose({ captureSelection, getScrollElement })
         :disabled="disabled"
         @click="applyColor(color)"
       />
-      <ColorPicker
-        :color="localColor"
-        label="自定义字色"
-        compact
-        :disabled="disabled"
-        @change="applyColor"
-      />
+      <ColorPicker :color="localColor" label="手动调色" :disabled="disabled" @change="applyColor" />
       <button class="ui-button" :disabled="disabled" @click="clearColor">
         <svg
           class="action-icon"
@@ -538,10 +559,16 @@ article {
   padding-top: 24px;
 }
 .desktop article {
-  padding: 4px 36px 36px;
+  box-sizing: content-box;
+  max-width: 677px;
+  margin: 0 auto;
+  padding: 4px 24px 36px;
 }
 .desktop .reader-meta {
-  padding-left: 36px;
+  box-sizing: content-box;
+  max-width: 677px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
 }
 .desktop.without-frame article {
   padding-top: 24px;

@@ -31,7 +31,12 @@ const chapters = computed(() =>
   chapterStyles.map(([id, name]) => ({ id, name, html: chapterPreview(id, props.config) })),
 )
 const paletteName = ref('')
+const paletteActionPending = ref(false)
 async function renamePalette(preset: ColorPreset): Promise<void> {
+  if (paletteActionPending.value) {
+    return
+  }
+  paletteActionPending.value = true
   try {
     const { value } = await ElMessageBox.prompt('输入新的配色名称', '修改配色名称', {
       inputValue: preset.name,
@@ -47,12 +52,42 @@ async function renamePalette(preset: ColorPreset): Promise<void> {
     })
   } catch {
     // 取消或关闭弹窗保留现有配色名称。
+  } finally {
+    paletteActionPending.value = false
   }
 }
-function deletePalette(preset: ColorPreset): void {
-  const patch = deleteColorPreset(props.config, preset.id)
-  if (patch) {
-    emit('change', patch)
+async function confirmPalette(preset: ColorPreset, action: 'update' | 'delete'): Promise<void> {
+  if (paletteActionPending.value || (action === 'delete' && props.config.palettes.length <= 1)) {
+    return
+  }
+  paletteActionPending.value = true
+  try {
+    await ElMessageBox.confirm(
+      action === 'update'
+        ? `将当前颜色覆盖到“${preset.name}”，是否继续？`
+        : `删除配色“${preset.name}”，是否继续？`,
+      action === 'update' ? '更新配色' : '删除配色',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+        closeOnClickModal: false,
+      },
+    )
+    if (!props.config.palettes.some((palette) => palette.id === preset.id)) {
+      return
+    }
+    const patch =
+      action === 'update'
+        ? updateColorPreset(props.config, preset.id)
+        : deleteColorPreset(props.config, preset.id)
+    if (patch) {
+      emit('change', patch)
+    }
+  } catch {
+    // 取消或关闭不改配色。
+  } finally {
+    paletteActionPending.value = false
   }
 }
 function savePalette(): void {
@@ -61,9 +96,6 @@ function savePalette(): void {
     emit('change', patch)
     paletteName.value = ''
   }
-}
-function updatePalette(preset: ColorPreset): void {
-  emit('change', updateColorPreset(props.config, preset.id))
 }
 function resetPalettes(): void {
   if (window.confirm('重置所有配色将移除现有配色，恢复默认六个配色。是否继续？')) {
@@ -292,7 +324,8 @@ function resetText(): void {
                 <button
                   class="ui-button"
                   :aria-label="'用当前颜色更新配色：' + preset.name"
-                  @click="updatePalette(preset)"
+                  :disabled="paletteActionPending"
+                  @click="confirmPalette(preset, 'update')"
                 >
                   <svg
                     class="action-icon"
@@ -314,6 +347,7 @@ function resetText(): void {
                   class="ui-button"
                   :aria-label="'修改配色名称：' + preset.name"
                   @click="renamePalette(preset)"
+                  :disabled="paletteActionPending"
                 >
                   <svg
                     class="action-icon"
@@ -338,9 +372,9 @@ function resetText(): void {
                 <span class="palette-delete">
                   <button
                     class="ui-button"
-                    :disabled="config.palettes.length <= 1"
+                    :disabled="config.palettes.length <= 1 || paletteActionPending"
                     :aria-label="'删除配色：' + preset.name"
-                    @click="deletePalette(preset)"
+                    @click="confirmPalette(preset, 'delete')"
                   >
                     <svg
                       class="action-icon"

@@ -2,7 +2,7 @@
 title: article模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-11
 owner: project maintainers
 ---
 
@@ -27,3 +27,7 @@ Markdown 解析、正文位置映射、结构化颜色标注、快捷格式与�
 ## 验证
 
 格式、Lint、TypeScript、生产构建、modules:check；功能手工验收，不新增或运行前端自动化。完整流程见[产品](../jlab-wechat-editor.md)、[UI](../jlab-wechat-editor-ui.md)、[存储](../jlab-wechat-editor-storage.md)。
+
+## 块锚点接口
+
+renderMarkdown在标题/段落/列表/引用/表格/代码等块上写入data-source-line。预览getScrollAnchors返回正文块源行与当前滚动容器中的纵向位置，排除头尾及隐藏块、同源行取首个可见块，并扣除手机zoom。原稿getScrollAnchors(lines)按textarea字体/宽度/换行规则用临时隐藏镜像测量对应源行，缓存随内容/尺寸/字体失效；镜像测量后立即移除。图片load、内容和尺寸变化报告scrollLayout。元数据仅服务预览，既有导出白名单清理剔除。

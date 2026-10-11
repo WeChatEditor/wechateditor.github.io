@@ -50,7 +50,22 @@ export function renderMarkdown(markdown: string, annotations: Annotation[] = [])
     })
     return `<span data-text-start="${start}" data-text-end="${end}">${pieces.join('')}</span>`
   }
-  return { html: md.render(markdown), text }
+  const env = {}
+  const tokens = md.parse(markdown, env)
+  for (const token of tokens) {
+    if (token.map && (token.nesting === 1 || ['fence', 'code_block', 'hr'].includes(token.type))) {
+      token.attrSet('data-source-line', String(token.map[0]))
+    }
+  }
+  for (const kind of ['fence', 'code_block']) {
+    const render = md.renderer.rules[kind]!
+    md.renderer.rules[kind] = function anchoredCode(tokens, index, options, env, renderer) {
+      const html = render(tokens, index, options, env, renderer)
+      const line = tokens[index].map?.[0]
+      return line === undefined ? html : html.replace('<pre', `<pre data-source-line="${line}"`)
+    }
+  }
+  return { html: md.renderer.render(tokens, md.options, env), text }
 }
 
 export function articleStatistics(markdown: string): {

@@ -4,6 +4,8 @@ export function useScrollSync(
   enabled: Ref<boolean>,
   getEditor: () => HTMLElement | undefined,
   getPreview: () => HTMLElement | undefined,
+  getPreviewAnchors: () => { line: number; top: number }[],
+  getEditorAnchors: (lines: number[]) => { line: number; top: number }[],
 ) {
   let frame: number | undefined
   let written = new WeakMap<HTMLElement, number>()
@@ -17,8 +19,43 @@ export function useScrollSync(
 
   function follow(source: HTMLElement, target: HTMLElement): void {
     cancel()
-    const sourceRange = source.scrollHeight - source.clientHeight
-    const progress = sourceRange > 0 ? Math.max(0, Math.min(1, source.scrollTop / sourceRange)) : 0
+    const editor = getEditor()
+    const preview = getPreview()
+    if (!editor || !preview) {
+      return
+    }
+    const editorRange = Math.max(0, editor.scrollHeight - editor.clientHeight)
+    const previewRange = Math.max(0, preview.scrollHeight - preview.clientHeight)
+    const previewAnchors = getPreviewAnchors().sort((a, b) => a.line - b.line)
+    const editorTops = new Map(
+      getEditorAnchors(previewAnchors.map((a) => a.line)).map((a) => [a.line, a.top]),
+    )
+    const pairs = [{ editor: 0, preview: 0 }]
+    for (const anchor of previewAnchors) {
+      const top = editorTops.get(anchor.line)
+      const previous = pairs[pairs.length - 1]
+      if (
+        top !== undefined &&
+        top > previous.editor &&
+        anchor.top > previous.preview &&
+        top < editorRange &&
+        anchor.top < previewRange
+      ) {
+        pairs.push({ editor: top, preview: anchor.top })
+      }
+    }
+    pairs.push({ editor: editorRange, preview: previewRange })
+    const from = source === editor ? 'editor' : 'preview'
+    const to = source === editor ? 'preview' : 'editor'
+    const position = Math.max(0, Math.min(pairs[pairs.length - 1][from], source.scrollTop))
+    const index = pairs.findIndex((pair, index) => index > 0 && pair[from] >= position)
+    const lower = pairs[Math.max(0, index - 1)]
+    const upper = pairs[index < 0 ? pairs.length - 1 : index]
+    const span = upper[from] - lower[from]
+    const destination =
+      editorRange === 0 || previewRange === 0
+        ? 0
+        : lower[to] + (span > 0 ? (position - lower[from]) / span : 0) * (upper[to] - lower[to])
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let previousTime: number | undefined
 
@@ -27,7 +64,6 @@ export function useScrollSync(
       if (!enabled.value || !target.isConnected) {
         return
       }
-      const destination = progress * Math.max(0, target.scrollHeight - target.clientHeight)
       const distance = destination - target.scrollTop
       const elapsed = previousTime === undefined ? 16 : Math.min(64, time - previousTime)
       previousTime = time

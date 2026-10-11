@@ -28,10 +28,9 @@ const scrollSync = useScrollSync(
   canSyncScroll,
   () => editorComponent.value?.getScrollElement(),
   () => previewComponent.value?.getScrollElement(),
+  () => previewComponent.value?.getScrollAnchors() || [],
+  (lines) => editorComponent.value?.getScrollAnchors(lines) || [],
 )
-function captureSelection(): void {
-  previewComponent.value?.captureSelection()
-}
 const containerWidth = ref(900)
 const dragging = ref(false)
 let observer: ResizeObserver | undefined
@@ -171,15 +170,12 @@ onBeforeUnmount(function cleanup() {
   <main class="workbench">
     <WorkspaceToolbar
       :config="store.config"
-      :local-color="store.localColor"
       :drawer="store.drawer"
       :copy-state="store.copyState"
       :disabled="!store.ready || store.restoring"
       :save-state="store.saveState"
       :save-blocked="store.saveBlocked || store.settingsBlocked"
       @config="store.setConfig"
-      @local-color="store.colorSelection(selection, $event)"
-      @capture="captureSelection"
       @drawer="toggleDrawer"
       @copy="copy"
       @retry="store.saveNow"
@@ -238,6 +234,7 @@ onBeforeUnmount(function cleanup() {
           @change="store.updateMarkdown"
           @import="fileInput?.click()"
           @scroll="scrollSync.scrolled"
+          @scroll-layout="scrollSync.align"
         />
         <div
           v-if="!store.focus"
@@ -303,6 +300,15 @@ onBeforeUnmount(function cleanup() {
         预计阅读 {{ store.statistics.readingMinutes }} 分钟
       </span>
       <span>数据仅保存在当前浏览器</span>
+      <span class="author-info"
+        >作者：桀士
+        <a
+          href="https://github.com/tanghaojie/JLabWeChatEditor"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub ↗</a
+        ></span
+      >
     </footer>
   </main>
 </template>
@@ -410,5 +416,13 @@ onBeforeUnmount(function cleanup() {
 .status-dot {
   padding: 0 12px;
   color: var(--ui-border);
+}
+.author-info a {
+  margin-left: 12px;
+  color: var(--ui-primary);
+  text-decoration: none;
+}
+.author-info a:hover {
+  text-decoration: underline;
 }
 </style>

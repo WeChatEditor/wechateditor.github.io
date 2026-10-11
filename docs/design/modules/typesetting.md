@@ -29,3 +29,7 @@ owner: project maintainers
 ## 验证
 
 格式、Lint、TypeScript、生产构建、modules:check；功能手工验收，不新增或运行前端自动化。完整流程见[产品](../jlab-wechat-editor.md)、[UI](../jlab-wechat-editor-ui.md)、[存储](../jlab-wechat-editor-storage.md)。
+
+## 配色确认与弹层
+
+更新和删除卡片配色需MessageBox二次确认，取消不写入；确认时使用最新配置，删除仍须保留至少一组。待确认时禁止重复打开操作。名称prompt预填并保留原校验，body中的Overlay需显式导入el-overlay.css提供fixed定位，使用MessageBox自身递增z-index，避免位于配色抽屉下方。
