@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-const props = defineProps<{ markdown: string; disabled: boolean }>()
+const props = defineProps<{
+  markdown: string
+  disabled: boolean
+  opening?: string
+  ending?: string
+}>()
 const emit = defineEmits<{
   change: [value: string]
   import: []
@@ -208,6 +213,10 @@ function tab(event: KeyboardEvent): void {
         {{ label }}
       </button>
     </div>
+    <section v-if="opening !== undefined" class="fixed-fragment" aria-label="固定开头，只读">
+      <div class="fixed-fragment-heading"><strong>固定开头</strong><span>只读</span></div>
+      <pre>{{ opening || '（内容为空）' }}</pre>
+    </section>
     <textarea
       ref="input"
       :value="markdown"
@@ -222,6 +231,10 @@ function tab(event: KeyboardEvent): void {
       @keydown="tab"
       @scroll="emit('scroll', $event.target as HTMLElement)"
     />
+    <section v-if="ending !== undefined" class="fixed-fragment" aria-label="固定结尾，只读">
+      <div class="fixed-fragment-heading"><strong>固定结尾</strong><span>只读</span></div>
+      <pre>{{ ending || '（内容为空）' }}</pre>
+    </section>
   </section>
 </template>
 
@@ -265,6 +278,38 @@ textarea {
     'Microsoft YaHei',
     monospace;
   tab-size: 2;
+}
+.fixed-fragment {
+  flex-shrink: 0;
+  margin: 8px 16px;
+  padding: 9px 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: 7px;
+  background: var(--ui-bg);
+  color: var(--ui-muted);
+}
+.fixed-fragment-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 16px;
+}
+.fixed-fragment-heading strong {
+  font-weight: 500;
+}
+.fixed-fragment pre {
+  max-height: 80px;
+  overflow: auto;
+  margin: 5px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    12px/1.65 'Cascadia Code',
+    Consolas,
+    'Microsoft YaHei',
+    monospace;
 }
 textarea::placeholder {
   color: var(--ui-muted);

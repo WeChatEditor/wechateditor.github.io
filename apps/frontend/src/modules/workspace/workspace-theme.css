@@ -27,6 +27,7 @@
   --el-text-color-regular: #475569;
   --el-border-color: #e2e8f0;
   --el-font-size-base: 13px;
+  --el-font-size-extra-small: 11px;
 }
 * {
   box-sizing: border-box;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ElMessageBox } from 'element-plus'
 import { useWorkspaceStore } from './workspace.store'
 import { clampRatio, splitBounds } from './workspace.service'
 import { useScrollSync } from './workspace-scroll-sync'
@@ -15,6 +16,39 @@ import type { TextSelection } from '../article/article.model'
 import { maxMarkdownLength } from '../../app.config'
 
 const store = useWorkspaceStore()
+const conflictDialog = ref<InstanceType<typeof window.HTMLDialogElement>>()
+const manualClose = ref(false)
+const disabled = computed(() => !store.ready || store.restoring || Boolean(store.conflictReason))
+let closeTimer: ReturnType<typeof setTimeout> | undefined
+watch(
+  () => store.conflictReason,
+  async function conflictChanged(reason) {
+    if (!reason) {
+      return
+    }
+    stopDrag()
+    selection.value = undefined
+    ElMessageBox.close()
+    await nextTick()
+    if (conflictDialog.value && !conflictDialog.value.open) {
+      conflictDialog.value.showModal()
+    }
+  },
+  { flush: 'post' },
+)
+function closeConflictedTab(): void {
+  try {
+    window.close()
+  } catch {
+    manualClose.value = true
+  }
+  clearTimeout(closeTimer)
+  closeTimer = setTimeout(function checkClosed() {
+    if (!window.closed) {
+      manualClose.value = true
+    }
+  }, 200)
+}
 const split = ref<HTMLElement>()
 const fileInput = ref<HTMLInputElement>()
 const selection = ref<TextSelection>()
@@ -22,7 +56,8 @@ const previewComponent = ref<InstanceType<typeof ArticlePreview>>()
 const editorComponent = ref<InstanceType<typeof ArticleEditor>>()
 const syncScroll = ref(false)
 const canSyncScroll = computed(
-  () => syncScroll.value && store.ready && !store.focus && !store.restoring,
+  () =>
+    syncScroll.value && store.ready && !store.focus && !store.restoring && !store.conflictReason,
 )
 const scrollSync = useScrollSync(
   canSyncScroll,
@@ -65,7 +100,7 @@ const drawerTitle = computed(
     })[store.drawer || 'text'],
 )
 function updatePointer(event: PointerEvent): void {
-  if (!split.value || !dragging.value) {
+  if (!split.value || !dragging.value || disabled.value) {
     return
   }
   const rect = split.value.getBoundingClientRect()
@@ -96,6 +131,9 @@ function keyRatio(event: KeyboardEvent): void {
           )
 }
 async function importFile(event: Event): Promise<void> {
+  if (disabled.value) {
+    return
+  }
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   input.value = ''
@@ -113,6 +151,9 @@ async function importFile(event: Event): Promise<void> {
     const markdown = new TextDecoder('utf-8', { fatal: true })
       .decode(await file.arrayBuffer())
       .replace(/^\uFEFF/, '')
+    if (store.conflictReason) {
+      return
+    }
     if (markdown.length > maxMarkdownLength) {
       throw new Error('文章超过 50 万字符，请拆分后导入。')
     }
@@ -134,7 +175,7 @@ function copy(): void {
   }
 }
 function beforeUnload(event: BeforeUnloadEvent): void {
-  if (store.dirty) {
+  if (store.dirty && !store.conflictReason) {
     event.preventDefault()
     event.returnValue = ''
     void store.saveNow()
@@ -158,6 +199,8 @@ onMounted(function initialize() {
   document.addEventListener('visibilitychange', pageHidden)
 })
 onBeforeUnmount(function cleanup() {
+  clearTimeout(closeTimer)
+  conflictDialog.value?.close()
   observer?.disconnect()
   window.removeEventListener('blur', stopDrag)
   window.removeEventListener('beforeunload', beforeUnload)
@@ -167,12 +210,12 @@ onBeforeUnmount(function cleanup() {
 </script>
 
 <template>
-  <main class="workbench">
+  <main class="workbench" :inert="Boolean(store.conflictReason)">
     <WorkspaceToolbar
       :config="store.config"
       :drawer="store.drawer"
       :copy-state="store.copyState"
-      :disabled="!store.ready || store.restoring"
+      :disabled="disabled"
       :save-state="store.saveState"
       :save-blocked="store.saveBlocked || store.settingsBlocked"
       @config="store.setConfig"
@@ -230,7 +273,9 @@ onBeforeUnmount(function cleanup() {
           v-if="!store.focus"
           ref="editorComponent"
           :markdown="store.article.markdown"
-          :disabled="!store.ready || store.restoring"
+          :opening="store.ending.opening?.enabled ? store.ending.opening.markdown : undefined"
+          :ending="store.ending.enabled ? store.ending.markdown : undefined"
+          :disabled="disabled"
           @change="store.updateMarkdown"
           @import="fileInput?.click()"
           @scroll="scrollSync.scrolled"
@@ -269,7 +314,7 @@ onBeforeUnmount(function cleanup() {
           :revision="store.article.revision"
           :mode="store.previewMode"
           :focus="store.focus"
-          :disabled="!store.ready || store.restoring"
+          :disabled="disabled"
           :accent="store.config.colors.accent"
           :local-color="store.localColor"
           :sync-scroll="syncScroll"
@@ -288,7 +333,7 @@ onBeforeUnmount(function cleanup() {
         :message="store.message"
         :invalid="store.invalidAnnotations"
         :diagnostics="[...store.preview.diagnostics, ...store.diagnostics]"
-        :disabled="!store.ready || store.restoring"
+        :disabled="disabled"
         @dismiss="store.message = ''"
         @clear="store.clearInvalidAnnotations"
       />
@@ -310,6 +355,24 @@ onBeforeUnmount(function cleanup() {
       >
     </footer>
   </main>
+  <dialog
+    ref="conflictDialog"
+    class="conflict-dialog"
+    aria-labelledby="conflict-title"
+    aria-describedby="conflict-description"
+    @cancel.prevent
+  >
+    <div class="conflict-warning" aria-hidden="true">!</div>
+    <h2 id="conflict-title">当前页面自动保存已暂停</h2>
+    <p id="conflict-description">{{ store.conflictReason }}</p>
+    <p class="conflict-instruction">请关闭当前标签页，继续使用另一标签页编辑。</p>
+    <p v-if="manualClose" class="conflict-close-error" role="alert">
+      浏览器未允许自动关闭。请点击标签页的关闭按钮，手动关闭当前页面。
+    </p>
+    <button type="button" class="conflict-confirm" @click="closeConflictedTab">
+      知道了，关闭当前标签页
+    </button>
+  </dialog>
 </template>
 
 <style>
@@ -423,5 +486,58 @@ onBeforeUnmount(function cleanup() {
 }
 .author-info a:hover {
   text-decoration: underline;
+}
+.conflict-dialog {
+  width: min(460px, calc(100vw - 40px));
+  padding: 28px;
+  border: 1px solid #f0cf9e;
+  border-radius: 16px;
+  color: var(--ui-text);
+  background: var(--ui-surface);
+  box-shadow: 0 24px 80px #0f172a40;
+}
+.conflict-dialog::backdrop {
+  background: #0f172aa6;
+}
+.conflict-warning {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fff3df;
+  color: #a16207;
+  font-size: 24px;
+  font-weight: 700;
+}
+.conflict-dialog h2 {
+  margin: 18px 0 12px;
+  font-size: 20px;
+  line-height: 1.5;
+}
+.conflict-dialog p {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.conflict-instruction {
+  color: var(--ui-muted);
+}
+.conflict-close-error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff3df;
+  color: #92400e;
+}
+.conflict-confirm {
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ui-primary);
+  color: white;
+  font-size: 14px;
+  line-height: 22px;
 }
 </style>

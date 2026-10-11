@@ -8,6 +8,8 @@ owner: project maintainers
 
 # workspace模块
 
+多标签冲突独立conflictReason状态，覆盖通知/配置storage事件/事务writeId冲突；锁定文章和配置写入，清除待保存、关闭抽屉、使复制快照失效，排队命令与晚到导入/恢复拒绝执行。page用inert和原生dialog顶层Modal阻断所有工作台操作，禁止Esc/遮罩关闭。确认关闭当前标签页，拒绝时提示手动关闭并保持锁定；冲突关闭页不触发补保存。普通权限/配额/损坏失败保留原流程。
+
 ## 职责与边界
 
 Pinia命令编排、覆盖抽屉、拖拽双栏、保存状态、配置localStorage与文章/主动版本IndexedDB。拥有完整草稿仓储。

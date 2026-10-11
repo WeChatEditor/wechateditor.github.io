@@ -2,7 +2,7 @@
 title: 桀士排版数据存储与文章版本
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-11
 owner: project maintainers
 ---
 
@@ -34,7 +34,7 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，opening仅扩展配置可选字段，不变更IndexedDB文章协议。
 
-文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。配置storage事件检测变化并暂停本页写入，提示备份/刷新；失败保留编辑和重试。新字段缺失补默认值，但损坏字段不默认覆盖。旧超限配色完整读，写入严格总计1至9。
+文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。文章通知、配置storage事件或writeId冲突进入独立冲突锁，文章和配置自动保存均暂停，待保存取消，原生Modal与工作台inert阻断全部操作；确认关闭当前标签页，浏览器拒绝则提示手动关闭并继续锁定。已开始的事务不能撤销，事务writeId检查继续保证拒绝过期正文覆盖；收到冲突后的新命令/排队写入/晚到内容应用被拒绝。权限/配额/损坏等非标签冲突保留对应编辑/重试流程。新字段缺失补默认值，但损坏字段不默认覆盖。旧超限配色完整读，写入严格总计1至9。手机档位仅内存，不改变配置格式。
 
 ## 隔离与验证
 

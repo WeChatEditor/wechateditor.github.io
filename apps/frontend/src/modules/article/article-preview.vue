@@ -32,6 +32,20 @@ const outerScroll = ref<HTMLElement>()
 const readerContent = ref<HTMLElement>()
 const frameScale = ref(1)
 const scaleMode = ref<'fit' | 'actual'>('fit')
+const phoneSizes = [
+  { width: 390, height: 844, label: 'iPhone 390px' },
+  { width: 375, height: 812, label: '标准手机 375px' },
+  { width: 414, height: 896, label: '大屏 414px' },
+] as const
+const phoneWidth = ref(390)
+const phoneSize = computed(
+  () => phoneSizes.find((size) => size.width === phoneWidth.value) || phoneSizes[0],
+)
+const phoneDimensions = computed(() => ({
+  '--phone-viewport-width': `${phoneSize.value.width}px`,
+  '--phone-frame-width': `${phoneSize.value.width + 6}px`,
+  '--phone-frame-height': `${phoneSize.value.height + 6}px`,
+}))
 const phoneScale = computed(() => (scaleMode.value === 'actual' ? 1 : frameScale.value))
 const readerTitle = computed(() => {
   const content = document.createElement('div')
@@ -85,7 +99,11 @@ function scrolled(event: Event): void {
 }
 function measureFrame(): void {
   if (stage.value && stage.value.clientWidth > 0 && stage.value.clientHeight > 0) {
-    frameScale.value = Math.min(1, stage.value.clientWidth / 440, stage.value.clientHeight / 956)
+    frameScale.value = Math.min(
+      1,
+      stage.value.clientWidth / (phoneSize.value.width + 6),
+      stage.value.clientHeight / (phoneSize.value.height + 6),
+    )
   }
   closeSelection()
   void nextTick(function layoutChanged() {
@@ -171,7 +189,9 @@ function clearColor(): void {
 }
 watch(() => [props.html, props.revision, props.mode, props.focus, props.disabled], closeSelection)
 watch(() => props.html, measureFrame, { flush: 'post' })
-watch([showFrame, scaleMode, () => props.mode, () => props.focus], measureFrame, { flush: 'post' })
+watch([showFrame, scaleMode, phoneWidth, () => props.mode, () => props.focus], measureFrame, {
+  flush: 'post',
+})
 onMounted(function listen() {
   document.addEventListener('selectionchange', changedSelection)
   document.addEventListener('pointerdown', outsidePointer)
@@ -306,11 +326,21 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
         framed: showFrame,
         'actual-pixels': showFrame && mode === 'phone' && scaleMode === 'actual',
       }"
+      :style="phoneDimensions"
       @scroll="scrolled"
     >
-      <div v-if="showFrame && mode === 'phone'" class="phone-scale-toolbar">
+      <div v-if="mode === 'phone'" class="phone-scale-toolbar">
         <div class="phone-scale-controls">
+          <label class="phone-size-control"
+            >手机视口
+            <select v-model.number="phoneWidth" :disabled="disabled" aria-label="手机视口档位">
+              <option v-for="size in phoneSizes" :key="size.width" :value="size.width">
+                {{ size.label }}
+              </option>
+            </select>
+          </label>
           <el-radio-group
+            v-if="showFrame"
             v-model="scaleMode"
             size="small"
             :disabled="disabled"
@@ -319,7 +349,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
             <el-radio-button value="fit">自适应</el-radio-button>
             <el-radio-button value="actual">原始大小</el-radio-button>
           </el-radio-group>
-          <span class="scale-status" role="status">
+          <span v-if="showFrame" class="scale-status" role="status">
             当前缩放比例: {{ Math.round(phoneScale * 100) }}%
           </span>
         </div>
@@ -329,7 +359,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
           ref="paper"
           class="paper"
           :class="[mode, { 'without-frame': !showFrame }]"
-          :style="showFrame && mode === 'phone' ? { zoom: phoneScale } : undefined"
+          :style="{ zoom: showFrame && mode === 'phone' ? phoneScale : undefined }"
         >
           <template v-if="showFrame">
             <div v-if="mode === 'phone'" class="phone-status" aria-hidden="true">
@@ -472,6 +502,22 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   margin: 0 auto;
   white-space: nowrap;
 }
+.phone-size-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+.phone-size-control select {
+  min-height: 30px;
+  padding: 3px 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-size: 12px;
+}
 .phone-scale-controls :deep(.el-radio-group) {
   flex-shrink: 0;
 }
@@ -487,7 +533,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   overflow: hidden;
 }
 .paper.phone {
-  width: 440px;
+  width: var(--phone-viewport-width);
   max-width: 100%;
   border-radius: 24px;
 }
@@ -651,9 +697,9 @@ article :deep(::selection) {
   flex-shrink: 0;
 }
 .framed .paper.phone {
-  width: 440px;
+  width: var(--phone-frame-width);
   max-width: none;
-  height: 956px;
+  height: var(--phone-frame-height);
   border: 3px solid #cbd2da;
   box-shadow:
     0 0 0 1px #e2e8f0,
@@ -664,11 +710,11 @@ article :deep(::selection) {
   overflow: auto;
 }
 .actual-pixels .frame-stage {
-  min-width: 440px;
+  min-width: var(--phone-frame-width);
 }
 .actual-pixels .paper.phone {
   height: 100%;
-  max-height: 956px;
+  max-height: var(--phone-frame-height);
 }
 .framed .paper.desktop {
   height: 100%;
@@ -757,7 +803,8 @@ article :deep(::selection) {
   padding: 0 clamp(0px, 6%, 80px);
 }
 .paper.phone.without-frame {
-  width: 440px;
+  width: calc(var(--phone-viewport-width) + 2px);
+  max-width: none;
 }
 .paper.desktop.without-frame {
   width: 1100px;

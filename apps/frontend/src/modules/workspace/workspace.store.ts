@@ -61,6 +61,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const settingsBlocked = ref(false)
   const saveState = computed(() => settingsError.value || articleSaveState.value)
   const saveBlocked = ref(false)
+  const conflictReason = ref('')
   const versions = ref<VersionSummary[]>([])
   const selectedVersion = ref<ArticleVersion>()
   const historyBusy = ref(false)
@@ -80,6 +81,20 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   let expectedWriteId: string | undefined
   let applying = false
   let exportGeneration = 0
+  function lockConflict(reason: string): void {
+    if (conflictReason.value) {
+      return
+    }
+    conflictReason.value = reason
+    saveBlocked.value = true
+    settingsBlocked.value = true
+    clearTimeout(timer)
+    timer = undefined
+    drawer.value = undefined
+    changed()
+    articleSaveState.value = '当前页面自动保存已暂停'
+    settingsError.value = ''
+  }
   const channel =
     typeof BroadcastChannel === 'undefined'
       ? undefined
@@ -87,8 +102,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   if (channel) {
     channel.onmessage = function externalSave(event) {
       if (event.data?.saved) {
-        saveBlocked.value = true
-        articleSaveState.value = '另一页面更新了草稿，请复制原稿到本地文件后刷新页面。'
+        lockConflict('另一标签页已更新文章，为避免覆盖，本页面已停止自动保存并锁定全部操作。')
       }
       if (drawer.value === 'history') {
         void historyAction(refreshVersions)
@@ -97,8 +111,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
   function externalSettings(event: StorageEvent): void {
     if (event.storageArea === localStorage && (event.key === settingsKey || event.key === null)) {
-      settingsBlocked.value = true
-      settingsError.value = '另一页面更新了配置，配置保存已暂停，请刷新页面。'
+      lockConflict('另一标签页已更新排版配置，为避免覆盖，本页面已停止自动保存并锁定全部操作。')
     }
   }
   window.addEventListener('storage', externalSettings)
@@ -135,6 +148,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
 
   async function initialize(): Promise<void> {
+    if (conflictReason.value) {
+      return
+    }
     let settings: WorkspaceSettings | undefined
     try {
       settings = loadSettings()
@@ -148,6 +164,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
     try {
       const stored = await storage.load()
+      if (conflictReason.value) {
+        return
+      }
       if (stored !== undefined) {
         expectedWriteId = draftWriteId(stored)
         const legacy = expectedWriteId === 'legacy' ? validateLegacyDraft(stored) : undefined
@@ -173,12 +192,19 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
             saveSettings(settingsSnapshot())
           }
           const result = await storage.save(draft, expectedWriteId)
+          if (conflictReason.value) {
+            return
+          }
           expectedWriteId = result.writeId
           channel?.postMessage({ saved: true })
         }
       }
       articleSaveState.value = stored ? '已恢复本地文章' : '修改后自动保存到本机'
     } catch (error) {
+      if (error instanceof DraftConflictError) {
+        lockConflict('另一标签页已更新文章，当前页面的迁移写入已拒绝，全部操作已锁定。')
+        return
+      }
       saveBlocked.value = true
       articleSaveState.value = '文章读取或迁移失败，文章保存已暂停'
       message.value =
@@ -206,7 +232,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     localColor.value = settings.localColor
   }
   function persistSettings(): void {
-    if (!ready.value || settingsBlocked.value) {
+    if (!ready.value || settingsBlocked.value || conflictReason.value) {
       return
     }
     try {
@@ -282,6 +308,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     articleSaveState.value = '保存中…'
     try {
       const result = await storage.save(draft, expectedWriteId, history)
+      if (conflictReason.value) {
+        throw new Error('当前页面自动保存已暂停')
+      }
       expectedWriteId = result.writeId
       if (version === articleGeneration) {
         articleSaveState.value = '已保存到本机'
@@ -291,15 +320,22 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       return result.timestamp
     } catch (error) {
       if (error instanceof DraftConflictError) {
-        saveBlocked.value = true
+        lockConflict('另一标签页已保存新的文章版本，当前页面的写入已拒绝，全部操作已锁定。')
       }
-      articleSaveState.value = '保存失败，请复制原稿到本地文件备份并重试'
+      if (!conflictReason.value) {
+        articleSaveState.value = '保存失败，请复制原稿到本地文件备份并重试'
+      }
       throw error
     }
   }
 
   function enqueue<T>(action: () => Promise<T>): Promise<T> {
-    const task = saveQueue.then(action)
+    const task = saveQueue.then(function runQueued() {
+      if (conflictReason.value) {
+        throw new Error('当前页面自动保存已暂停')
+      }
+      return action()
+    })
     saveQueue = task.then(
       () => undefined,
       () => undefined,
@@ -311,7 +347,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     if (timer) {
       clearTimeout(timer)
     }
-    if (!ready.value || restoring.value) {
+    if (!ready.value || restoring.value || conflictReason.value) {
       return
     }
     if (settingsDirty.value) {
@@ -344,7 +380,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   async function historyAction(action: () => Promise<void>): Promise<void> {
-    if (!ready.value || historyBusy.value) {
+    if (!ready.value || historyBusy.value || conflictReason.value) {
       return
     }
     historyBusy.value = true
@@ -378,7 +414,10 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   async function viewVersion(timestamp: number): Promise<void> {
     await historyAction(async function view() {
       selectedVersion.value = undefined
-      selectedVersion.value = validateVersion(await storage.loadVersion(timestamp), timestamp)
+      const record = validateVersion(await storage.loadVersion(timestamp), timestamp)
+      if (!conflictReason.value) {
+        selectedVersion.value = record
+      }
     })
   }
   async function restoreVersion(timestamp: number): Promise<void> {
@@ -407,6 +446,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       )
       draft.assets = [...draft.assets, ...endingAssets]
       await writeArticle(draft, articleGeneration)
+      if (conflictReason.value) {
+        return
+      }
       applying = true
       try {
         article.value = draft.article
@@ -437,7 +479,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
 
   function updateMarkdown(markdown: string): void {
-    if (restoring.value || markdown === article.value.markdown) {
+    if (conflictReason.value || restoring.value || markdown === article.value.markdown) {
       return
     }
     if (markdown.length > maxMarkdownLength) {
@@ -469,6 +511,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function setConfig(patch: Partial<TypesettingConfig>): void {
+    if (conflictReason.value) {
+      return
+    }
     config.value = { ...config.value, ...patch }
   }
   function choosePreset(id: string): void {
@@ -478,6 +523,9 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function colorSelection(selection: TextSelection | undefined, color: string): void {
+    if (conflictReason.value) {
+      return
+    }
     localColor.value = color
     if (restoring.value) {
       return
@@ -493,13 +541,16 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function toggleDrawer(kind: 'text' | 'colors' | 'ending' | 'chapters' | 'history'): void {
+    if (conflictReason.value) {
+      return
+    }
     drawer.value = drawer.value === kind ? undefined : kind
     if (drawer.value === 'history') {
       void historyAction(refreshVersions)
     }
   }
   function clearSelectionColor(selection: TextSelection | undefined): void {
-    if (!ready.value || restoring.value) {
+    if (!ready.value || restoring.value || conflictReason.value) {
       return
     }
     if (!selection || selection.revision !== article.value.revision) {
@@ -513,7 +564,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function clearInvalidAnnotations(): void {
-    if (!ready.value || restoring.value) {
+    if (!ready.value || restoring.value || conflictReason.value) {
       return
     }
     article.value = {
@@ -523,7 +574,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   async function prepareCopy(): Promise<void> {
-    if (copyState.value === 'preparing' || copyState.value === 'copying') {
+    if (conflictReason.value || copyState.value === 'preparing' || copyState.value === 'copying') {
       return
     }
     clearCopyReset()
@@ -552,7 +603,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   async function copyPrepared(): Promise<void> {
-    if (!exportResult.value || copyState.value === 'copying') {
+    if (conflictReason.value || !exportResult.value || copyState.value === 'copying') {
       return
     }
     clearCopyReset()
@@ -610,6 +661,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     dirty,
     saveState,
     saveBlocked,
+    conflictReason,
     settingsBlocked,
     versions,
     selectedVersion,
