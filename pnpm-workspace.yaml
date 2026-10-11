@@ -9,3 +9,6 @@ onlyBuiltDependencies:
   - vue-demi
 
 minimumReleaseAge: 1440
+
+allowBuilds:
+  vue-demi: true
