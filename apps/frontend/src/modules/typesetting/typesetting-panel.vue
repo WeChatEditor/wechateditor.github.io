@@ -202,7 +202,9 @@ function resetText(): void {
           @update:model-value="emit('change', { chapterDecorationTight: Boolean($event) })"
         />
       </label>
-      <p class="settings-intro">开启时装饰紧贴标题，关闭时装饰位于行边；两种下划线不受影响。</p>
+      <p class="settings-intro">
+        开启时装饰紧贴标题、下划线与标题等宽；关闭时装饰位于行边、下划线铺满整行。
+      </p>
       <div class="chapter-alignment" role="group" aria-label="标题对齐方式">
         <button
           v-for="[value, label] in [

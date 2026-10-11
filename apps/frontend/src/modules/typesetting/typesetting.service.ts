@@ -181,13 +181,13 @@ function chapterDecoration(style: ChapterStyle, accent: string, trailing = false
   if (style === 'bar' || style === 'thick-bar') {
     decoration.style.cssText += `width:${style === 'bar' ? 4 : 8}px;height:1.2em;background-color:${accent};`
   } else if (style === 'dots') {
-    decoration.style.width = '13px'
+    decoration.style.width = '9px'
     for (let row = 0; row < 3; row++) {
       const line = document.createElement('span')
-      line.style.cssText = `display:block;line-height:0;${row ? 'margin-top:3px;' : ''}`
+      line.style.cssText = `display:block;line-height:0;${row ? 'margin-top:2px;' : ''}`
       for (let column = 0; column < 2; column++) {
         const dot = document.createElement('span')
-        dot.style.cssText = `display:inline-block;width:5px;height:5px;border-radius:50%;background-color:${accent};${column ? 'margin-left:3px;' : ''}`
+        dot.style.cssText = `display:inline-block;width:3px;height:3px;border-radius:50%;background-color:${accent};${column ? 'margin-left:3px;' : ''}`
         line.append(dot)
       }
       decoration.append(line)
@@ -219,7 +219,16 @@ function decorateChapter(
     content.prepend(sequence)
   }
   if (style === 'underline' || style === 'thick-underline') {
-    heading.style.borderBottom = `${style === 'underline' ? 2 : 5}px solid ${accent}`
+    const underlineTarget = config.chapterDecorationTight ? content : heading
+    if (config.chapterDecorationTight) {
+      content.style.display = 'inline-block'
+      content.style.maxWidth = '100%'
+      content.style.boxSizing = 'border-box'
+      content.style.verticalAlign = 'top'
+      content.style.paddingBottom = heading.style.paddingBottom
+      heading.style.paddingBottom = '0'
+    }
+    underlineTarget.style.borderBottom = `${style === 'underline' ? 2 : 5}px solid ${accent}`
     heading.append(content)
     return
   }

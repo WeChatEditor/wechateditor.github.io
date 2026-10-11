@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [下划线紧贴与点阵尺寸调整](fix/2026/10/2026-10-11-chapter-decoration-sizing.md)
+
 - [配色描述与radio选中态](style/2026/10/2026-10-08-radio-solid-color.md)
 
 - [标题装饰与对齐配置](feat/2026/10/2026-10-08-chapter-styles.md)
