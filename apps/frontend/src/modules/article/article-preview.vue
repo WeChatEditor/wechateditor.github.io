@@ -199,23 +199,27 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
 <template>
   <section ref="pane" class="preview-pane">
     <div class="preview-heading">
-      <span class="preview-title">
-        <svg
-          class="action-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-        公众号预览
-      </span>
+      <div class="pane-identity pane-identity-reading">
+        <span class="pane-identity-icon" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </span>
+        <div class="pane-identity-copy">
+          <h2 class="pane-identity-title">公众号预览</h2>
+          <span class="pane-identity-caption">微信阅读视图</span>
+        </div>
+      </div>
       <div class="preview-actions">
         <button
           type="button"
@@ -431,12 +435,6 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   flex-shrink: 0;
   align-items: center;
   gap: 8px;
-}
-.preview-title {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 6px;
 }
 .preview-pane :deep(.el-radio-button__inner) {
   padding: 6px 10px;
@@ -765,3 +763,4 @@ article :deep(::selection) {
   width: 1100px;
 }
 </style>
+<style scoped src="./article-pane-heading.css"></style>

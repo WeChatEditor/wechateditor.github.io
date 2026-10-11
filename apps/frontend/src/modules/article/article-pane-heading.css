@@ -1,0 +1,51 @@
+.pane-identity {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+.pane-identity-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid #dbe7fb;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #f3f7ff, #eaf1ff);
+  color: #416bc0;
+}
+.pane-identity-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.pane-identity-reading .pane-identity-icon {
+  border-color: #dcece4;
+  background: linear-gradient(145deg, #f3faf6, #eaf5ef);
+  color: #398161;
+}
+.pane-identity-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pane-identity-title {
+  margin: 0;
+  color: var(--ui-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19px;
+  letter-spacing: 0.2px;
+}
+.pane-identity-caption {
+  color: var(--ui-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 13px;
+  letter-spacing: 0.5px;
+}
+.pane-identity-code {
+  font-size: 9px;
+  letter-spacing: 1px;
+}

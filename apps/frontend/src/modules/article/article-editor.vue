@@ -152,8 +152,28 @@ function tab(event: KeyboardEvent): void {
 <template>
   <section class="editor-pane">
     <div class="pane-heading">
-      <span class="pane-label">MARKDOWN</span><span>原稿</span
-      ><el-button
+      <div class="pane-identity">
+        <span class="pane-identity-icon" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            focusable="false"
+          >
+            <path
+              d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9ZM14 3v6h6M9 12l-2 2 2 2m6-4 2 2-2 2"
+            />
+          </svg>
+        </span>
+        <div class="pane-identity-copy">
+          <h2 class="pane-identity-title">原稿</h2>
+          <span class="pane-identity-caption pane-identity-code">MARKDOWN</span>
+        </div>
+      </div>
+      <el-button
         class="import-button"
         size="small"
         text
@@ -217,19 +237,13 @@ function tab(event: KeyboardEvent): void {
 .pane-heading {
   flex-shrink: 0;
   height: var(--ui-pane-heading-height);
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid var(--ui-border);
   color: var(--ui-text);
   font-size: 13px;
-}
-.pane-label {
-  font-size: 11px;
-  letter-spacing: 1.6px;
-  font-weight: 700;
-  color: var(--ui-muted);
 }
 .import-button {
   margin-left: auto;
@@ -267,3 +281,4 @@ textarea::placeholder {
   padding: 3px 6px;
 }
 </style>
+<style scoped src="./article-pane-heading.css"></style>
