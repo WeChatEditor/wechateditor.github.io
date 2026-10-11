@@ -1,5 +1,7 @@
 # 活动计划
 
+- [Web 与 Chrome 轻量传稿插件实施计划](2026-10-11-wechat-transfer-extension.md)：设计已准备，实现待授权；自动新建插入文字、用户手动保存。
+
 - [原稿固定头尾显示配置](2026-10-11-editor-fixed-fragments.md)：独立控制左侧只读块并保存偏好。
 
 - [扩展文字设置字号范围](2026-10-11-font-size-range.md)：11至32px与常用快捷字号。
