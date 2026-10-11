@@ -50,6 +50,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const ratio = ref(0.5)
   const previewMode = ref<'phone' | 'desktop'>('phone')
   const localColor = ref('#c44b77')
+  const showFixedFragments = ref(true)
   const drawer = ref<'text' | 'colors' | 'ending' | 'chapters' | 'history' | undefined>()
   const focus = ref(false)
   const ready = ref(false)
@@ -222,6 +223,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       ratio: ratio.value,
       previewMode: previewMode.value,
       localColor: localColor.value,
+      showFixedFragments: showFixedFragments.value,
     }
   }
   function applySettings(settings: WorkspaceSettings): void {
@@ -230,6 +232,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     ratio.value = settings.ratio
     previewMode.value = settings.previewMode
     localColor.value = settings.localColor
+    showFixedFragments.value = settings.showFixedFragments ?? true
   }
   function persistSettings(): void {
     if (!ready.value || settingsBlocked.value || conflictReason.value) {
@@ -282,7 +285,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     { deep: true, flush: 'sync' },
   )
   watch(
-    [config, ending, ratio, previewMode, localColor],
+    [config, ending, ratio, previewMode, localColor, showFixedFragments],
     function settingsChanged() {
       if (ready.value && !applying) {
         changed()
@@ -655,6 +658,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     ratio,
     previewMode,
     localColor,
+    showFixedFragments,
     drawer,
     focus,
     ready,

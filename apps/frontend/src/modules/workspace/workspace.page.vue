@@ -251,7 +251,9 @@ onBeforeUnmount(function cleanup() {
       <EndingPanel
         v-else-if="store.drawer === 'ending'"
         :ending="store.ending"
+        :show-fixed-fragments="store.showFixedFragments"
         @change="store.ending = { ...store.ending, ...$event }"
+        @show-fixed-fragments="store.showFixedFragments = $event"
       />
       <HistoryPanel
         v-else-if="store.drawer === 'history'"
@@ -273,8 +275,14 @@ onBeforeUnmount(function cleanup() {
           v-if="!store.focus"
           ref="editorComponent"
           :markdown="store.article.markdown"
-          :opening="store.ending.opening?.enabled ? store.ending.opening.markdown : undefined"
-          :ending="store.ending.enabled ? store.ending.markdown : undefined"
+          :opening="
+            store.showFixedFragments && store.ending.opening?.enabled
+              ? store.ending.opening.markdown
+              : undefined
+          "
+          :ending="
+            store.showFixedFragments && store.ending.enabled ? store.ending.markdown : undefined
+          "
           :disabled="disabled"
           @change="store.updateMarkdown"
           @import="fileInput?.click()"

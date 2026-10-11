@@ -30,6 +30,8 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 ## 兼容与失败
 
+原稿固定头尾展示偏好showFixedFragments为配置格式1的可选布尔字段，localStorage即时覆盖，无文章历史。缺失补true以延续旧展示，false保持关闭，存在但类型错误则拒绝读写。偏好不改变FixedEnding启用状态、IndexedDB草稿或文章版本协议。
+
 正文字号校验范围扩为11至32px，来源为typesetting.model公共范围常量，配置格式仍为1，旧14至18px记录继续有效，合法小数记录不额外拒绝。UI滑杆以1px递增，默认/重置16px；配置仍即时覆盖localStorage，不写文章版本。
 
 标题配置chapterDecorationTight默认true、chapterAlignment默认left，仍用配置格式1即时保存，不写文章版本。旧记录缺失字段时补默认值；存在但类型/枚举错误则拒绝。已移除box/overline/quote仅作为读取兼容值，规范化为bar；其他未知样式继续拒绝，不以回退掩盖损坏记录。

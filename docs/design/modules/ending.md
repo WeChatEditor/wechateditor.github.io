@@ -2,7 +2,7 @@
 title: ending模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-11
 owner: project maintainers
 ---
 
@@ -15,6 +15,8 @@ owner: project maintainers
 非目标：本模块不增加账号、云存储或服务端API，不访问其他模块私有文件。当前文件位于apps/frontend/src/modules/ending。
 
 ## 公共接口与依赖
+
+ending-panel接收workspace提供的showFixedFragments布尔prop，通过同名事件请求改变原稿只读头尾展示；面板不拥有或持久化此偏好，开关独立于FixedEnding启用状态。
 
 公共文件：`ending.model.ts`、`ending.service.ts`、`ending-panel.vue`。跨模块仅导入这些文件，禁止barrel。允许依赖：article；禁止反向依赖与循环。登记来源唯一为根.module-boundaries.json。
 

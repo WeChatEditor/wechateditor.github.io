@@ -21,6 +21,7 @@ export interface WorkspaceSettings {
   ratio: number
   previewMode: 'phone' | 'desktop'
   localColor: string
+  showFixedFragments?: boolean
 }
 
 export interface WorkspaceDraft {

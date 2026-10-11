@@ -56,6 +56,7 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
     draft &&
     draft.schemaVersion === 1 &&
     isColor(draft.localColor) &&
+    (draft.showFixedFragments === undefined || typeof draft.showFixedFragments === 'boolean') &&
     draft.config &&
     typeof draft.config.preset === 'string' &&
     ['body', 'heading', 'accent', 'muted', 'background'].every((role) =>
@@ -128,6 +129,7 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
   }
   return {
     ...draft,
+    showFixedFragments: draft.showFixedFragments ?? true,
     config: normalizeTypesetting(draft.config),
     ending: normalizeEnding(draft.ending),
   }

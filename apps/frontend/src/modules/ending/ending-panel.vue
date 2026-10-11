@@ -2,8 +2,11 @@
 import { computed } from 'vue'
 import type { FixedEnding, FixedOpening } from './ending.model'
 import { defaultOpening } from './ending.service'
-const props = defineProps<{ ending: FixedEnding }>()
-const emit = defineEmits<{ change: [patch: Partial<FixedEnding>] }>()
+const props = defineProps<{ ending: FixedEnding; showFixedFragments: boolean }>()
+const emit = defineEmits<{
+  change: [patch: Partial<FixedEnding>]
+  showFixedFragments: [value: boolean]
+}>()
 const opening = computed(() => props.ending.opening ?? defaultOpening())
 function changeOpening(patch: Partial<FixedOpening>): void {
   emit('change', { opening: { ...opening.value, ...patch } })
@@ -27,6 +30,16 @@ function appendSnippet(markdown: string): void {
 <template>
   <div class="ending-body">
     <p class="intro">为每篇文章保留熟悉的开头和结尾，分别启用、随时修改。</p>
+    <section class="editor-display-setting" aria-label="原稿显示">
+      <label class="ending-switch">
+        <span>在原稿中显示固定头尾</span>
+        <el-switch
+          :model-value="showFixedFragments"
+          @update:model-value="emit('showFixedFragments', Boolean($event))"
+        />
+      </label>
+      <p class="note">仅控制左侧只读块，不影响预览和复制。</p>
+    </section>
     <section class="opening-section" aria-label="固定开头">
       <label class="ending-switch"
         >启用固定开头<el-switch
@@ -106,7 +119,8 @@ function appendSnippet(markdown: string): void {
 .ending-body {
   padding: 22px;
 }
-.opening-section {
+.opening-section,
+.editor-display-setting {
   padding-bottom: 24px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--ui-border);
