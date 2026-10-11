@@ -299,7 +299,6 @@ onBeforeUnmount(function cleanup() {
         <span class="status-dot">/</span>
         预计阅读 {{ store.statistics.readingMinutes }} 分钟
       </span>
-      <span>数据仅保存在当前浏览器</span>
       <span class="author-info"
         >作者：桀士
         <a

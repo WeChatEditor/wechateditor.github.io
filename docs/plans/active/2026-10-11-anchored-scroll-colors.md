@@ -8,6 +8,10 @@ owner: project maintainers
 
 # 锚点同步与配色交互修正
 
+## 底栏存储提示调整
+
+维护者指出底栏“数据仅保存在当前浏览器”突兀，本次移入顶栏保存状态title说明。底栏回到左侧统计、右侧作者/GitHub；保存状态正文及错误提示保留。暂存区为空，归档NOT_DUE，保留既有workspace配置；只改展示，无存储行为变化。静态验证结果见关联日志，悬停说明与底栏视觉等待人工确认。
+
 按维护者七项要求修改顶栏强调色、选区手动调色、电脑677px正文宽度、块锚点同步、配色更新/删除确认、改名弹层及作者/GitHub。依据[UI设计](../../design/jlab-wechat-editor-ui.md)、[article](../../design/modules/article.md)、[workspace](../../design/modules/workspace.md)、[typesetting](../../design/modules/typesetting.md)。暂存区为空、无CodeGraph，归档NOT_DUE。既有pnpm-workspace.yaml改动保留并排除格式化和提交。
 
 实现方案：Markdown块携带源行号，编辑器使用同字体/宽度/换行的隐藏镜像测量源行位置；组件公开行号/纵向位置，workspace按相邻块插值双向同步。头尾与阅读元信息不参与正文锚点；顶部/底部作为边界，图片加载与尺寸/内容改变重建映射。保留防回环、减少动态效果与关闭清理。元数据不进入公众号输出。配色弹窗共享Element Plus递增层级，取消不修改，确认后按最新配置执行。无需新增依赖或存储格式。

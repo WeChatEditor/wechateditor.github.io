@@ -89,7 +89,7 @@ const controls = [
     <span
       class="save-status"
       :class="{ failed: saveBlocked || saveState.startsWith('保存失败') }"
-      :title="saveState"
+      :title="`${saveState}。数据仅保存在当前浏览器`"
       role="status"
       ><i aria-hidden="true" />{{ saveState }}</span
     >

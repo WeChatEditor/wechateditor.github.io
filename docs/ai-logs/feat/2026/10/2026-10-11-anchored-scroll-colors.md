@@ -9,6 +9,12 @@ owner: project maintainers
 
 # 锚点同步与配色交互修正
 
+## 底栏存储提示调整
+
+2026-10-11维护者要求弱化底部浏览器存储文案。选择从底栏移除独立提示，将原文收进顶栏保存状态title，与保存状态合并为悬停说明；底栏统计/作者/GitHub保留，无存储/保存行为变化。继续现行UI设计与本计划，开始暂存区为空、归档NOT_DUE，workspace配置保留且不提交。无需新ADR或依赖，不执行前端自动化，视觉人工验收。
+
+本轮format/format:check、Lint（0错误/226警告）、typecheck、build、modules:check、docs:check、diff检查通过，归档CI为NOT_DUE。JS540.19kB/gzip194.99kB，保留已有体积提示。format临时ignore隔离人类workspace配置，改动与开始一致；治理脚本未改，不重复治理测试。关联提交由本文件Git历史定位，不推送。
+
 目标为维护者七项UI与滚动调整。读取入口、活动计划、UI/模块/存储ADR/治理/验证设计；记忆只用于既有选区、存储与人工验收约束，当前独立仓库为事实来源。确认原算法为全文高度比例、自定义颜色已有但气泡隐藏标签、配色更新删除直接生效。作者采用项目品牌“桀士”，GitHub指向已核验origin仓库。
 
 选择Markdown源行与可测量块锚点、textarea隐藏镜像、workspace私有映射协调器，保留模块依赖方向。顶栏只改accent，localColor保留为气泡颜色偏好；电脑正文与元信息居中最大677px，外壳可更宽。配色确认及改名共用动态层级。
