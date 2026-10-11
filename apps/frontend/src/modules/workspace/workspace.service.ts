@@ -6,7 +6,7 @@ import type {
 } from './draft-storage.port'
 import { isColor } from '../article/article.service'
 import { normalizeTypesetting, maxPalettes } from '../typesetting/typesetting.service'
-import { chapterStyles } from '../typesetting/typesetting.model'
+import { chapterStyles, fontSizeRange } from '../typesetting/typesetting.model'
 import { maxMarkdownLength } from '../../app.config'
 import { normalizeEnding } from '../ending/ending.service'
 
@@ -93,8 +93,8 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
       draft.config.paragraphGap,
       draft.config.letterSpacing,
     ].every(Number.isFinite) &&
-    draft.config.fontSize >= 14 &&
-    draft.config.fontSize <= 18 &&
+    draft.config.fontSize >= fontSizeRange.min &&
+    draft.config.fontSize <= fontSizeRange.max &&
     draft.config.lineHeight >= 1.6 &&
     draft.config.lineHeight <= 2.2 &&
     draft.config.paragraphGap >= 8 &&

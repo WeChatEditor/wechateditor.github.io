@@ -13,6 +13,8 @@ import {
 } from './typesetting.service'
 import {
   chapterStyles,
+  fontSizeRange,
+  fontSizePresets,
   type TypesettingConfig,
   type ColorPreset,
   type ColorRole,
@@ -126,15 +128,15 @@ function resetText(): void {
       >
       <el-slider
         :model-value="config.fontSize"
-        :min="14"
-        :max="18"
-        :step="1"
+        :min="fontSizeRange.min"
+        :max="fontSizeRange.max"
+        :step="fontSizeRange.step"
         aria-label="字号"
         @update:model-value="emit('change', { fontSize: Number($event) })"
       />
-      <div class="quick-values">
+      <div class="quick-values font-size-presets">
         <button
-          v-for="size in [14, 15, 16, 17]"
+          v-for="size in fontSizePresets"
           :key="size"
           class="ui-button bordered"
           :class="{ active: config.fontSize === size }"
@@ -484,6 +486,13 @@ function resetText(): void {
   flex: 1;
   font-size: 12px;
   padding: 5px 6px;
+}
+.font-size-presets {
+  flex-wrap: wrap;
+}
+.font-size-presets button {
+  flex: 0 0 calc((100% - 10px) / 3);
+  min-width: 0;
 }
 .el-select {
   width: 100%;

@@ -8,6 +8,8 @@ export const chapterStyles = [
   ['circles', '双圆'],
   ['dots', '点阵'],
 ] as const
+export const fontSizeRange = { min: 11, max: 32, step: 1 } as const
+export const fontSizePresets = [11, 12, 14, 16, 18, 20, 24, 28, 32] as const
 export type ChapterStyle = (typeof chapterStyles)[number][0]
 export type ColorRole = 'body' | 'heading' | 'accent' | 'muted' | 'background'
 export interface ColorPreset {

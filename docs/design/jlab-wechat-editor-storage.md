@@ -30,6 +30,8 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 
 ## 兼容与失败
 
+正文字号校验范围扩为11至32px，来源为typesetting.model公共范围常量，配置格式仍为1，旧14至18px记录继续有效，合法小数记录不额外拒绝。UI滑杆以1px递增，默认/重置16px；配置仍即时覆盖localStorage，不写文章版本。
+
 标题配置chapterDecorationTight默认true、chapterAlignment默认left，仍用配置格式1即时保存，不写文章版本。旧记录缺失字段时补默认值；存在但类型/枚举错误则拒绝。已移除box/overline/quote仅作为读取兼容值，规范化为bar；其他未知样式继续拒绝，不以回退掩盖损坏记录。
 
 旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，opening仅扩展配置可选字段，不变更IndexedDB文章协议。
