@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import {
   ElButton,
-  ElColorPicker,
   ElDrawer,
   ElOption,
   ElRadioButton,
@@ -31,7 +30,6 @@ import App from './App.vue'
 createApp(App)
   .use(createPinia())
   .use(ElButton)
-  .use(ElColorPicker)
   .use(ElDrawer)
   .component('ElRadioButton', ElRadioButton)
   .component('ElRadioGroup', ElRadioGroup)

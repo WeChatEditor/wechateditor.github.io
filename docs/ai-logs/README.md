@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [共用调色弹窗屏幕取色器](feat/2026/10/2026-10-11-color-eyedropper.md)
+
 - [下划线紧贴与点阵尺寸调整](fix/2026/10/2026-10-11-chapter-decoration-sizing.md)
 
 - [配色描述与radio选中态](style/2026/10/2026-10-08-radio-solid-color.md)
