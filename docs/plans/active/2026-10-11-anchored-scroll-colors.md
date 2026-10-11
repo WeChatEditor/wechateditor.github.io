@@ -8,6 +8,10 @@ owner: project maintainers
 
 # 锚点同步与配色交互修正
 
+## 改名输入双焦点框修正
+
+维护者截图显示输入内层方形outline与Element Plus圆角wrapper高亮叠加。沿用本计划，仅对MessageBox内层el-input__inner的focus-visible关闭通用outline，保留wrapper焦点及校验错误边框。起始暂存区为空，归档NOT_DUE，既有人类workspace配置保留。人工确认鼠标/键盘聚焦只有单框、无效名称错误状态及保存/取消；静态检查结果记入本日志。
+
 ## 底栏存储提示调整
 
 维护者指出底栏“数据仅保存在当前浏览器”突兀，本次移入顶栏保存状态title说明。底栏回到左侧统计、右侧作者/GitHub；保存状态正文及错误提示保留。暂存区为空，归档NOT_DUE，保留既有workspace配置；只改展示，无存储行为变化。静态验证结果见关联日志，悬停说明与底栏视觉等待人工确认。

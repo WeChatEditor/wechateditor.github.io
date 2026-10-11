@@ -9,6 +9,12 @@ owner: project maintainers
 
 # 锚点同步与配色交互修正
 
+## 改名输入双焦点框修正
+
+维护者截图作为视觉问题证据。源码确认workspace通用input:focus-visible outline与Element Plus wrapper.is-focus box-shadow叠加；只对.el-message-box .el-input__inner:focus-visible清除outline，保留外层组件高亮、验证失败边框和其他控件焦点。符合既有单焦点框约束，不改改名/校验/存储逻辑。暂存区为空，归档NOT_DUE，人类workspace配置保留且不提交。继续本计划和UI设计，无新ADR/依赖，不执行前端自动化，真实交互由人类确认。
+
+本轮format（临时ignore隔离人类配置）/format:check、Lint（0错误/226警告）、typecheck、build、modules:check、docs:check和diff检查通过；归档CI为NOT_DUE。CSS102.91kB/gzip16.30kB，JS540.19kB/gzip194.99kB，已有包体积提示保留。纯CSS修正，治理脚本不变，不重复治理测试。人工视觉仍待确认，计划pending_human_acceptance；关联提交以Git历史定位，提交后核验GPT-6 trailer，不推送。
+
 ## 底栏存储提示调整
 
 2026-10-11维护者要求弱化底部浏览器存储文案。选择从底栏移除独立提示，将原文收进顶栏保存状态title，与保存状态合并为悬停说明；底栏统计/作者/GitHub保留，无存储/保存行为变化。继续现行UI设计与本计划，开始暂存区为空、归档NOT_DUE，workspace配置保留且不提交。无需新ADR或依赖，不执行前端自动化，视觉人工验收。

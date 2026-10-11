@@ -18,6 +18,8 @@ owner: project maintainers
 
 底部仅显示左侧字数/阅读时长与右侧作者/GitHub。“数据仅保存在当前浏览器”收进顶栏保存状态的title悬停说明，与当前保存状态一起展示，不再单独占据底栏中央。
 
+改名MessageBox的Element Plus输入框只保留外层wrapper的焦点边框，内层input的focus-visible不叠加工作台通用outline。该例外限定MessageBox输入，不移除原稿、原生输入或按钮的键盘焦点提示。
+
 ## 网站图标
 
 浏览器图标使用蓝白配色的纸页与字母 J 图形，沿用工作台主色 #2563EB。图形保持粗线条和少量排版横线，适合小尺寸标签页。生成原图与提示词保存在 docs/reference/brand/；应用 public/ 保存多尺寸 favicon.ico、32px/192px PNG 和 180px Apple 图标，HTML 使用相对路径，兼容 GitHub Pages 仓库子路径。图标不影响文章导出、界面标题或存储协议。生成素材需人工确认视觉；允许的验证为资源尺寸、ICO 结构、生产产物及静态工程检查。
