@@ -24,3 +24,5 @@ change_type: feat
 偏差与边界：按实现授权先完成工程，P0/P4真实验收待维护者。候选选择器不是实际页面证据；只顶层官方JSAPI和不同documentId的新建，缺失则阻断。浮层统一打开popup，避免content直接发起写入；旧内部阶段消息改为scripting直接返回。uncertain过期清除原标题/正文/绑定但保留匿名阻断。用户活动使租约失效；运行租约结束前禁止清理；不承诺公众号副作用与本地状态原子化。
 
 遗留：能力定位、标题进入真实文章状态、文字样式/保存重开、安装/权限、竞态和中断恢复全部待人类验收。详见[指南](../../../../guides/wechat-transfer-extension.md)。本日志保持pending_human_acceptance，不推送或上架。关联实现提交通过本日志Git历史定位，收尾台账登记实际完整SHA。
+
+收尾：实现提交ba7af69cb305fc08d6823f3384889c685832a783，核验真实GPT-6 co-author trailer，工作区清洁后登记为归档审查基线。docs:archive:check:ci最终NOT_DUE，台账和此实际结果另提交。31项纯治理/契约检查通过；没有前端功能验收。依赖安装曾因zod4.6.6未满足minimumReleaseAge被拒绝，维持策略选择4.6.5；显式构建批准仍仅esbuild/vue-demi。

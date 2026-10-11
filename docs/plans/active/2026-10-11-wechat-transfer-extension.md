@@ -75,15 +75,15 @@ owner: project maintainers
 ## P5：打包、记录与交接
 
 - [x] 交付unpacked目录、ZIP、版本说明、实际ID、安装/更新/卸载指南、Web来源配置及故障说明。
-- [ ] 执行format/format:check、Lint、类型、生产构建、模块/文档检查、适用契约/治理检查和docs:archive:check:ci。
-- [ ] 同步设计为最终事实、记录偏差和真实提交；技术验证通过按仓库规则自动提交，不默认为推送或上架。
+- [x] 执行format/format:check、Lint、类型、生产构建、模块/文档检查、适用契约/治理检查和docs:archive:check:ci（NOT_DUE）。
+- [x] 同步设计为最终事实、记录偏差和真实提交；实现提交ba7af69cb305fc08d6823f3384889c685832a783，自动提交但未推送或上架。
 - [ ] 人类验收完成后将实施计划/AI记录标completed并归档、更新索引；未完成保留活动状态。
 
 退出条件：静态包证据与浏览器/公众号证据分别记录，能够安装使用，原Web无插件仍可写作/复制。Chrome Web Store上架、远端发布、付费和公众号保存/发布不属于默认交接动作。
 
 ## 实际结果、偏差、遗留与提交
 
-2026-10-12已实现P1至P3代码及P5安装包：四workspace、Zod/parse5契约、Web预检/抽屉/握手/快照、MV3单任务去重/租约/恢复、popup/浮层及保守官方JSAPI适配。共享类型、模块/文档、生产和开发构建、22项治理及9项契约检查通过；Lint零错误、有现行Vue排版警告，Web构建保留大chunk提示。format/最终归档CI及提交按收尾记录更新。
+2026-10-12已实现P1至P3代码及P5安装包：四workspace、Zod/parse5契约、Web预检/抽屉/握手/快照、MV3单任务去重/租约/恢复、popup/浮层及保守官方JSAPI适配。格式、类型、模块/文档、生产和开发构建、22项治理及9项契约检查通过；Lint零错误、有现行Vue排版警告，Web构建保留大chunk提示。实现提交ba7af69cb305fc08d6823f3384889c685832a783作为已审查真实基线，最终归档CI为NOT_DUE。
 
 偏差：维护者明确设计通过而真实账号尚未验收，工程先交付以便P0/P4人工校准；没有把P0退出条件写为通过。入口/账号/标题是候选，顶层JSAPI、不同documentId的新建证据和空编辑器缺一则停止。浮层只打开可信popup，写入统一从popup确认。旧TARGET_READY/STEP_RESULT改为scripting直接返回；正常到期任务删除，uncertain过期保留匿名阻断直到人工丢弃。实际Web经维护者确认为https://wechateditor.github.io/，生产来源已同步收紧。
 
