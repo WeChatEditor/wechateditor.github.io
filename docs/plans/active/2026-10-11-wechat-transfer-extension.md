@@ -8,6 +8,10 @@ owner: project maintainers
 
 # Web 与 Chrome 轻量传稿插件实施计划
 
+## 2026-10-12现行交互调整
+
+维护者明确取消发送状态检测及二次确认/启动/取消/恢复清理交互，点击Web发送后自动新建并插入。当前0.1.3及协议2以[交互简化计划](2026-10-12-wechat-transfer-simplification.md)、[现行设计](../../design/wechat-transfer-extension.md)和[最新指南](../../guides/wechat-transfer-extension.md)为准。下方P1至P3勾选项记录最初实现事实；其中抽屉标题/替换确认、状态查询、人工START/CANCEL/CLEAR和恢复管理验收已被本次简化取代，不作为当前待办。P0真实入口/官方接口和P4实际自动传稿、排版及手动保存仍待人类验收。
+
 ## 目标、授权与设计依据
 
 2026-10-12维护者授权执行整个实施计划，并确认目前仅设计通过、实际公众号验收尚未进行。先完成独立工程、Web连接、保守页面适配和可安装包；P0真实账号能力及P4前端功能保留人类验收，未获得前端自动化授权。依据[插件设计](../../design/wechat-transfer-extension.md)、[消息协议](../../reference/wechat-transfer-protocol.md)和[ADR](../../decisions/ADR-20261011-wechat-transfer-extension.md)。

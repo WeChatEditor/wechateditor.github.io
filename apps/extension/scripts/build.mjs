@@ -51,6 +51,7 @@ const manifest = {
   minimum_chrome_version: '120',
   description: '连接桀士排版Web工作台，新建公众号图文并插入文字排版，由用户检查后手动保存。',
   key: identity.key,
+  icons: { 32: 'logo-32.png', 192: 'logo.png' },
   permissions: ['storage', 'scripting'],
   host_permissions: [
     'https://mp.weixin.qq.com/*',
@@ -66,10 +67,19 @@ const manifest = {
     { matches: ['https://mp.weixin.qq.com/*'], js: ['content.js'], run_at: 'document_idle' },
   ],
   content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" },
+  web_accessible_resources: [{ resources: ['logo.png'], matches: ['https://mp.weixin.qq.com/*'] }],
 }
 await writeFile(resolve(directory, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
 await copyFile(resolve(root, 'popup.html'), resolve(directory, 'popup.html'))
 await copyFile(resolve(root, 'NOTICE.md'), resolve(directory, 'NOTICE.md'))
+await copyFile(
+  resolve(root, '../frontend/public/favicon-192x192.png'),
+  resolve(directory, 'logo.png'),
+)
+await copyFile(
+  resolve(root, '../frontend/public/favicon-32x32.png'),
+  resolve(directory, 'logo-32.png'),
+)
 if (process.argv.includes('--zip')) {
   const files = {}
   for (const name of [
@@ -80,6 +90,8 @@ if (process.argv.includes('--zip')) {
     'manifest.json',
     'NOTICE.md',
     'LICENSES.txt',
+    'logo.png',
+    'logo-32.png',
   ])
     files[name] = new Uint8Array(await readFile(resolve(directory, name)))
   const archive = resolve(root, 'dist', `jlab-wechat-transfer-${version}.zip`)

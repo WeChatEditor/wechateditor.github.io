@@ -63,7 +63,6 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   >()
   const transfer = createTransferConnection()
   const transferTitle = ref('')
-  const transferReplace = ref(false)
   const focus = ref(false)
   const ready = ref(false)
   const articleDirty = ref(false)
@@ -137,39 +136,13 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       assets: assets.value.map((a) => ({ ...a, blob: a.blob })),
     }
   }
-  const transferWarning = computed(function transferPreflight() {
-    if (drawer.value !== 'transfer') return ''
-    return preflightTextArticle(snapshot()).hasImages
-      ? '这篇文章含图片，请使用“复制到公众号”，在后台粘贴并检查图片'
-      : ''
-  })
-  function openTransfer(): void {
+  async function openTransfer(): Promise<void> {
     if (['preparing', 'copying'].includes(copyState.value)) return
     if (!ready.value || restoring.value || conflictReason.value || transfer.state.busy) return
-    transferTitle.value = preflightTextArticle(snapshot()).title
-    transferReplace.value = false
     focus.value = false
-    drawer.value = 'transfer'
-  }
-  async function connectTransfer(): Promise<void> {
-    try {
-      await transfer.connect()
-    } catch (error) {
-      transfer.state.message = error instanceof Error ? error.message : '插件未连接'
-    }
-  }
-  async function submitTransfer(): Promise<void> {
-    if (['preparing', 'copying'].includes(copyState.value)) return
-    if (
-      !ready.value ||
-      restoring.value ||
-      conflictReason.value ||
-      transfer.state.busy ||
-      transferWarning.value
-    )
-      return
     const currentGeneration = generation
     const source = snapshot()
+    transferTitle.value = preflightTextArticle(source).title || '未命名文章'
     try {
       const result = exportTextArticle(source)
       await transfer.submit(
@@ -189,11 +162,11 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
             currentGeneration === generation
           )
         },
-        transferReplace.value ? transfer.state.task?.id : undefined,
       )
     } catch (error) {
       transfer.state.message = error instanceof Error ? error.message : '无法准备传稿快照'
     }
+    if (!conflictReason.value) drawer.value = 'transfer'
   }
   const preview = computed(function renderPreview() {
     return previewArticle(snapshot(), urls.value)
@@ -754,13 +727,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     snapshot,
     transferState: transfer.state,
     transferTitle,
-    transferReplace,
-    transferWarning,
     openTransfer,
-    connectTransfer,
-    submitTransfer,
-    retryTransfer: transfer.retryReceipt,
-    cancelTransfer: transfer.cancel,
     initialize,
     saveNow,
     refreshHistory,

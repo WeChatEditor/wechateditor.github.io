@@ -8,12 +8,12 @@ owner: project maintainers
 
 # extension-shell模块
 
-apps/extension/src/modules/extension-shell公开service挂载popup和公众号Shadow DOM浮层。依赖方向为共享契约和插件wechat-transfer消息端口，不读仓储、不导入页面适配器。以textContent创建用户内容，避免HTML模板注入。
+apps/extension/src/modules/extension-shell公开service挂载popup和公众号closed Shadow DOM浮层。依赖共享契约和wechat-transfer消息端口，不读仓储、不导入页面适配器；用户文字用textContent创建。
 
-Popup提供Web/公众号打开、目标能力刷新、显式账号选择及勾选确认、新建插入、取消、检查后台后丢弃或清空损坏任务。双击busy锁，按钮只响应可信用户点击；任务执行约束由worker再次检查。任务状态2秒轮询，页面离开释放计时。
+复用本项目logo，Web/公众号导航按钮缩小并排。Popup下拉默认已选或第一个可用账号，右侧刷新图标具备title/aria-label/键盘焦点；仅打开/刷新/选择时检查页面能力。按钮响应可信点击并使用busy锁。选择保存由worker校验，登录后刷新可自动继续用户已发送但尚未启动的快照。
 
-后台浮层只显示摘要并打开可信插件面板；content来源不能START_INSERT/CANCEL/CLEAR，不依靠page消息启动写入。Chrome版本/策略不支持action.openPopup时提示点击工具栏图标。关闭浮层不取消任务。
+删除checkbox/校验、新建插入启动、取消和恢复清理入口。没有状态查询和2秒轮询。界面打开时一次读取文章元信息，后台浮层接收worker一次性TRANSFER_NOTICE并校验Schema/发送者，不通过网页消息触发操作；“已插入”不等于保存证明。
 
-浮层之外的可信后台pointerdown/keydown/input活动报告PAGE_ACTIVITY，不含载荷、URL或账号；worker只对匹配执行目标失效租约。
+浮层仍报告外部可信pointerdown/keydown/input活动供worker阻断匹配写入竞态，不含正文/URL/账号。content不能选择账号；OPEN_PANEL受Chrome策略限制时打开本地面板标签。收起浮层不影响已授权执行。
 
-失败和恢复通过状态文案显示，成功文案为“已插入，请检查排版并手动保存”。界面不记录原稿、历史、封面或后台凭据。格式/Lint/类型/构建及人工键盘、登录、目标、多窗口和恢复验收。
+格式/Lint/类型/构建允许；logo布局、默认选择、登录后继续、键盘、Chrome面板与后台结果提示由人类验收，无前端自动化。

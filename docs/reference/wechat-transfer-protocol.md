@@ -1,56 +1,45 @@
 # Web 与轻量插件消息协议
 
-2026-10-12实现规格。packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts中的Zod Schema为结构来源，类型使用z.infer。业务边界见[插件设计](../design/wechat-transfer-extension.md)。
+2026-10-12交互简化规格，协议版本2。Zod Schema为结构来源，类型使用z.infer，入口为packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts。[插件设计](../design/wechat-transfer-extension.md)描述现行行为。Web和插件需同时更新，协议1明确拒绝。
 
 ## 外部消息
 
-请求包含protocolVersion:1、UUID requestId及kind；仅SUBMIT_TASK包含payload。严格拒绝未知字段。成功响应为同版本/同ID/status:0/data，失败为同版本/同ID/非零status/err；不附原始页面错误或载荷。
+所有请求包含protocolVersion:2和UUID requestId，严格拒绝未知字段。成功响应为同版本/同ID/status:0/data；失败为非零status/err，不附载荷或原始页面异常。
 
-| kind        | 请求字段                     | 成功data                                                | 副作用                  |
-| ----------- | ---------------------------- | ------------------------------------------------------- | ----------------------- |
-| PING        | 无                           | extensionVersion/supportedProtocolVersions/capabilities | 只握手                  |
-| SUBMIT_TASK | payload                      | {task:摘要}                                             | 存储后ACK，不写后台     |
-| GET_STATUS  | 可选taskId、receiptRequestId | {task:摘要或null}                                       | 不返回正文/账号         |
-| OPEN_WECHAT | 无                           | {}                                                      | 打开固定公众号首页      |
-| CANCEL_TASK | taskId                       | {task:摘要}                                             | 仅未执行任务可从Web取消 |
+| kind        | 请求字段 | 成功data                     | 行为                                  |
+| ----------- | -------- | ---------------------------- | ------------------------------------- |
+| SUBMIT_TASK | payload  | {article:{title,receivedAt}} | 先持久化后ACK，自动选择目标并新建插入 |
+| OPEN_PANEL  | 无       | {}                           | 优先打开popup，失败时打开本地面板标签 |
+| OPEN_WECHAT | 无       | {}                           | 打开固定公众号首页                    |
 
-仅真实组织Web根或/index.html顶层来源接受外部消息，开发包额外支持5175/4175。来源字段不得由payload提供。外部没有START_INSERT或任意代码、URL、选择器、方法名参数。
+不再支持PING、GET_STATUS、CANCEL_TASK，Web不查询发送阶段、不重试接收状态。接收超时提示检查后台，没有自动重试。没有公开任意代码/URL/选择器/方法名参数。
 
-## 内部消息和结果
+worker仅接受真实组织Web根/index.html顶层来源；开发包额外支持5175/4175。来源不能由payload自报。保留整个信封2MiB UTF8限制、严格HTML/样式/媒体和digest校验。
 
-独立internalRequestSchema支持STATUS、TARGETS、OPEN_WEB、OPEN_WECHAT、OPEN_PANEL、PAGE_ACTIVITY、START_INSERT(taskId/tabId/account)、CANCEL_TASK(taskId/inspected)和CLEAR_STORAGE(inspected:true)。写入/清理只接受实际扩展popup来源；公众号content仅STATUS/OPEN_WEB/OPEN_PANEL/PAGE_ACTIVITY。PAGE_ACTIVITY需匹配当前任务tab/document，shell只在可信页面输入/指针/键盘活动时报告。成功{status:0,data}，失败{status,err}。
+## 内部消息
 
-页面结果通过内置scripting.executeScript的直接返回，由worker检查绑定/租约/phase，不接受旧设计中的content TARGET_READY/STEP_RESULT消息。SOURCE_CHANGED由Web当前快照校验显示；后台页面原始异常和正文不作为错误响应。
+| kind                                | 参数           | 用途                                                            |
+| ----------------------------------- | -------------- | --------------------------------------------------------------- |
+| ARTICLE                             | 无             | 一次读取标题/接收时间元信息或null，不返回正文和阶段             |
+| TARGETS                             | 无             | 返回targets及selected，保存有效选择或默认第一个，继续未启动快照 |
+| SELECT_TARGET                       | tabId、account | 复核并保存所选公众号，继续未启动快照                            |
+| OPEN_WEB / OPEN_WECHAT / OPEN_PANEL | 无             | 打开固定界面                                                    |
+| PAGE_ACTIVITY                       | 无             | 可信后台用户活动使匹配执行租约失效                              |
 
-## 快照及摘要
+取消内部STATUS、START_INSERT、CANCEL_TASK、CLEAR_STORAGE。TARGETS/SELECT_TARGET只接受popup.html来源。公众号content仅ARTICLE/OPEN_WEB/OPEN_PANEL/PAGE_ACTIVITY。成功{status:0,data}、失败{status,err}。
 
-payload字段为sourceArticleId(UUID)、sourceRevision/sourceGeneration(非负安全整数)、createdAt(epoch毫秒)、title(去空白1至64码点)、html/plainText(非空)、profile(wechat-editor-text@1-candidate)、digest(64位SHA256十六进制)，可选replaceTaskId(UUID)。
+worker向公众号content发送TRANSFER_NOTICE(message)作为一次性完成/失败提示；content校验Schema及sender.id，不接收网页window消息。它不触发状态查询或新建操作。
 
-摘要按数组固定顺序序列化：protocolVersion、profile、title、html、plainText、sourceArticleId、sourceRevision、sourceGeneration、createdAt、replaceTaskId或null。收到后复算，HTML解析校验失败整篇拒绝，不静默清洗改稿。整个信封UTF8上限2MiB，schema也限制单字段；不截断。图片/媒体、CSS URL或危险HTML阻断。
+## 快照与内部去重
 
-任务摘要含id/requestId/title/receivedAt/phase/message，不返回原稿或账号。phase为pending/waiting_login/waiting_target/creating/waiting_editor/applying/inserted/blocked/uncertain/cancelled/expired。当前实现未登录/未选择时维持pending；正常到期移除，uncertain到期清除敏感载荷后保留阻断。
+payload为sourceArticleId(UUID)、sourceRevision/sourceGeneration(非负安全整数)、createdAt、title(1至64 Unicode码点)、html/plainText(非空)、profile(wechat-editor-text@1-candidate)、digest(64位SHA256)。删除replaceTaskId，重新发送自动更新旧快照。
 
-同requestId同digest返回同一回执；不同digest拒绝。替换需要明确旧taskId，不能替换执行中/uncertain。持久化后ACK，执行前持久化creating/applying。创建/写入后结果不明、worker重启或用户介入均uncertain，不自动重放。正常TTL24小时，最多100回执；终态延迟重试不复活任务。
+digest数组固定顺序：protocolVersion、profile、title、html、plainText、sourceArticleId、sourceRevision、sourceGeneration、createdAt。插件复算，不静默改稿后执行。标题自动来自当前H1，缺失使用“未命名文章”；图片/媒体整篇拒绝。
 
-Web握手1.5秒/提交5秒。提交超时保留原请求，只重试同ID/digest，或GET_STATUS按receiptRequestId查询；明确拒绝可重新准备。页面操作整体30秒/JSAPI单次10秒，不等于微信官方限制。
+执行阶段仅用于插件本地租约/去重回执，不提供外部查询。相同requestId/digest不再启动，不同digest冲突；执行租约存在时拒绝新请求，其他旧快照自动替换。最多100回执，TTL24小时，正常到期删除。worker中断不重放写入，旧版本快照升级后不能执行；下一次明确发送可以创建新任务。
 
-## 错误码
+## 错误与验证
 
-| status | 名称                 | 处理                                    |
-| ------ | -------------------- | --------------------------------------- |
-| 4101   | SOURCE_REJECTED      | 来源/权限不符                           |
-| 4102   | PROTOCOL_UNSUPPORTED | 更新Web和插件                           |
-| 4103   | PAYLOAD_INVALID      | 字段/digest/尺寸/内容不合法             |
-| 4104   | IMAGE_UNSUPPORTED    | 使用现有复制流程                        |
-| 4105   | STORAGE_UNAVAILABLE  | 检查配额/损坏记录；先检查后台再明确清理 |
-| 4106   | TASK_BUSY            | 不替换或重复执行                        |
-| 4107   | TASK_EXPIRED         | 重新准备                                |
-| 4108   | TARGET_REQUIRED      | 登录/选择账号并确认                     |
-| 4109   | PAGE_UNSUPPORTED     | 页面能力缺失，使用复制                  |
-| 4110   | EDITOR_NOT_EMPTY     | 停止覆盖                                |
-| 4111   | STEP_TIMEOUT         | 就绪/导航超时，执行任务转uncertain      |
-| 4112   | RESULT_UNCERTAIN     | 检查后台后明确丢弃，禁止自动重放        |
-| 4113   | SOURCE_CHANGED       | Web重新准备快照（当前显示本地错误）     |
-| 4114   | REQUEST_CONFLICT     | 同ID不同内容/目标任务变化               |
+现有错误码4101至4114继续用于来源、协议、字段/HTML/摘要/尺寸、图片、存储、任务忙、到期、目标、页面、非空编辑器、超时、结果不确定、源变化和请求冲突。仅必要失败响应和后台一次性提示对用户可见，不维护发送状态页面。
 
-共享契约检查覆盖来源、严格字段/动作、标题码点、digest、UTF8尺寸、受控HTML/媒体和空内容。它不启动浏览器。实际来源权限、ID安装、MAIN世界、导航、标题内部状态及保存保真仍由人类验收。
+共享契约检查覆盖严格字段/已删除动作、协议1拒绝、选择目标参数、元信息无阶段、来源、Unicode标题、digest、尺寸、HTML/媒体及空正文。静态检查不启动浏览器，真实来源权限、Chrome面板、导航、标题状态、插入与手动保存仍由人类验收。

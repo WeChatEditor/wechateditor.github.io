@@ -3,7 +3,7 @@ import { parseFragment, type DefaultTreeAdapterMap } from 'parse5'
 z.config({ jitless: true })
 export const extensionId = 'imiclghaaoleoggfhfdbanmaehamnpmg'
 
-export const protocolVersion = 1 as const
+export const protocolVersion = 2 as const
 export const profile = 'wechat-editor-text@1-candidate' as const
 export const maxMessageBytes = 2 * 1024 * 1024
 export const taskTtl = 24 * 60 * 60 * 1000
@@ -50,38 +50,27 @@ export const payloadSchema = z.strictObject({
   plainText: z.string().trim().min(1).max(maxMessageBytes),
   profile: z.literal(profile),
   digest: z.string().regex(/^[a-f0-9]{64}$/),
-  replaceTaskId: z.uuid().optional(),
 })
 export type TransferPayload = z.infer<typeof payloadSchema>
 const envelope = { protocolVersion: z.literal(protocolVersion), requestId: z.uuid() }
 export const externalRequestSchema = z.discriminatedUnion('kind', [
-  z.strictObject({ ...envelope, kind: z.literal('PING') }),
   z.strictObject({ ...envelope, kind: z.literal('SUBMIT_TASK'), payload: payloadSchema }),
-  z.strictObject({
-    ...envelope,
-    kind: z.literal('GET_STATUS'),
-    taskId: z.uuid().optional(),
-    receiptRequestId: z.uuid().optional(),
-  }),
+  z.strictObject({ ...envelope, kind: z.literal('OPEN_PANEL') }),
   z.strictObject({ ...envelope, kind: z.literal('OPEN_WECHAT') }),
-  z.strictObject({ ...envelope, kind: z.literal('CANCEL_TASK'), taskId: z.uuid() }),
 ])
 export type ExternalRequest = z.infer<typeof externalRequestSchema>
 export const internalRequestSchema = z.discriminatedUnion('kind', [
-  z.strictObject({ kind: z.literal('STATUS') }),
+  z.strictObject({ kind: z.literal('ARTICLE') }),
   z.strictObject({ kind: z.literal('TARGETS') }),
   z.strictObject({ kind: z.literal('OPEN_WEB') }),
   z.strictObject({ kind: z.literal('OPEN_PANEL') }),
   z.strictObject({ kind: z.literal('PAGE_ACTIVITY') }),
   z.strictObject({ kind: z.literal('OPEN_WECHAT') }),
   z.strictObject({
-    kind: z.literal('START_INSERT'),
-    taskId: z.uuid(),
+    kind: z.literal('SELECT_TARGET'),
     tabId: integer,
     account: z.string().min(1).max(200),
   }),
-  z.strictObject({ kind: z.literal('CANCEL_TASK'), taskId: z.uuid(), inspected: z.boolean() }),
-  z.strictObject({ kind: z.literal('CLEAR_STORAGE'), inspected: z.literal(true) }),
 ])
 export type InternalRequest = z.infer<typeof internalRequestSchema>
 export const phaseSchema = z.enum([
@@ -119,13 +108,14 @@ export const responseSchema = z
       context.addIssue({ code: 'custom', message: '响应成功/失败字段不一致' })
   })
 export type TransferResponse = z.infer<typeof responseSchema>
-export const handshakeSchema = z.strictObject({
-  extensionVersion: z.string(),
-  supportedProtocolVersions: z.array(z.literal(1)),
-  capabilities: z.array(z.literal('text-transfer')),
+export const articleInfoSchema = z.strictObject({ title: titleSchema, receivedAt: integer })
+export const articleResponseSchema = z.strictObject({ article: articleInfoSchema.nullable() })
+export const targetSelectionSchema = z.strictObject({
+  tabId: integer,
+  account: z.string().min(1).max(200),
 })
-export const statusSchema = z.strictObject({ task: taskSummarySchema.nullable() })
 export const targetsSchema = z.strictObject({
+  selected: targetSelectionSchema.nullable(),
   targets: z.array(
     z.strictObject({
       tabId: integer,
@@ -142,6 +132,10 @@ export const internalResponseSchema = z.strictObject({
   status: integer,
   data: z.unknown().optional(),
   err: z.string().optional(),
+})
+export const transferNoticeSchema = z.strictObject({
+  kind: z.literal('TRANSFER_NOTICE'),
+  message: z.string().max(500),
 })
 
 export function utf8Bytes(value: unknown): number {
@@ -162,7 +156,6 @@ export async function contentDigest(payload: Omit<TransferPayload, 'digest'>): P
     payload.sourceRevision,
     payload.sourceGeneration,
     payload.createdAt,
-    payload.replaceTaskId ?? null,
   ])
   const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical))
   return Array.from(new Uint8Array(buffer), function hex(byte) {

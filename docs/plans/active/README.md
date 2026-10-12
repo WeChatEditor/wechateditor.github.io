@@ -1,5 +1,7 @@
 # 活动计划
 
+- [公众号一键传稿交互简化](2026-10-12-wechat-transfer-simplification.md)：0.1.3一键自动新建插入、默认账号和紧凑界面，工程检查通过，待人工验收。
+
 - [公众号首页账号名称识别修正](2026-10-12-wechat-account-detection.md)：支持首页及其他后台名称class，交付0.1.2，待复验。
 
 - [Web 与 Chrome 轻量传稿插件实施计划](2026-10-11-wechat-transfer-extension.md)：工程实现与安装包已准备，实际公众号/Chrome待人类验收；文字首版、手动保存。

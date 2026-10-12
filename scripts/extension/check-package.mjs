@@ -45,6 +45,18 @@ assert.ok(
 assert.equal(JSON.stringify(manifest).includes('127.0.0.1'), false)
 assert.equal(JSON.stringify(manifest).includes('localhost'), false)
 assert.equal(manifest.content_security_policy.extension_pages.includes('unsafe-eval'), false)
+assert.deepEqual(manifest.web_accessible_resources, [
+  { resources: ['logo.png'], matches: ['https://mp.weixin.qq.com/*'] },
+])
+assert.deepEqual(manifest.icons, { 32: 'logo-32.png', 192: 'logo.png' })
+for (const [name, size] of [
+  ['logo-32.png', 32],
+  ['logo.png', 192],
+]) {
+  const png = readFileSync(join(root, 'dist/production', name))
+  assert.equal(png.readUInt32BE(16), size)
+  assert.equal(png.readUInt32BE(20), size)
+}
 for (const script of ['worker.js', 'content.js', 'popup.js']) {
   const metadata = JSON.parse(
     readFileSync(join(root, 'dist/production', script.replace('.js', '.meta.json')), 'utf8'),
@@ -83,6 +95,8 @@ assert.deepEqual(
     'popup.html',
     'popup.js',
     'worker.js',
+    'logo.png',
+    'logo-32.png',
   ].sort(),
 )
 for (const [name, bytes] of Object.entries(files))

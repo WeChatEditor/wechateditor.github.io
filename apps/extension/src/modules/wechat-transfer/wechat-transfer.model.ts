@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { payloadSchema, taskSummarySchema } from '@jlab-wechat-editor/wechat-transfer-contract'
+import {
+  payloadSchema,
+  taskSummarySchema,
+  targetSelectionSchema,
+} from '@jlab-wechat-editor/wechat-transfer-contract'
 
 export const taskSchema = taskSummarySchema.extend({
   payload: payloadSchema.optional(),
@@ -16,7 +20,8 @@ export const receiptSchema = z.strictObject({
   task: taskSummarySchema,
 })
 export const repositorySchema = z.strictObject({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
+  selected: targetSelectionSchema.nullable(),
   task: taskSchema.nullable(),
   receipts: z.array(receiptSchema).max(100),
 })

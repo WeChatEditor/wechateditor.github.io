@@ -11,6 +11,8 @@ import {
   maxMessageBytes,
   payloadSchema,
   profile,
+  protocolVersion,
+  articleResponseSchema,
   titleSchema,
   TransferError,
   responseSchema,
@@ -48,7 +50,7 @@ test('only explicit project path and development origins can connect', function 
 })
 test('schemas reject unknown fields and external write commands', function () {
   const message = {
-    protocolVersion: 1,
+    protocolVersion,
     requestId: crypto.randomUUID(),
     kind: 'SUBMIT_TASK',
     payload: payload(),
@@ -61,18 +63,44 @@ test('schemas reject unknown fields and external write commands', function () {
     internalRequestSchema.safeParse({ kind: 'CLEAR_STORAGE', inspected: false }).success,
     false,
   )
+  for (const kind of ['PING', 'GET_STATUS', 'CANCEL_TASK'])
+    assert.equal(
+      externalRequestSchema.safeParse({ protocolVersion, requestId: crypto.randomUUID(), kind })
+        .success,
+      false,
+    )
+  for (const kind of ['STATUS', 'START_INSERT', 'CANCEL_TASK', 'CLEAR_STORAGE'])
+    assert.equal(internalRequestSchema.safeParse({ kind }).success, false)
+  assert.ok(
+    internalRequestSchema.safeParse({ kind: 'SELECT_TARGET', tabId: 3, account: '公众号' }).success,
+  )
+  assert.equal(
+    internalRequestSchema.safeParse({ kind: 'SELECT_TARGET', tabId: -1, account: '' }).success,
+    false,
+  )
+  assert.equal(externalRequestSchema.safeParse({ ...message, protocolVersion: 1 }).success, false)
 })
 test('responses distinguish success and failure without mixed fields', function () {
-  const envelope = { protocolVersion: 1, requestId: crypto.randomUUID() }
+  const envelope = { protocolVersion, requestId: crypto.randomUUID() }
   assert.ok(responseSchema.safeParse({ ...envelope, status: 0, data: { task: null } }).success)
   assert.ok(responseSchema.safeParse({ ...envelope, status: 4103, err: '无效内容' }).success)
   for (const response of [
     { ...envelope, status: 0, err: '失败' },
     { ...envelope, status: 4103 },
     { ...envelope, status: 4103, err: '失败', data: {} },
-    { ...envelope, protocolVersion: 2, status: 0 },
+    { ...envelope, protocolVersion: 1, status: 0 },
   ])
     assert.equal(responseSchema.safeParse(response).success, false)
+  assert.ok(
+    articleResponseSchema.safeParse({ article: { title: '当前文章', receivedAt: Date.now() } })
+      .success,
+  )
+  assert.equal(
+    articleResponseSchema.safeParse({
+      article: { title: '文章', receivedAt: Date.now(), phase: 'inserted' },
+    }).success,
+    false,
+  )
 })
 
 test('title uses Unicode codepoints, trim, nonempty and 64 guard', function () {
@@ -80,7 +108,7 @@ test('title uses Unicode codepoints, trim, nonempty and 64 guard', function () {
   assert.equal(titleSchema.safeParse('😀'.repeat(65)).success, false)
   assert.equal(titleSchema.safeParse('  ').success, false)
 })
-test('digest binds content, output generation and explicit replacement', async function () {
+test('digest binds current content and output generation', async function () {
   const source = payload()
   const original = await contentDigest(source)
   assert.equal(original, await contentDigest(source))
@@ -88,7 +116,7 @@ test('digest binds content, output generation and explicit replacement', async f
     { ...source, title: '更改标题' },
     { ...source, html: '<p>更改正文</p>' },
     { ...source, sourceGeneration: 4 },
-    { ...source, replaceTaskId: crypto.randomUUID() },
+    { ...source, createdAt: source.createdAt + 1 },
   ])
     assert.notEqual(original, await contentDigest(other))
 })

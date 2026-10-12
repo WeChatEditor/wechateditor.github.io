@@ -23,12 +23,10 @@ import {
 } from '../wechat-page/wechat-page.service'
 import {
   executionPhases,
-  summary,
   type TransferRepository,
   type TransferTask,
 } from './wechat-transfer.model'
 import {
-  clearRepository,
   readRepository,
   receiveTask,
   synchronize,
@@ -49,7 +47,7 @@ async function repository(): Promise<TransferRepository> {
   if (startupFailed)
     throw new TransferError(
       errors.STORAGE_UNAVAILABLE,
-      '插件存储初始化失败，请检查后台后在插件清空任务存储',
+      '插件存储初始化失败，请重新安装插件后从编辑器发送，Web原稿仍保留',
     )
   const state = await readRepository()
   synchronize(state)
@@ -58,7 +56,7 @@ async function repository(): Promise<TransferRepository> {
 }
 function requireTask(state: TransferRepository, id: string): TransferTask {
   if (!state.task || state.task.id !== id)
-    throw new TransferError(errors.REQUEST_CONFLICT, '任务已经变化，请刷新状态')
+    throw new TransferError(errors.REQUEST_CONFLICT, '任务已经变化，请重新发送当前内容')
   return state.task
 }
 async function phase(
@@ -101,9 +99,11 @@ async function runTask(
 ): Promise<void> {
   let applying = false
   let sideEffects = false
+  let noticeTab = selectedTab
   try {
     sideEffects = true
     let tabId = await duplicateTarget(selectedTab, account)
+    noticeTab = tabId
     await phase(id, attempt, 'creating', '独立后台标签已打开，正在进入草稿箱', { tabId, account })
     const deadline = Date.now() + 30000
     let drafts = false
@@ -116,6 +116,7 @@ async function runTask(
       const child = await childTab(tabId)
       if (child !== undefined) {
         tabId = child
+        noticeTab = tabId
         await phase(id, attempt, 'waiting_editor', '新建页面已打开', { tabId, account })
       }
       let inspected
@@ -127,7 +128,7 @@ async function runTask(
       }
       const page = inspected.page
       if (Date.now() >= deadline)
-        throw new TransferError(errors.STEP_TIMEOUT, '等待新建编辑器超时，请检查后台后明确丢弃')
+        throw new TransferError(errors.STEP_TIMEOUT, '等待新建编辑器超时，请检查后台')
       if (page.account && page.account !== account)
         throw new TransferError(errors.TARGET_REQUIRED, '公众号账号已变化，已停止')
       if (!page.account) {
@@ -184,6 +185,12 @@ async function runTask(
     if (!result.applied || !result.matches)
       throw new TransferError(errors.RESULT_UNCERTAIN, result.message)
     await phase(id, attempt, 'inserted', '已插入，请检查排版并手动保存')
+    await chrome.tabs
+      .sendMessage(noticeTab, {
+        kind: 'TRANSFER_NOTICE',
+        message: '已插入，请检查排版并手动保存',
+      })
+      .catch(function pageClosed() {})
   } catch (error) {
     try {
       await phase(
@@ -191,69 +198,101 @@ async function runTask(
         attempt,
         applying || sideEffects ? 'uncertain' : 'blocked',
         applying
-          ? '可能已经写入，请检查后台后明确丢弃，禁止自动重试'
+          ? '可能已经写入，请检查后台，禁止自动重试'
           : error instanceof TransferError
             ? error.message
-            : '后台页面操作中断，请检查新建页面后明确丢弃，禁止自动重试',
+            : '后台页面操作中断，请检查新建页面，没有自动重试',
       )
     } catch {
       /* A cancelled or recovered attempt must never mutate its successor. */
     }
+    await chrome.tabs
+      .sendMessage(noticeTab, {
+        kind: 'TRANSFER_NOTICE',
+        message: applying
+          ? '可能已经写入，请检查当前页面；没有自动重试'
+          : error instanceof TransferError
+            ? error.message
+            : '自动插入已停止，请检查后台',
+      })
+      .catch(function pageClosed() {})
   } finally {
     if (activeAttempt === attempt) activeAttempt = undefined
   }
 }
-async function cancel(state: TransferRepository, id: string, inspected: boolean): Promise<void> {
-  const task = requireTask(state, id)
-  if (activeAttempt)
-    throw new TransferError(errors.TASK_BUSY, '正在执行，请等待完成或关闭后台标签后检查结果')
-  if ((executionPhases.has(task.phase) || task.phase === 'uncertain') && !inspected)
-    throw new TransferError(errors.RESULT_UNCERTAIN, '请先在插件确认已检查后台，再明确丢弃')
-  task.phase = 'cancelled'
-  task.message = '任务已取消'
-  delete task.payload
-  delete task.attemptId
-  delete task.account
-  delete task.documentId
-  delete task.tabId
-  synchronize(state)
-  await writeRepository(state)
+function articleInfo(task: TransferTask | null) {
+  return task ? { title: task.title, receivedAt: task.receivedAt } : null
+}
+function chooseTarget(
+  targets: Awaited<ReturnType<typeof listTargets>>,
+  selected: TransferRepository['selected'],
+) {
+  const available = targets.filter(function available(target) {
+    return Boolean(target.account) && !target.editor
+  })
+  return (
+    available.find(function previous(target) {
+      return target.tabId === selected?.tabId && target.account === selected.account
+    }) || available[0]
+  )
+}
+async function openPanel(): Promise<void> {
+  try {
+    await chrome.action.openPopup()
+  } catch {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('popup.html') })
+  }
+}
+function schedulePending(targets?: Awaited<ReturnType<typeof listTargets>>): void {
+  setTimeout(function dispatch() {
+    void startPending(targets).catch(function unavailable() {
+      // No page writes have started; the received snapshot remains available after login/refresh.
+    })
+  }, 0)
+}
+async function startPending(knownTargets?: Awaited<ReturnType<typeof listTargets>>): Promise<void> {
+  const targets = knownTargets || (await listTargets())
+  const execution = await serialized(async function acquire() {
+    const state = await repository()
+    const task = state.task
+    if (activeAttempt || !task?.payload || task.phase !== 'pending') return
+    const target = chooseTarget(targets, state.selected)
+    if (!target) return
+    state.selected = { tabId: target.tabId, account: target.account }
+    task.phase = 'creating'
+    task.message = '即将独立新建图文'
+    task.attemptId = crypto.randomUUID()
+    task.tabId = target.tabId
+    task.account = target.account
+    synchronize(state)
+    await writeRepository(state)
+    activeAttempt = task.attemptId
+    return { id: task.id, attempt: task.attemptId, tabId: target.tabId, account: target.account }
+  })
+  if (execution) await runTask(execution.id, execution.attempt, execution.tabId, execution.account)
 }
 async function external(request: ExternalRequest) {
-  if (request.kind === 'PING')
-    return {
-      extensionVersion: chrome.runtime.getManifest().version,
-      supportedProtocolVersions: [1],
-      capabilities: ['text-transfer'],
-    }
-  const state = await repository()
-  if (request.kind === 'GET_STATUS') {
-    const receipt = request.receiptRequestId
-      ? state.receipts.find(function matching(item) {
-          return item.requestId === request.receiptRequestId
-        })
-      : undefined
-    const task =
-      receipt?.task ??
-      (state.task && (!request.taskId || state.task.id === request.taskId)
-        ? summary(state.task)
-        : null)
-    return { task }
+  if (request.kind === 'OPEN_PANEL') {
+    await openPanel()
+    return {}
   }
   if (request.kind === 'OPEN_WECHAT') {
     await openWechat()
     return {}
   }
-  if (request.kind === 'CANCEL_TASK') {
-    await cancel(state, request.taskId, false)
-    return { task: state.task && summary(state.task) }
-  }
   validateTextHtml(request.payload.html)
   if ((await contentDigest(request.payload)) !== request.payload.digest)
-    throw new TransferError(errors.PAYLOAD_INVALID, '内容摘要不匹配，请重新准备传稿')
+    throw new TransferError(errors.PAYLOAD_INVALID, '内容摘要不匹配，请重新点击发送')
+  const state = await repository()
+  const duplicate = state.receipts.some(function received(receipt) {
+    return receipt.requestId === request.requestId
+  })
+  if (activeAttempt && !duplicate)
+    throw new TransferError(errors.TASK_BUSY, '正在插入上一份内容，请稍后再发送')
   const task = receiveTask(state, request.requestId, request.payload)
   await writeRepository(state)
-  return { task: summary(task) }
+  if (!duplicate) schedulePending()
+  return { article: articleInfo(task) }
 }
 async function internal(request: InternalRequest, sender: chrome.runtime.MessageSender) {
   if (request.kind === 'PAGE_ACTIVITY') {
@@ -265,7 +304,7 @@ async function internal(request: InternalRequest, sender: chrome.runtime.Message
       (!state.task.documentId || state.task.documentId === sender.documentId)
     ) {
       state.task.phase = 'uncertain'
-      state.task.message = '检测到用户操作后台页面，已停止后续自动操作，请检查后台'
+      state.task.message = '检测到后台编辑，已停止自动插入，请检查当前页面'
       delete state.task.attemptId
       synchronize(state)
       await writeRepository(state)
@@ -273,10 +312,9 @@ async function internal(request: InternalRequest, sender: chrome.runtime.Message
     return {}
   }
   if (request.kind === 'OPEN_PANEL') {
-    await chrome.action.openPopup()
+    await openPanel()
     return {}
   }
-  if (request.kind === 'TARGETS') return { targets: await listTargets() }
   if (request.kind === 'OPEN_WEB') {
     await openWeb()
     return {}
@@ -285,47 +323,23 @@ async function internal(request: InternalRequest, sender: chrome.runtime.Message
     await openWechat()
     return {}
   }
-  if (request.kind === 'CLEAR_STORAGE') {
-    if (activeAttempt) throw new TransferError(errors.TASK_BUSY, '执行中无法清空，请先等待任务结束')
-    await startup
-    await chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' })
-    await clearRepository()
-    startupFailed = false
-    return { task: null }
-  }
   const state = await repository()
-  if (request.kind === 'STATUS') return { task: state.task && summary(state.task) }
-  if (request.kind === 'CANCEL_TASK') {
-    await cancel(state, request.taskId, request.inspected)
-    return { task: state.task && summary(state.task) }
+  if (request.kind === 'ARTICLE') return { article: articleInfo(state.task) }
+  if (request.kind === 'TARGETS') {
+    const targets = await listTargets()
+    const target = chooseTarget(targets, state.selected)
+    state.selected = target ? { tabId: target.tabId, account: target.account } : null
+    await writeRepository(state)
+    schedulePending(targets)
+    return { targets, selected: state.selected }
   }
-  const task = requireTask(state, request.taskId)
-  if (
-    !task.payload ||
-    !['pending', 'waiting_login', 'waiting_target'].includes(task.phase) ||
-    activeAttempt
-  )
-    throw new TransferError(errors.TASK_BUSY, '此任务不能再次自动执行，请检查后台后丢弃并重新发送')
   const target = await inspectPage(request.tabId)
   if (!target.page.account || target.page.account !== request.account || target.page.editor)
-    throw new TransferError(
-      errors.TARGET_REQUIRED,
-      '请选择已登录的后台首页或草稿箱，并确认显示的账号',
-    )
-  task.phase = 'creating'
-  task.message = '即将独立新建图文'
-  task.attemptId = crypto.randomUUID()
-  task.tabId = request.tabId
-  task.account = request.account
-  synchronize(state)
+    throw new TransferError(errors.TARGET_REQUIRED, '公众号页面已变化，请刷新后选择可用账号')
+  state.selected = { tabId: request.tabId, account: request.account }
   await writeRepository(state)
-  activeAttempt = task.attemptId
-  const attempt = task.attemptId
-  // Dispatch after durable acknowledgement. All mutations still use the single queue.
-  setTimeout(function execute() {
-    void runTask(task.id, attempt, request.tabId, request.account)
-  }, 0)
-  return { task: summary(task) }
+  schedulePending()
+  return {}
 }
 function extensionUi(sender: chrome.runtime.MessageSender): boolean {
   return sender.id === chrome.runtime.id && sender.url === chrome.runtime.getURL('popup.html')
@@ -341,6 +355,7 @@ export function registerTransferWorker(): void {
       delete state.task.account
       delete state.task.documentId
       delete state.task.tabId
+      delete state.task.payload
     }
     synchronize(state)
     await writeRepository(state)
@@ -406,10 +421,10 @@ export function registerTransferWorker(): void {
           (!extensionUi(sender) &&
             !(
               content &&
-              ['STATUS', 'OPEN_WEB', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(parsed.data.kind)
+              ['ARTICLE', 'OPEN_WEB', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(parsed.data.kind)
             ))
         )
-          throw new TransferError(errors.SOURCE_REJECTED, '只允许插件面板启动或清理任务')
+          throw new TransferError(errors.SOURCE_REJECTED, '只允许插件面板选择公众号')
         respond({ status: 0, data: await internal(parsed.data, sender) })
       } catch (error) {
         respond({

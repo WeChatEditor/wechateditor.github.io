@@ -282,14 +282,6 @@ onBeforeUnmount(function cleanup() {
         :title="store.transferTitle"
         :state="store.transferState"
         :disabled="disabled || ['preparing', 'copying'].includes(store.copyState)"
-        :warning="store.transferWarning"
-        :replace="store.transferReplace"
-        @title="store.transferTitle = $event"
-        @replace="store.transferReplace = $event"
-        @submit="store.submitTransfer"
-        @connect="store.connectTransfer"
-        @retry="store.retryTransfer"
-        @cancel="store.cancelTransfer"
         @copy="copy"
       />
     </el-drawer>

@@ -1,5 +1,9 @@
-# 桀士排版轻量传稿插件
+# 桀士排版·公众号助手
 
-Chrome MV3、版本0.1.2、稳定ID `imiclghaaoleoggfhfdbanmaehamnpmg`。支持首页weui-desktop_name及其他后台页面acount_box-nickname账号名称。Web写作，插件接收文字快照并在用户确认账号后独立新建图文、插入；用户检查后手动保存。含图使用原复制流程。实际流程仍待人类验收。
+Chrome MV3轻量传稿插件，0.1.3、协议2。Web点击“发送到公众号”即提交当前文字排版并自动新建插入；用户检查后手动保存。
 
-根目录执行`pnpm package:extension`输出production unpacked和ZIP；`pnpm build:extension:dev`输出支持127.0.0.1:5175/4175的development。两者同ID只装一份。安装、更新、恢复、人工验收见[指南](../../docs/guides/wechat-transfer-extension.md)，实现边界见[设计](../../docs/design/wechat-transfer-extension.md)。
+pnpm package:extension生成dist/production和dist/jlab-wechat-transfer-0.1.3.zip；pnpm build:extension:dev生成dist/development。生产/开发稳定ID一致，只安装一份，Web和插件需同时更新。
+
+插件使用已选有效公众号或第一个可用账号；无账号时登录后台后点击下拉右侧刷新图标自动继续。界面有logo和并排小导航按钮，没有确认checkbox、启动/取消/恢复清理或发送状态轮询。内部去重、独立空图文及中断不重放保护保留。
+
+见[安装与人工验收](../../docs/guides/wechat-transfer-extension.md)、[设计](../../docs/design/wechat-transfer-extension.md)、[协议](../../docs/reference/wechat-transfer-protocol.md)。工程构建不代表实际公众号插入/保存通过。

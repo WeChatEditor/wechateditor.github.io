@@ -1,4 +1,5 @@
 import {
+  payloadSchema,
   errors,
   taskTtl,
   TransferError,
@@ -8,19 +9,53 @@ import {
   executionPhases,
   repositorySchema,
   summary,
+  taskSchema,
   type TransferRepository,
   type TransferTask,
 } from './wechat-transfer.model'
+import { z } from 'zod'
+
+const legacyRepositorySchema = repositorySchema
+  .omit({ schemaVersion: true, selected: true })
+  .extend({
+    schemaVersion: z.literal(1),
+    task: taskSchema
+      .extend({
+        payload: payloadSchema.extend({ replaceTaskId: z.uuid().optional() }).optional(),
+      })
+      .nullable(),
+  })
 
 const key = 'wechat-transfer:repository:v1'
 export async function readRepository(): Promise<TransferRepository> {
   const value = (await chrome.storage.local.get(key))[key]
-  if (value === undefined) return { schemaVersion: 1, task: null, receipts: [] }
-  const parsed = repositorySchema.safeParse(value)
+  if (value === undefined) return { schemaVersion: 2, selected: null, task: null, receipts: [] }
+  // Retain old receipts, but never execute a snapshot sent under the previous interaction.
+  const legacy = legacyRepositorySchema.safeParse(value)
+  const migrated = legacy.success
+    ? {
+        ...legacy.data,
+        schemaVersion: 2,
+        selected: null,
+        task: legacy.data.task
+          ? {
+              ...legacy.data.task,
+              payload: undefined,
+              attemptId: undefined,
+              tabId: undefined,
+              documentId: undefined,
+              account: undefined,
+              phase: 'blocked',
+              message: '插件已更新，请从编辑器重新发送当前内容',
+            }
+          : null,
+      }
+    : value
+  const parsed = repositorySchema.safeParse(migrated)
   if (!parsed.success)
     throw new TransferError(
       errors.STORAGE_UNAVAILABLE,
-      '任务存储格式无法识别，请检查后台后在插件中清空任务',
+      '插件存储格式无法识别，请重新安装插件后从编辑器发送；Web原稿仍保留',
     )
   return parsed.data
 }
@@ -37,18 +72,7 @@ export function synchronize(repository: TransferRepository): void {
     return receipt.expiresAt > now
   })
   if (repository.task && now - repository.task.receivedAt >= taskTtl) {
-    if (executionPhases.has(repository.task.phase) || repository.task.phase === 'uncertain') {
-      repository.task.phase = 'uncertain'
-      repository.task.message = '任务执行记录已过期，请检查后台并明确丢弃；禁止自动重试'
-      repository.task.title = '过期任务（请检查后台）'
-      delete repository.task.payload
-      delete repository.task.account
-      delete repository.task.documentId
-      delete repository.task.tabId
-      delete repository.task.attemptId
-    } else {
-      repository.task = null
-    }
+    repository.task = null
   }
   const task = repository.task
   if (task) {
@@ -75,17 +99,14 @@ export function receiveTask(
   if (Date.now() - payload.createdAt > taskTtl || payload.createdAt > Date.now() + 60000)
     throw new TransferError(errors.TASK_EXPIRED, '快照时间无效或已过期，请重新准备')
   const current = repository.task
-  if (current && (executionPhases.has(current.phase) || current.phase === 'uncertain'))
-    throw new TransferError(errors.TASK_BUSY, '当前任务执行中或结果不确定，请先在插件检查后台')
-  if (current?.payload && payload.replaceTaskId !== current.id)
-    throw new TransferError(errors.TASK_BUSY, '已有待传快照，请明确替换或先取消')
-  if (payload.replaceTaskId && current?.id !== payload.replaceTaskId)
-    throw new TransferError(errors.REQUEST_CONFLICT, '待替换任务已变化，请刷新状态')
+  if (current && executionPhases.has(current.phase))
+    throw new TransferError(errors.TASK_BUSY, '正在插入上一份内容，请稍后再发送')
   if (repository.receipts.length >= 100)
     throw new TransferError(errors.TASK_BUSY, '24小时内任务数量已达保护上限，请稍后再试')
   if (current?.payload) {
     current.phase = 'cancelled'
-    current.message = '已被用户明确替换'
+    current.message = '已被本次发送替换'
+    delete current.payload
     synchronize(repository)
   }
   const task: TransferTask = {
@@ -94,7 +115,7 @@ export function receiveTask(
     title: payload.title,
     receivedAt: Date.now(),
     phase: 'pending',
-    message: '快照已接收，请在插件选择公众号并开始插入',
+    message: '当前内容已接收，将自动新建并插入',
     payload,
   }
   repository.task = task
@@ -105,7 +126,4 @@ export function receiveTask(
     task: summary(task),
   })
   return task
-}
-export async function clearRepository(): Promise<void> {
-  await chrome.storage.local.remove(key)
 }
