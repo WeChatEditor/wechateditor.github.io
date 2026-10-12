@@ -1,6 +1,6 @@
 # 活动计划
 
-- [公众号首页账号名称识别修正](2026-10-12-wechat-account-detection.md)：维护者确认当前名称class，修复缺失候选并交付0.1.1，待复验。
+- [公众号首页账号名称识别修正](2026-10-12-wechat-account-detection.md)：支持首页及其他后台名称class，交付0.1.2，待复验。
 
 - [Web 与 Chrome 轻量传稿插件实施计划](2026-10-11-wechat-transfer-extension.md)：工程实现与安装包已准备，实际公众号/Chrome待人类验收；文字首版、手动保存。
 

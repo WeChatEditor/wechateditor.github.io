@@ -20,3 +20,7 @@ change_type: fix
 验证：冻结严格peer安装、pnpm format及format:check、Lint（0错误，现行240个Vue排版警告）、typecheck、模块/文档、生产package/开发build、ID/权限/来源/ZIP检查、归档CI NOT_DUE及git diff --check通过。没有前端单元、组件或浏览器自动化；浏览器受站点策略阻断后未绕过。未核验真实识别成功、正文写入或保存，未推送。
 
 交接：原安装目录已更新，用户在扩展管理页重新加载并核对0.1.1，再刷新公众号、刷新目标能力。复验结果仍待用户；日志和计划pending_human_acceptance。真实关联提交由此文件Git历史定位，不记录后台URL/账号内容。
+
+后续指令：维护者明确首页使用weui-desktop_name，其他页面使用acount_box-nickname。按原样加入精确候选，不纠正其实际class拼写、不依赖猜测的URL；可见性/唯一性及账号复核不变。交付版本0.1.2，继续同一修正计划。该轮起点工作区/暂存为空，归档NOT_DUE；没有再次访问被站点策略阻断的页面。构建/静态验证及复验边界在收尾补充。
+
+0.1.2收尾：统一账号识别加入.acount_box-nickname，与.weui-desktop_name共同作用于探测、导航及写入前后复核。manifest版本、稳定ID/权限/来源、生产/开发构建和ZIP一致性检查通过；格式、Lint（0错误，240个现行警告）、类型、模块/文档、diff及归档CI NOT_DUE通过。未改契约/依赖/模块登记，未创建前端测试或读取被阻断后台；人类跨页面复验待进行。真实修复提交由本记录Git历史定位，继续pending_human_acceptance。

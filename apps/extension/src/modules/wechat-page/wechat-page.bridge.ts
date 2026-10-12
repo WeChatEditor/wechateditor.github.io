@@ -17,7 +17,7 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
   function accountName(): string {
     const names = [
       ...document.querySelectorAll(
-        '.weui-desktop_name, .weui-desktop-account__nickname, .account_nickname, #account_nickname',
+        '.weui-desktop_name, .acount_box-nickname, .weui-desktop-account__nickname, .account_nickname, #account_nickname',
       ),
     ]
       .filter(visible)
