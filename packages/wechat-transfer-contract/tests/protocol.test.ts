@@ -105,6 +105,24 @@ test('responses distinguish success and failure without mixed fields', function 
   )
 })
 
+test('autosave accepts a complete snapshot without execution or clipboard read commands', function () {
+  const message = {
+    protocolVersion,
+    requestId: crypto.randomUUID(),
+    kind: 'SAVE_ARTICLE',
+    payload: payload(),
+  }
+  assert.ok(externalRequestSchema.safeParse(message).success)
+  for (const invalid of [
+    { ...message, payload: undefined },
+    { ...message, payload: { ...message.payload, digest: '' } },
+    { ...message, start: true },
+    { ...message, payload: { ...message.payload, replaceTaskId: crypto.randomUUID() } },
+  ])
+    assert.equal(externalRequestSchema.safeParse(invalid).success, false)
+  assert.equal(internalRequestSchema.safeParse(message).success, false)
+})
+
 test('title uses Unicode codepoints, trim, nonempty and 64 guard', function () {
   assert.equal(titleSchema.parse(` ${'😀'.repeat(64)} `), '😀'.repeat(64))
   assert.equal(titleSchema.safeParse('😀'.repeat(65)).success, false)

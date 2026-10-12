@@ -16,6 +16,8 @@ apps/extension/src/modules/extension-shell公开service挂载popup和公众号cl
 
 Popup增加“复制到公众号”和“复制标题”，用户点击时才读取COPY_ARTICLE当前快照，正文不交给公众号content或Web。可信点击内直接调用剪贴板write，ClipboardItem的异步HTML/纯文字来自同一次快照读取，保留排版；标题复制仅纯文字。复制反馈等到write成功，缺失/过期或权限/能力失败显示错误，不降级或触发自动重试。成功、失败和中断后均可复制，无需回编辑器。
 
+元信息和COPY_ARTICLE读取最新成功自动保存或手动发送的独立clipboard快照，面板显示“已保存内容”。缺失内容提示等待Web修改后的自动保存或手动发送；自动同步不写系统剪贴板、不打开面板或后台，面板不新增同步/发送状态查询。
+
 浮层仍报告外部可信pointerdown/keydown/input活动供worker阻断匹配写入竞态，不含正文/URL/账号。content不能选择账号；OPEN_PANEL受Chrome策略限制时打开本地面板标签。收起浮层不影响已授权执行。
 
 格式/Lint/类型/构建允许；logo布局、默认选择、登录后继续、键盘、Chrome面板与后台结果提示由人类验收，无前端自动化。

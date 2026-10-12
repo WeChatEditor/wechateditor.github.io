@@ -21,4 +21,4 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。源码同步到组织仓库后，GitHub Pages工作流自动检查并部署Web。维护者确认地址为[在线应用](https://wechateditor.github.io/)，执行边界见[静态部署](docs/guides/static-deployment.md)。
 
-可选Chrome轻量传稿插件0.1.4提供Web一键发送，接收当前文字排版后优先打开后台尝试独立新建插入；未完成时可直接从插件面板复制排版或标题，无需回编辑器。插件默认首个可用公众号、紧凑导航及logo，不检测发送状态或要求二次确认/启动。用户检查后手动保存，含图沿用编辑器复制。执行`pnpm package:extension`得到安装目录和ZIP，详见[安装与人工验收](docs/guides/wechat-transfer-extension.md)。真实公众号尚未验收，本次实现尚未推送或部署。
+可选Chrome轻量传稿插件0.1.5在Web自动保存后同步当前文字排版，可从插件面板复制排版或标题，无需手动发送。点击“发送到公众号”才打开后台尝试独立新建插入，自动同步不影响原发送任务。插件默认首个可用公众号、紧凑导航及logo，不检测发送状态或要求二次确认/启动。用户检查后手动保存，含图沿用编辑器复制。执行`pnpm package:extension`得到安装目录和ZIP，详见[安装与人工验收](docs/guides/wechat-transfer-extension.md)。实际Chrome同步和公众号流程尚待人工验收，本次实现尚未推送或部署。

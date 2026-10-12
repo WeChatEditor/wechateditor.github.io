@@ -108,8 +108,8 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
   async function loadArticle(): Promise<void> {
     const current = articleResponseSchema.parse(await send({ kind: 'ARTICLE' })).article
     article.textContent = current
-      ? `本次内容：${current.title}`
-      : '在写作工作台点击“发送到公众号”，即可传入当前内容。'
+      ? `已保存内容：${current.title}`
+      : '写作工作台自动保存或点击“发送到公众号”后，即可在这里复制排版内容。'
   }
   if (mode === 'popup') {
     async function copyArticle(titleOnly = false): Promise<void> {
@@ -117,9 +117,10 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
         throw new Error('当前浏览器无法复制排版内容，请使用桌面Chrome重新打开插件面板')
       const snapshot = send({ kind: 'COPY_ARTICLE' }).then(function received(raw) {
         const current = clipboardResponseSchema.parse(raw).article
-        if (!current) throw new Error('插件中暂无可复制内容，请先在编辑器发送文章')
+        if (!current)
+          throw new Error('插件中暂无可复制内容，请在编辑器修改并等待自动保存，或点击发送文章')
         validateTextHtml(current.html)
-        article.textContent = `本次内容：${current.title}`
+        article.textContent = `已保存内容：${current.title}`
         return current
       })
       // Start the clipboard write during the click; both formats resolve from one snapshot.

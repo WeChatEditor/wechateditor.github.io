@@ -9,4 +9,6 @@ export interface PreparedText {
 export interface TransferConnection {
   busy: boolean
   message: string
+  cacheStatus: 'idle' | 'saving' | 'saved' | 'error'
+  cacheMessage: string
 }

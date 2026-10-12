@@ -29,6 +29,7 @@ import {
 } from './wechat-transfer.model'
 import {
   readRepository,
+  receiveClipboard,
   receiveTask,
   synchronize,
   writeRepository,
@@ -220,8 +221,13 @@ async function runTask(
     if (activeAttempt === attempt) activeAttempt = undefined
   }
 }
-function articleInfo(task: TransferTask | null) {
-  return task ? { title: task.title, receivedAt: task.receivedAt } : null
+function articleInfo(article: { title: string; receivedAt: number } | null) {
+  return article ? { title: article.title, receivedAt: article.receivedAt } : null
+}
+function clipboardInfo(state: TransferRepository) {
+  return state.clipboard
+    ? { title: state.clipboard.payload.title, receivedAt: state.clipboard.receivedAt }
+    : null
 }
 function chooseTarget(
   targets: Awaited<ReturnType<typeof listTargets>>,
@@ -295,6 +301,11 @@ async function external(request: ExternalRequest) {
   if ((await contentDigest(request.payload)) !== request.payload.digest)
     throw new TransferError(errors.PAYLOAD_INVALID, '内容摘要不匹配，请重新点击发送')
   const state = await repository()
+  if (request.kind === 'SAVE_ARTICLE') {
+    receiveClipboard(state, request.payload)
+    await writeRepository(state)
+    return { article: clipboardInfo(state) }
+  }
   const duplicate = state.receipts.some(function received(receipt) {
     return receipt.requestId === request.requestId
   })
@@ -335,17 +346,17 @@ async function internal(request: InternalRequest, sender: chrome.runtime.Message
     return {}
   }
   const state = await repository()
-  if (request.kind === 'ARTICLE') return { article: articleInfo(state.task) }
+  if (request.kind === 'ARTICLE') return { article: clipboardInfo(state) }
   if (request.kind === 'COPY_ARTICLE') {
-    const payload = state.task?.payload
+    const payload = state.clipboard?.payload
     return {
       article:
-        payload && state.task
+        payload && state.clipboard
           ? {
               title: payload.title,
               html: payload.html,
               plainText: payload.plainText,
-              receivedAt: state.task.receivedAt,
+              receivedAt: state.clipboard.receivedAt,
             }
           : null,
     }

@@ -8,6 +8,7 @@ defineProps<{
   transferBusy: boolean
   disabled: boolean
   saveState: string
+  pluginSaveState: string
   saveBlocked: boolean
 }>()
 const emit = defineEmits<{
@@ -91,7 +92,7 @@ const controls = [
     <span
       class="save-status"
       :class="{ failed: saveBlocked || saveState.startsWith('保存失败') }"
-      :title="`${saveState}。数据仅保存在当前浏览器`"
+      :title="`${saveState}。${pluginSaveState}。数据仅保存在当前浏览器`"
       role="status"
       ><i aria-hidden="true" />{{ saveState }}</span
     >

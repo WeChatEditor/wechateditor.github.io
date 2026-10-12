@@ -1,6 +1,6 @@
 # 现行设计
 
-- [Web 与 Chrome 轻量传稿插件](wechat-transfer-extension.md)：Web一键提交并自动新建插入，插件默认账号/紧凑界面，无发送状态检测；手动保存，真实公众号待人工验收。
+- [Web 与 Chrome 轻量传稿插件](wechat-transfer-extension.md)：Web自动保存同步可复制快照，手动一键提交并尝试新建插入；公众号手动保存，实际功能待人工验收。
 
 - [产品](jlab-wechat-editor.md)
 - [工作台UI](jlab-wechat-editor-ui.md)

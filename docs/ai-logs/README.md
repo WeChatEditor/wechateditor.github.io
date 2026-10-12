@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [自动保存同步插件排版快照](feat/2026/10/2026-10-12-wechat-autosave-snapshot.md)
+
 - [插件内复制传稿退路](feat/2026/10/2026-10-12-wechat-plugin-copy-fallback.md)
 
 - [公众号一键传稿交互简化](refactor/2026/10/2026-10-12-wechat-transfer-simplification.md)

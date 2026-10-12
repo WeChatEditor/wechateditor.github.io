@@ -16,7 +16,7 @@ import {
 import { z } from 'zod'
 
 const legacyRepositorySchema = repositorySchema
-  .omit({ schemaVersion: true, selected: true })
+  .omit({ schemaVersion: true, selected: true, clipboard: true })
   .extend({
     schemaVersion: z.literal(1),
     task: taskSchema
@@ -29,7 +29,8 @@ const legacyRepositorySchema = repositorySchema
 const key = 'wechat-transfer:repository:v1'
 export async function readRepository(): Promise<TransferRepository> {
   const value = (await chrome.storage.local.get(key))[key]
-  if (value === undefined) return { schemaVersion: 2, selected: null, task: null, receipts: [] }
+  if (value === undefined)
+    return { schemaVersion: 2, selected: null, task: null, clipboard: null, receipts: [] }
   // Retain old receipts, but never execute a snapshot sent under the previous interaction.
   const legacy = legacyRepositorySchema.safeParse(value)
   const migrated = legacy.success
@@ -57,7 +58,17 @@ export async function readRepository(): Promise<TransferRepository> {
       errors.STORAGE_UNAVAILABLE,
       '插件存储格式无法识别，请重新安装插件后从编辑器发送；Web原稿仍保留',
     )
-  return parsed.data
+  const state = parsed.data
+  if (
+    !legacy.success &&
+    typeof value === 'object' &&
+    value !== null &&
+    !('clipboard' in value) &&
+    state.task?.payload
+  ) {
+    state.clipboard = { payload: state.task.payload, receivedAt: state.task.receivedAt }
+  }
+  return state
 }
 export async function writeRepository(repository: TransferRepository): Promise<void> {
   try {
@@ -74,6 +85,9 @@ export function synchronize(repository: TransferRepository): void {
   if (repository.task && now - repository.task.receivedAt >= taskTtl) {
     repository.task = null
   }
+  if (repository.clipboard && now - repository.clipboard.receivedAt >= taskTtl) {
+    repository.clipboard = null
+  }
   const task = repository.task
   if (task) {
     const receipt = repository.receipts.find(function matching(item) {
@@ -81,6 +95,11 @@ export function synchronize(repository: TransferRepository): void {
     })
     if (receipt) receipt.task = summary(task)
   }
+}
+export function receiveClipboard(repository: TransferRepository, payload: TransferPayload): void {
+  if (Date.now() - payload.createdAt > taskTtl || payload.createdAt > Date.now() + 60000)
+    throw new TransferError(errors.TASK_EXPIRED, '快照时间无效或已过期，请重新准备')
+  repository.clipboard = { payload, receivedAt: Date.now() }
 }
 export function receiveTask(
   repository: TransferRepository,
@@ -121,6 +140,7 @@ export function receiveTask(
     payload,
   }
   repository.task = task
+  receiveClipboard(repository, payload)
   repository.receipts.push({
     requestId,
     digest: payload.digest,

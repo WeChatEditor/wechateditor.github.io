@@ -71,7 +71,11 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const articleSaveState = ref('正在读取草稿…')
   const settingsError = ref('')
   const settingsBlocked = ref(false)
-  const saveState = computed(() => settingsError.value || articleSaveState.value)
+  const saveState = computed(
+    () =>
+      settingsError.value ||
+      `${articleSaveState.value}${transfer.state.cacheStatus === 'saved' ? ' · 插件已同步' : ''}`,
+  )
   const saveBlocked = ref(false)
   const conflictReason = ref('')
   const versions = ref<VersionSummary[]>([])
@@ -87,6 +91,8 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   const storage = createDraftStorage()
   let timer: ReturnType<typeof setTimeout> | undefined
   let copyResetTimer: ReturnType<typeof setTimeout> | undefined
+  let pluginSaveTimer: ReturnType<typeof setTimeout> | undefined
+  let disposed = false
   let saveQueue = Promise.resolve()
   let generation = 0
   let articleGeneration = 0
@@ -135,6 +141,48 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       ending: JSON.parse(JSON.stringify(ending.value)),
       assets: assets.value.map((a) => ({ ...a, blob: a.blob })),
     }
+  }
+  function canSyncPlugin(): boolean {
+    return (
+      ready.value &&
+      !disposed &&
+      !restoring.value &&
+      !conflictReason.value &&
+      !saveBlocked.value &&
+      !settingsBlocked.value &&
+      !articleDirty.value &&
+      !settingsDirty.value &&
+      !settingsError.value
+    )
+  }
+  function schedulePluginSave(delay = 450): void {
+    clearTimeout(pluginSaveTimer)
+    if (!canSyncPlugin()) return
+    pluginSaveTimer = setTimeout(function syncSavedArticle() {
+      pluginSaveTimer = undefined
+      if (!canSyncPlugin()) return
+      const currentGeneration = generation
+      const source = snapshot()
+      try {
+        const result = exportTextArticle(source)
+        void transfer.save(
+          {
+            sourceArticleId: source.article.id,
+            sourceRevision: source.article.revision,
+            sourceGeneration: currentGeneration,
+            title: preflightTextArticle(source).title || '未命名文章',
+            html: result.html,
+            plainText: result.plainText,
+          },
+          function current() {
+            return canSyncPlugin() && currentGeneration === generation
+          },
+        )
+      } catch (error) {
+        transfer.state.cacheStatus = 'error'
+        transfer.state.cacheMessage = `插件未同步，已有快照未更新：${error instanceof Error ? error.message : '无法准备排版快照'}`
+      }
+    }, delay)
   }
   async function openTransfer(): Promise<void> {
     if (['preparing', 'copying'].includes(copyState.value)) return
@@ -285,6 +333,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       saveSettings(settingsSnapshot())
       settingsDirty.value = false
       settingsError.value = ''
+      schedulePluginSave()
     } catch {
       settingsError.value =
         config.value.palettes.length > maxPalettes
@@ -299,6 +348,12 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
   function changed(): void {
     clearCopyReset()
+    clearTimeout(pluginSaveTimer)
+    pluginSaveTimer = undefined
+    transfer.state.cacheStatus = 'idle'
+    transfer.state.cacheMessage = conflictReason.value
+      ? '当前页面已锁定，插件同步已暂停'
+      : '排版有修改，等待同步插件'
     generation++
     exportResult.value = undefined
     copyState.value = 'idle'
@@ -361,6 +416,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
       if (version === articleGeneration) {
         articleSaveState.value = '已保存到本机'
         articleDirty.value = false
+        schedulePluginSave(0)
       }
       channel?.postMessage({ saved: true })
       return result.timestamp
@@ -511,6 +567,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     if (articleDirty.value && !saveBlocked.value) {
       void saveNow()
     }
+    schedulePluginSave(0)
   }
   async function deleteVersion(timestamp: number): Promise<void> {
     await historyAction(async function remove() {
@@ -683,6 +740,8 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     }
   }
   function dispose(): void {
+    disposed = true
+    clearTimeout(pluginSaveTimer)
     generation++
     exportGeneration++
     clearCopyReset()
@@ -709,6 +768,7 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     ready,
     dirty,
     saveState,
+    pluginSaveState: computed(() => transfer.state.cacheMessage),
     saveBlocked,
     conflictReason,
     settingsBlocked,

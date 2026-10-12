@@ -220,6 +220,7 @@ onBeforeUnmount(function cleanup() {
       :transfer-busy="store.transferState.busy"
       :disabled="disabled"
       :save-state="store.saveState"
+      :plugin-save-state="store.pluginSaveState"
       :save-blocked="store.saveBlocked || store.settingsBlocked"
       @config="store.setConfig"
       @drawer="toggleDrawer"

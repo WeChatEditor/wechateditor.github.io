@@ -2,7 +2,7 @@
 title: 桀士排版数据存储与文章版本
 status: accepted
 created: 2026-10-08
-updated: 2026-10-11
+updated: 2026-10-12
 owner: project maintainers
 ---
 
@@ -23,6 +23,8 @@ workspace拥有仓储编排，draft-storage.port为公共端口；adapters、wor
 | Range/抽屉/focus/复制结果/历史预览/手机缩放模式/同步滚动 | 内存                                                         | 不持久化                          |
 
 ## 保存和恢复
+
+Web本机保存成功后异步同步受控文字HTML/纯文字到插件独立clipboard快照；排版/头尾配置保存成功后450ms防抖，正文事务成功后及历史恢复完成后同步。不新增IndexedDB字段/文章版本，不移动数据所有权；初始化不自动传稿。插件不可用或校验/存储失败不影响本机保存，状态提示未同步且旧插件快照未更新。SAVE_ARTICLE不触发公众号页面操作或系统剪贴板写入，详见[插件设计](wechat-transfer-extension.md)。
 
 启动配置先校验再current，新origin无current时加载原版示例稿“把想法，排成好文章”，无历史标注素材，默认设置保留；已有current（包括空正文）优先恢复，不以正文是否为空判断首次打开。示例稿沿用修改后自动保存规则，初始化不主动创建历史版本。文章schemaVersion1，草稿schemaVersion2含writeId，配置schemaVersion1。修改配置不写current/历史；正文不写配置。主动新增版本同事务写current与versions，只含正文引用素材；同毫秒或时钟回退使用已有最大键加一，add避免覆盖。列表本地时区倒序；读取失败不冒充空列表。
 

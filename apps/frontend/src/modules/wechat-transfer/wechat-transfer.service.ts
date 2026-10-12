@@ -28,7 +28,13 @@ async function request(message: ExternalRequest): Promise<unknown> {
     throw new Error('插件未连接，请安装或启用Chrome插件；也可以使用“复制到公众号”')
   return new Promise(function transmit(resolve, reject) {
     const timer = setTimeout(function late() {
-      reject(new Error('插件应答超时，请检查后台；没有自动重试此次发送'))
+      reject(
+        new Error(
+          message.kind === 'SAVE_ARTICLE'
+            ? '插件保存应答超时，请检查插件；本机草稿不受影响'
+            : '插件应答超时，请检查后台；没有自动重试此次发送',
+        ),
+      )
     }, 5000)
     try {
       chrome.sendMessage(extensionId, message, function received(raw) {
@@ -56,32 +62,63 @@ async function request(message: ExternalRequest): Promise<unknown> {
   })
 }
 export function createTransferConnection() {
-  const state = reactive<TransferConnection>({ busy: false, message: '' })
-  async function submit(prepared: PreparedText, isCurrent: () => boolean): Promise<void> {
-    if (state.busy) return
-    state.busy = true
-    state.message = '正在发送当前内容…'
-    try {
+  const state = reactive<TransferConnection>({
+    busy: false,
+    message: '',
+    cacheStatus: 'idle',
+    cacheMessage: '排版尚未同步插件',
+  })
+  let queue = Promise.resolve()
+  function transmit(
+    kind: 'SUBMIT_TASK' | 'SAVE_ARTICLE',
+    prepared: PreparedText,
+    isCurrent: () => boolean,
+  ): Promise<void> {
+    const operation = queue.then(async function sendSnapshot() {
+      if (!isCurrent()) throw new Error('排版或正文已变化，请重新点击发送')
       validateTextHtml(prepared.html)
       const title = titleSchema.safeParse(prepared.title)
-      if (!title.success)
-        throw new Error('公众号标题不能超过64个字符，请调整正文中的一级标题后再发送')
-      const base = {
-        ...prepared,
-        title: title.data,
-        createdAt: Date.now(),
-        profile,
-      }
+      if (!title.success) throw new Error('公众号标题不能超过64个字符，请调整正文中的一级标题')
+      const base = { ...prepared, title: title.data, createdAt: Date.now(), profile }
       const payload = payloadSchema.parse({ ...base, digest: await contentDigest(base) })
       if (!isCurrent()) throw new Error('排版或正文已变化，请重新点击发送')
       articleResponseSchema.parse(
         await request({
           protocolVersion,
           requestId: crypto.randomUUID(),
-          kind: 'SUBMIT_TASK',
+          kind,
           payload,
         }),
       )
+    })
+    queue = operation.catch(function failed() {})
+    return operation
+  }
+  async function save(prepared: PreparedText, isCurrent: () => boolean): Promise<void> {
+    if (!isCurrent()) return
+    state.cacheStatus = 'saving'
+    state.cacheMessage = '正在同步排版到插件…'
+    try {
+      await transmit('SAVE_ARTICLE', prepared, isCurrent)
+      if (!isCurrent()) return
+      state.cacheStatus = 'saved'
+      state.cacheMessage = '排版已保存到插件，可在插件面板复制'
+    } catch (error) {
+      if (!isCurrent()) return
+      state.cacheStatus = 'error'
+      state.cacheMessage = `插件未同步，已有快照未更新：${error instanceof Error ? error.message : '请检查插件'}`
+    }
+  }
+  async function submit(prepared: PreparedText, isCurrent: () => boolean): Promise<void> {
+    if (state.busy) return
+    state.busy = true
+    state.message = '正在发送当前内容…'
+    try {
+      await transmit('SUBMIT_TASK', prepared, isCurrent)
+      if (isCurrent()) {
+        state.cacheStatus = 'saved'
+        state.cacheMessage = '排版已保存到插件，可在插件面板复制'
+      }
       state.message =
         '当前内容已传给插件，将打开公众号后台尝试新建并插入。如未完成，请打开插件面板“复制到公众号”，在后台粘贴并检查后手动保存。'
     } catch (error) {
@@ -90,5 +127,5 @@ export function createTransferConnection() {
       state.busy = false
     }
   }
-  return { state, submit }
+  return { state, submit, save }
 }

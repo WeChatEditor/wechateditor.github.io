@@ -23,6 +23,13 @@ export const repositorySchema = z.strictObject({
   schemaVersion: z.literal(2),
   selected: targetSelectionSchema.nullable(),
   task: taskSchema.nullable(),
+  clipboard: z
+    .strictObject({
+      payload: payloadSchema,
+      receivedAt: z.number().int().nonnegative(),
+    })
+    .nullable()
+    .default(null),
   receipts: z.array(receiptSchema).max(100),
 })
 export type TransferRepository = z.infer<typeof repositorySchema>

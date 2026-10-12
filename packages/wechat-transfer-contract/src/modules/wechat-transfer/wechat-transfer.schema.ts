@@ -55,6 +55,7 @@ export type TransferPayload = z.infer<typeof payloadSchema>
 const envelope = { protocolVersion: z.literal(protocolVersion), requestId: z.uuid() }
 export const externalRequestSchema = z.discriminatedUnion('kind', [
   z.strictObject({ ...envelope, kind: z.literal('SUBMIT_TASK'), payload: payloadSchema }),
+  z.strictObject({ ...envelope, kind: z.literal('SAVE_ARTICLE'), payload: payloadSchema }),
   z.strictObject({ ...envelope, kind: z.literal('OPEN_PANEL') }),
   z.strictObject({ ...envelope, kind: z.literal('OPEN_WECHAT') }),
 ])
