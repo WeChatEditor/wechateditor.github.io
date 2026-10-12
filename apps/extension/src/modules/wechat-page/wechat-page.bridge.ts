@@ -19,18 +19,29 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     )
   }
   function accountName(): string {
-    const names = [
+    const elements = [
       ...document.querySelectorAll(
         '.weui-desktop_name, .acount_box-nickname, .weui-desktop-account__nickname, .account_nickname, #account_nickname',
       ),
     ]
+    const names = elements
       .filter(visible)
       .map(function name(element) {
         return element.textContent?.trim() || ''
       })
       .filter(Boolean)
     const unique = [...new Set(names)]
-    return unique.length === 1 ? unique[0] : ''
+    if (unique.length) return unique.length === 1 ? unique[0] : ''
+    // A fresh editor can hide its account header. Only verify an already bound account.
+    if (
+      command.account &&
+      (command.operation === 'probe' || command.operation === 'apply') &&
+      typeof api?.invoke === 'function' &&
+      elements.length === 1 &&
+      elements[0].textContent?.trim() === command.account
+    )
+      return command.account
+    return ''
   }
   function titleInput(): HTMLInputElement | HTMLTextAreaElement | undefined {
     const inputs = [
@@ -111,7 +122,12 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
       }
     }
   } catch {
-    return { ...failed, account, message: '官方编辑接口未就绪或返回格式不支持，请稍后检查能力' }
+    return {
+      ...failed,
+      account,
+      editor: Boolean(api),
+      message: '官方编辑接口未就绪或返回格式不支持，请稍后检查能力',
+    }
   }
   const input = titleInput()
   const editor = Boolean(api)

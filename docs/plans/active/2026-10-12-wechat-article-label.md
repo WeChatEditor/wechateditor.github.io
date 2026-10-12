@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 公众号文章菜单名称识别修正
 
+维护者确认0.1.9已能打开文章新标签；未插入正文的后续问题由只读检查定位为编辑页账号节点隐藏，见[0.1.10隐藏账号修正](2026-10-12-wechat-hidden-editor-account.md)。实际正文/排版/保存尚未验收。
+
 ## 目标、授权与设计依据
 
 维护者确认草稿箱已能正确打开，但可见“文章”入口定位超时；随后主动提供创作下拉菜单HTML。菜单项li.weui-desktop-dropdown__list-ele同时含可见.weui-desktop-dropdown__list-ele__text和display:none的同名tooltip，当前controlsFor使用textContent得到“文章文章”并精确匹配失败。截图证明入口可见，所给HTML解释该结构为何不匹配；不据此声称完整新标签/正文流程已通过。

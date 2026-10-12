@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [新文章编辑页隐藏账号核对修正](fix/2026/10/2026-10-12-wechat-hidden-editor-account.md)
+
 - [公众号文章菜单名称识别修正](fix/2026/10/2026-10-12-wechat-article-label.md)
 
 - [公众号首页草稿箱菜单定位修正](fix/2026/10/2026-10-12-wechat-draft-menu.md)

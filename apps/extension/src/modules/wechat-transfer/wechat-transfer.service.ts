@@ -140,7 +140,10 @@ async function runTask(
       }
       let inspected
       try {
-        inspected = await inspectPage(tabId)
+        inspected = await inspectPage(tabId, {
+          operation: 'probe',
+          ...(step === 'editor' ? { account } : {}),
+        })
       } catch {
         await wait(500)
         continue

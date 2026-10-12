@@ -8,6 +8,8 @@ owner: project maintainers
 
 # wechat-page模块
 
+0.1.10只读probe/apply在传入已确认账号且官方invoke存在时，可核对新编辑页隐藏的唯一账号候选：没有非空可见名称、候选节点恰好一个、textContent去首尾空白后严格等于已确认账号。可见名称优先且必须唯一，冲突不回退；空值、多候选、不一致或无预期账号拒绝。drafts/create/article仍要求可见账号。apply既有写入前后accountName复核使用同一规则，不改变非空页保护或正文接口。接口就绪探测失败仍标记editor，让worker保留准确等待原因。公共model及依赖不变；隐藏退路只为本次新文章子标签探测和已验证绑定的apply调用使用。
+
 0.1.9创作下拉菜单名称适配：维护者实际HTML中，li.weui-desktop-dropdown__list-ele含可见.weui-desktop-dropdown__list-ele__text“文章”和隐藏同名tooltip，旧textContent将二者合并。已登记的下拉菜单项优先读取可见名称标签，其他可点击候选使用innerText，aria-label保留优先级；点击仍落在原菜单项或去重后的内部链接。精确语义、唯一可见可用入口与新标签保护保持，缺失等待、多目标停止。只修改私有bridge，不变更公共model/service或模块依赖。
 
 0.1.8根据维护者提供的实际左侧结构，将草稿箱限定为.weui-desktop-menu_create内容管理分组内的a.weui-desktop-menu__link，以title/内部.weui-desktop-menu__name核对语义，不要求固定ID或复制链接参数。可见性同时排除hidden/inert和visibility:hidden/collapse；同名正文入口及隐藏副本不构成目标。子菜单未显示时允许一次点击该分组的“内容管理”span标题，返回menuExpansionRequested/retryNavigation，worker保持原草稿箱阶段等待，后续expandMenu:false防止反复切换。只有本地页面命令包含该布尔参数，不开放外部消息或任意选择器。缺失可等待，多个可见分组/入口或禁用立即停止；新的创作/文章同样区分缺失等待与多目标停止。
