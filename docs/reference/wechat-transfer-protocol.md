@@ -18,15 +18,18 @@ worker仅接受真实组织Web根/index.html顶层来源；开发包额外支持
 
 ## 内部消息
 
-| kind                                | 参数           | 用途                                                            |
-| ----------------------------------- | -------------- | --------------------------------------------------------------- |
-| ARTICLE                             | 无             | 一次读取标题/接收时间元信息或null，不返回正文和阶段             |
-| TARGETS                             | 无             | 返回targets及selected，保存有效选择或默认第一个，继续未启动快照 |
-| SELECT_TARGET                       | tabId、account | 复核并保存所选公众号，继续未启动快照                            |
-| OPEN_WEB / OPEN_WECHAT / OPEN_PANEL | 无             | 打开固定界面                                                    |
-| PAGE_ACTIVITY                       | 无             | 可信后台用户活动使匹配执行租约失效                              |
+| kind                                | 参数           | 用途                                                                             |
+| ----------------------------------- | -------------- | -------------------------------------------------------------------------------- |
+| ARTICLE                             | 无             | 一次读取标题/接收时间元信息或null，不返回正文和阶段                              |
+| COPY_ARTICLE                        | 无             | 仅可信popup读取{article:{title,receivedAt,html,plainText}}或null，供用户点击复制 |
+| TARGETS                             | 无             | 返回targets及selected，保存有效选择或默认第一个，继续未启动快照                  |
+| SELECT_TARGET                       | tabId、account | 复核并保存所选公众号，继续未启动快照                                             |
+| OPEN_WEB / OPEN_WECHAT / OPEN_PANEL | 无             | 打开固定界面                                                                     |
+| PAGE_ACTIVITY                       | 无             | 可信后台用户活动使匹配执行租约失效                                               |
 
-取消内部STATUS、START_INSERT、CANCEL_TASK、CLEAR_STORAGE。TARGETS/SELECT_TARGET只接受popup.html来源。公众号content仅ARTICLE/OPEN_WEB/OPEN_PANEL/PAGE_ACTIVITY。成功{status:0,data}、失败{status,err}。
+取消内部STATUS、START_INSERT、CANCEL_TASK、CLEAR_STORAGE。TARGETS/SELECT_TARGET/COPY_ARTICLE只接受popup.html来源。公众号content仅ARTICLE/OPEN_WEB/OPEN_PANEL/PAGE_ACTIVITY，使用共享contentRequestAllowed校验；Web没有正文读取消息。成功{status:0,data}、失败{status,err}。
+
+COPY_ARTICLE只返回当前一次已接收快照，不返回账号、执行阶段、来源标识或历史。无论成功/失败/中断均保留当前载荷供复制，TTL24小时或新发送替换后删除。复制动作不检测状态、不重放写入，不改变快照。Popup可信点击内直接启动ClipboardItem异步HTML/纯文字写入，同次读取保证两个格式一致。
 
 worker向公众号content发送TRANSFER_NOTICE(message)作为一次性完成/失败提示；content校验Schema及sender.id，不接收网页window消息。它不触发状态查询或新建操作。
 
@@ -36,7 +39,7 @@ payload为sourceArticleId(UUID)、sourceRevision/sourceGeneration(非负安全�
 
 digest数组固定顺序：protocolVersion、profile、title、html、plainText、sourceArticleId、sourceRevision、sourceGeneration、createdAt。插件复算，不静默改稿后执行。标题自动来自当前H1，缺失使用“未命名文章”；图片/媒体整篇拒绝。
 
-执行阶段仅用于插件本地租约/去重回执，不提供外部查询。相同requestId/digest不再启动，不同digest冲突；执行租约存在时拒绝新请求，其他旧快照自动替换。最多100回执，TTL24小时，正常到期删除。worker中断不重放写入，旧版本快照升级后不能执行；下一次明确发送可以创建新任务。
+执行阶段仅用于插件本地租约/去重回执，不提供外部查询。相同requestId/digest不再启动，不同digest冲突；执行租约存在时拒绝新请求，其他旧快照自动替换。最多100回执，TTL24小时，正常到期删除。worker中断只失效执行绑定，载荷仍可复制，不重放写入。旧v1快照升级后不能执行；0.1.3已经删除的正文不能恢复，更新后重新发送。下一次明确发送可以创建新任务。
 
 ## 错误与验证
 

@@ -104,8 +104,10 @@ export function receiveTask(
   if (repository.receipts.length >= 100)
     throw new TransferError(errors.TASK_BUSY, '24小时内任务数量已达保护上限，请稍后再试')
   if (current?.payload) {
-    current.phase = 'cancelled'
-    current.message = '已被本次发送替换'
+    if (current.phase === 'pending') {
+      current.phase = 'cancelled'
+      current.message = '已被本次发送替换'
+    }
     delete current.payload
     synchronize(repository)
   }

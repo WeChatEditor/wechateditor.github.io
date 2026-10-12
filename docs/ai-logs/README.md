@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [插件内复制传稿退路](feat/2026/10/2026-10-12-wechat-plugin-copy-fallback.md)
+
 - [公众号一键传稿交互简化](refactor/2026/10/2026-10-12-wechat-transfer-simplification.md)
 
 - [公众号账号名称识别修正](fix/2026/10/2026-10-12-wechat-account-detection.md)

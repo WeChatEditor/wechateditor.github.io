@@ -83,12 +83,7 @@ export function createTransferConnection() {
         }),
       )
       state.message =
-        '当前内容已传给插件，将按所选公众号自动新建并插入。请在后台检查排版并手动保存。'
-      await request({ protocolVersion, requestId: crypto.randomUUID(), kind: 'OPEN_PANEL' }).catch(
-        function panelUnavailable() {
-          state.message += ' 如面板未打开，请点击浏览器工具栏的插件图标。'
-        },
-      )
+        '当前内容已传给插件，将打开公众号后台尝试新建并插入。如未完成，请打开插件面板“复制到公众号”，在后台粘贴并检查后手动保存。'
     } catch (error) {
       state.message = error instanceof Error ? error.message : '传稿失败，请使用复制流程'
     } finally {

@@ -14,6 +14,8 @@ apps/extension/src/modules/extension-shell公开service挂载popup和公众号cl
 
 删除checkbox/校验、新建插入启动、取消和恢复清理入口。没有状态查询和2秒轮询。界面打开时一次读取文章元信息，后台浮层接收worker一次性TRANSFER_NOTICE并校验Schema/发送者，不通过网页消息触发操作；“已插入”不等于保存证明。
 
+Popup增加“复制到公众号”和“复制标题”，用户点击时才读取COPY_ARTICLE当前快照，正文不交给公众号content或Web。可信点击内直接调用剪贴板write，ClipboardItem的异步HTML/纯文字来自同一次快照读取，保留排版；标题复制仅纯文字。复制反馈等到write成功，缺失/过期或权限/能力失败显示错误，不降级或触发自动重试。成功、失败和中断后均可复制，无需回编辑器。
+
 浮层仍报告外部可信pointerdown/keydown/input活动供worker阻断匹配写入竞态，不含正文/URL/账号。content不能选择账号；OPEN_PANEL受Chrome策略限制时打开本地面板标签。收起浮层不影响已授权执行。
 
 格式/Lint/类型/构建允许；logo布局、默认选择、登录后继续、键盘、Chrome面板与后台结果提示由人类验收，无前端自动化。

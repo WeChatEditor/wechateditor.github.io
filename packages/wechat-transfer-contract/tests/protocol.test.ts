@@ -13,6 +13,8 @@ import {
   profile,
   protocolVersion,
   articleResponseSchema,
+  clipboardResponseSchema,
+  contentRequestAllowed,
   titleSchema,
   TransferError,
   responseSchema,
@@ -107,6 +109,37 @@ test('title uses Unicode codepoints, trim, nonempty and 64 guard', function () {
   assert.equal(titleSchema.parse(` ${'😀'.repeat(64)} `), '😀'.repeat(64))
   assert.equal(titleSchema.safeParse('😀'.repeat(65)).success, false)
   assert.equal(titleSchema.safeParse('  ').success, false)
+})
+
+test('copy payload retains formatted text and is limited to the trusted panel', function () {
+  const article = {
+    title: '文章标题',
+    receivedAt: Date.now(),
+    html: '<section><p style="color:#247267"><strong>排版正文</strong></p></section>',
+    plainText: '排版正文',
+  }
+  assert.deepEqual(clipboardResponseSchema.parse({ article }).article, article)
+  assert.ok(clipboardResponseSchema.safeParse({ article: null }).success)
+  assert.equal(
+    clipboardResponseSchema.safeParse({ article: { ...article, html: '' } }).success,
+    false,
+  )
+  assert.equal(
+    clipboardResponseSchema.safeParse({ article: { ...article, phase: 'inserted' } }).success,
+    false,
+  )
+  const copy = internalRequestSchema.parse({ kind: 'COPY_ARTICLE' })
+  assert.equal(contentRequestAllowed(copy), false)
+  assert.ok(contentRequestAllowed(internalRequestSchema.parse({ kind: 'ARTICLE' })))
+  assert.equal(contentRequestAllowed(internalRequestSchema.parse({ kind: 'TARGETS' })), false)
+  assert.equal(
+    externalRequestSchema.safeParse({
+      protocolVersion,
+      requestId: crypto.randomUUID(),
+      kind: 'COPY_ARTICLE',
+    }).success,
+    false,
+  )
 })
 test('digest binds current content and output generation', async function () {
   const source = payload()

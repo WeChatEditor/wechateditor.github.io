@@ -61,6 +61,7 @@ export const externalRequestSchema = z.discriminatedUnion('kind', [
 export type ExternalRequest = z.infer<typeof externalRequestSchema>
 export const internalRequestSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('ARTICLE') }),
+  z.strictObject({ kind: z.literal('COPY_ARTICLE') }),
   z.strictObject({ kind: z.literal('TARGETS') }),
   z.strictObject({ kind: z.literal('OPEN_WEB') }),
   z.strictObject({ kind: z.literal('OPEN_PANEL') }),
@@ -73,6 +74,9 @@ export const internalRequestSchema = z.discriminatedUnion('kind', [
   }),
 ])
 export type InternalRequest = z.infer<typeof internalRequestSchema>
+export function contentRequestAllowed(request: InternalRequest): boolean {
+  return ['ARTICLE', 'OPEN_WEB', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(request.kind)
+}
 export const phaseSchema = z.enum([
   'pending',
   'waiting_login',
@@ -110,6 +114,13 @@ export const responseSchema = z
 export type TransferResponse = z.infer<typeof responseSchema>
 export const articleInfoSchema = z.strictObject({ title: titleSchema, receivedAt: integer })
 export const articleResponseSchema = z.strictObject({ article: articleInfoSchema.nullable() })
+export const clipboardArticleSchema = articleInfoSchema.extend({
+  html: z.string().min(1).max(maxMessageBytes),
+  plainText: z.string().trim().min(1).max(maxMessageBytes),
+})
+export const clipboardResponseSchema = z.strictObject({
+  article: clipboardArticleSchema.nullable(),
+})
 export const targetSelectionSchema = z.strictObject({
   tabId: integer,
   account: z.string().min(1).max(200),

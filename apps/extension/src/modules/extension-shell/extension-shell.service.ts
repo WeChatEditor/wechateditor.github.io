@@ -1,8 +1,10 @@
 import {
   articleResponseSchema,
+  clipboardResponseSchema,
   internalResponseSchema,
   targetsSchema,
   transferNoticeSchema,
+  validateTextHtml,
   type InternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
 
@@ -52,6 +54,9 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
   section.append(navigation)
   const article = document.createElement('p')
   section.append(article)
+  const feedback = document.createElement('p')
+  feedback.setAttribute('role', 'status')
+  feedback.style.cssText = 'color:#247267;font-size:12px'
   const error = document.createElement('p')
   error.className = 'error'
   error.setAttribute('role', 'alert')
@@ -71,6 +76,7 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
       busy = true
       control.disabled = true
       error.textContent = ''
+      feedback.textContent = ''
       try {
         await action()
       } catch (failure) {
@@ -106,6 +112,60 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
       : '在写作工作台点击“发送到公众号”，即可传入当前内容。'
   }
   if (mode === 'popup') {
+    async function copyArticle(titleOnly = false): Promise<void> {
+      if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined')
+        throw new Error('当前浏览器无法复制排版内容，请使用桌面Chrome重新打开插件面板')
+      const snapshot = send({ kind: 'COPY_ARTICLE' }).then(function received(raw) {
+        const current = clipboardResponseSchema.parse(raw).article
+        if (!current) throw new Error('插件中暂无可复制内容，请先在编辑器发送文章')
+        validateTextHtml(current.html)
+        article.textContent = `本次内容：${current.title}`
+        return current
+      })
+      // Start the clipboard write during the click; both formats resolve from one snapshot.
+      const formats: Record<string, Promise<Blob>> = {
+        'text/plain': snapshot.then(function plain(current) {
+          return new Blob([titleOnly ? current.title : current.plainText], { type: 'text/plain' })
+        }),
+      }
+      if (!titleOnly)
+        formats['text/html'] = snapshot.then(function html(current) {
+          return new Blob([current.html], { type: 'text/html' })
+        })
+      for (const format of Object.values(formats)) void format.catch(function unavailable() {})
+      try {
+        await navigator.clipboard.write([new ClipboardItem(formats)])
+      } catch (failure) {
+        // Surface missing/invalid snapshots; clipboard permission failures have a user-facing hint.
+        await snapshot
+        throw new Error('复制未完成，请保持插件面板打开并再次点击复制；可检查浏览器剪贴板权限', {
+          cause: failure,
+        })
+      }
+      feedback.textContent = titleOnly
+        ? '标题已复制，可粘贴到公众号标题栏。'
+        : '排版内容已复制，可直接粘贴到公众号正文编辑区。'
+    }
+    const copyRow = document.createElement('div')
+    copyRow.style.cssText = 'display:flex;gap:8px;margin:10px 0 12px'
+    section.append(copyRow)
+    const copy = button(
+      '复制到公众号',
+      async function copyBody() {
+        await copyArticle()
+      },
+      copyRow,
+      'M9 7h11v14H9ZM15 7V3H4v14h5',
+    )
+    copy.style.cssText = 'flex:1;color:#fff;background:#247267;border-color:#247267'
+    button(
+      '复制标题',
+      async function copyTitle() {
+        await copyArticle(true)
+      },
+      copyRow,
+    )
+    section.append(feedback)
     const label = document.createElement('label')
     label.className = 'target-label'
     label.htmlFor = 'wechat-account'
@@ -216,7 +276,7 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
     hide.className = 'hide'
   }
   const hint = document.createElement('small')
-  hint.textContent = '点击工作台发送后自动新建并插入；请在后台检查并手动保存。'
+  hint.textContent = '发送后尝试自动插入；未完成时可直接在插件面板复制。请在后台检查并手动保存。'
   section.append(hint, error)
   void loadArticle().catch(function unavailable(failure) {
     error.textContent = failure instanceof Error ? failure.message : '内容信息不可用'

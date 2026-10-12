@@ -2,6 +2,7 @@ import {
   allowedSource,
   assertMessageSize,
   contentDigest,
+  contentRequestAllowed,
   errors,
   externalRequestSchema,
   internalRequestSchema,
@@ -75,7 +76,6 @@ async function phase(
     task.message = message
     if (binding) Object.assign(task, binding)
     if (next === 'inserted') {
-      delete task.payload
       delete task.account
       delete task.documentId
       delete task.tabId
@@ -243,21 +243,31 @@ async function openPanel(): Promise<void> {
     await chrome.tabs.create({ url: chrome.runtime.getURL('popup.html') })
   }
 }
-function schedulePending(targets?: Awaited<ReturnType<typeof listTargets>>): void {
+function schedulePending(
+  targets?: Awaited<ReturnType<typeof listTargets>>,
+  openWhenUnavailable = false,
+): void {
   setTimeout(function dispatch() {
-    void startPending(targets).catch(function unavailable() {
+    void startPending(targets, openWhenUnavailable).catch(function unavailable() {
       // No page writes have started; the received snapshot remains available after login/refresh.
     })
   }, 0)
 }
-async function startPending(knownTargets?: Awaited<ReturnType<typeof listTargets>>): Promise<void> {
+async function startPending(
+  knownTargets?: Awaited<ReturnType<typeof listTargets>>,
+  openWhenUnavailable = false,
+): Promise<void> {
   const targets = knownTargets || (await listTargets())
+  let openLogin = false
   const execution = await serialized(async function acquire() {
     const state = await repository()
     const task = state.task
     if (activeAttempt || !task?.payload || task.phase !== 'pending') return
     const target = chooseTarget(targets, state.selected)
-    if (!target) return
+    if (!target) {
+      openLogin = openWhenUnavailable
+      return
+    }
     state.selected = { tabId: target.tabId, account: target.account }
     task.phase = 'creating'
     task.message = '即将独立新建图文'
@@ -270,6 +280,7 @@ async function startPending(knownTargets?: Awaited<ReturnType<typeof listTargets
     return { id: task.id, attempt: task.attemptId, tabId: target.tabId, account: target.account }
   })
   if (execution) await runTask(execution.id, execution.attempt, execution.tabId, execution.account)
+  else if (openLogin) await openWechat()
 }
 async function external(request: ExternalRequest) {
   if (request.kind === 'OPEN_PANEL') {
@@ -291,7 +302,7 @@ async function external(request: ExternalRequest) {
     throw new TransferError(errors.TASK_BUSY, '正在插入上一份内容，请稍后再发送')
   const task = receiveTask(state, request.requestId, request.payload)
   await writeRepository(state)
-  if (!duplicate) schedulePending()
+  if (!duplicate) schedulePending(undefined, true)
   return { article: articleInfo(task) }
 }
 async function internal(request: InternalRequest, sender: chrome.runtime.MessageSender) {
@@ -325,6 +336,20 @@ async function internal(request: InternalRequest, sender: chrome.runtime.Message
   }
   const state = await repository()
   if (request.kind === 'ARTICLE') return { article: articleInfo(state.task) }
+  if (request.kind === 'COPY_ARTICLE') {
+    const payload = state.task?.payload
+    return {
+      article:
+        payload && state.task
+          ? {
+              title: payload.title,
+              html: payload.html,
+              plainText: payload.plainText,
+              receivedAt: state.task.receivedAt,
+            }
+          : null,
+    }
+  }
   if (request.kind === 'TARGETS') {
     const targets = await listTargets()
     const target = chooseTarget(targets, state.selected)
@@ -355,7 +380,6 @@ export function registerTransferWorker(): void {
       delete state.task.account
       delete state.task.documentId
       delete state.task.tabId
-      delete state.task.payload
     }
     synchronize(state)
     await writeRepository(state)
@@ -418,13 +442,9 @@ export function registerTransferWorker(): void {
           sender.url?.startsWith('https://mp.weixin.qq.com/')
         if (
           !parsed.success ||
-          (!extensionUi(sender) &&
-            !(
-              content &&
-              ['ARTICLE', 'OPEN_WEB', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(parsed.data.kind)
-            ))
+          (!extensionUi(sender) && !(content && contentRequestAllowed(parsed.data)))
         )
-          throw new TransferError(errors.SOURCE_REJECTED, '只允许插件面板选择公众号')
+          throw new TransferError(errors.SOURCE_REJECTED, '此操作仅允许从插件面板发起')
         respond({ status: 0, data: await internal(parsed.data, sender) })
       } catch (error) {
         respond({

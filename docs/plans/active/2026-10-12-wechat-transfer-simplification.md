@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 公众号一键传稿交互简化
 
+补充交互以[插件内复制退路计划](2026-10-12-wechat-plugin-copy-fallback.md)为准：0.1.4发送后优先打开后台尝试插入，用户按需打开插件面板复制本次快照，不强制打开面板；成功/失败/中断后保留快照至TTL或下次发送。以下0.1.3为本计划初次交付记录，不作为当前复制能力的限制。
+
 维护者要求取消发送状态检测，编辑器点击发送即提交当前页面内容，再打开发送界面；插件缩小并排导航按钮、添加现有logo，公众号默认选择第一个，刷新图标放在选择器后，删除确认勾选、新建插入启动按钮、取消和恢复清理。维护者进一步明确：点击发送后自动新建并插入，不改为手动粘贴。
 
 起点HEAD为25ca61ba28229f14aed1b143adf68e5c6c9c7c84，工作区/暂存为空，无.codegraph。首次修改前暂存门禁通过，归档审计NOT_DUE。依据[插件设计](../../design/wechat-transfer-extension.md)、[协议](../../reference/wechat-transfer-protocol.md)及[ADR](../../decisions/ADR-20261011-wechat-transfer-extension.md)。

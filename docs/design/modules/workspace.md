@@ -8,7 +8,7 @@ owner: project maintainers
 
 # workspace模块
 
-顶栏点击发送即捕获当前文字排版，自动取H1标题（缺失时为“未命名文章”）并提交，随后打开520px反馈抽屉及插件面板。抽屉无标题/连接/替换确认或任务状态检测。workspace调用wechat-export公开预检/文字输出及wechat-transfer公开连接，sourceGeneration覆盖既有完整输出输入并在异步提交前复核冲突/恢复。原复制、current和主动历史语义不变。
+顶栏点击发送即捕获当前文字排版，自动取H1标题（缺失时为“未命名文章”）并提交，随后打开520px反馈抽屉，worker调度打开后台尝试新建插入；插件面板由用户按需打开，其中可直接复制收到的排版内容。抽屉无标题/连接/替换确认或任务状态检测。workspace调用wechat-export公开预检/文字输出及wechat-transfer公开连接，sourceGeneration覆盖既有完整输出输入并在异步提交前复核冲突/恢复。原复制、current和主动历史语义不变。
 
 多标签冲突独立conflictReason状态，覆盖通知/配置storage事件/事务writeId冲突；锁定文章和配置写入，清除待保存、关闭抽屉、使复制快照失效，排队命令与晚到导入/恢复拒绝执行。page用inert和原生dialog顶层Modal阻断所有工作台操作，禁止Esc/遮罩关闭。确认关闭当前标签页，拒绝时提示手动关闭并保持锁定；冲突关闭页不触发补保存。普通权限/配额/损坏失败保留原流程。
 
