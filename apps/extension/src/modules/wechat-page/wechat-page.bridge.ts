@@ -8,7 +8,7 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     editor: false,
     empty: false,
     titleSupported: false,
-    message: '无法识别公众号页面，请打开已登录后台首页后检查能力',
+    message: '无法识别公众号页面来源或所在文档，请在公众号后台顶层页面检查能力',
   }
   if (location.origin !== 'https://mp.weixin.qq.com' || window.top !== window) return failed
   function visible(element: Element): boolean {
@@ -17,7 +17,7 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
   function accountName(): string {
     const names = [
       ...document.querySelectorAll(
-        '.weui-desktop-account__nickname, .account_nickname, #account_nickname',
+        '.weui-desktop_name, .weui-desktop-account__nickname, .account_nickname, #account_nickname',
       ),
     ]
       .filter(visible)
@@ -87,7 +87,12 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     return value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   }
   let account = accountName()
-  if (!account) return failed
+  if (!account)
+    return {
+      ...failed,
+      message:
+        '未能唯一识别右上角公众号名称，插件尚未开始新建或插入，请更新插件后刷新页面再检查能力',
+    }
   if (command.account && account !== command.account)
     return { ...failed, message: '公众号账号已经变化，请重新确认目标' }
   let state: Record<string, unknown> = {}

@@ -50,7 +50,7 @@ Web使用externally_connectable和chrome.runtime.sendMessage。共享[协议](..
 
 最低Chrome120，桌面Chrome为当前目标；Edge/手机/无痕均未验收。权限仅storage、scripting；host_permissions为公众号和组织Web。无全局tabs、cookies、debugger、剪贴板、downloads、nativeMessaging、unlimitedStorage或all_urls。storage.local设置TRUSTED_CONTEXTS，content只能查询摘要、打开Web/popup和报告可信用户页面活动；START_INSERT/CANCEL/CLEAR只接受扩展popup来源。
 
-版本0.1.0；实际稳定ID为imiclghaaoleoggfhfdbanmaehamnpmg，由extension.identity.json公开manifest key推导。生成过程仅保存公钥，私钥未写文件。生产/开发包使用相同ID，二者只安装一份。Web内置同一ID；未来商店ID变化需一起更新Web和插件，不把开发ID称为商店ID。
+版本0.1.1；manifest及ZIP版本统一来自extension/package.json。实际稳定ID为imiclghaaoleoggfhfdbanmaehamnpmg，由extension.identity.json公开manifest key推导。生成过程仅保存公钥，私钥未写文件。生产/开发包使用相同ID，二者只安装一份。Web内置同一ID；未来商店ID变化需一起更新Web和插件，不把开发ID称为商店ID。
 
 ## 单任务和恢复
 
@@ -79,6 +79,8 @@ Web提交应答丢失保留原信封，只允许重试原请求；已收到明�
 官方原始文档已核对invoke对象参数apiName/apiParam/sucCb/errCb，以及get_isready的isReady/isNew和get_content的content。isNew代表新编辑器版本，不证明新建文章；必须另有本次create点击证据、独立标签和空标题/正文。适配器只操作顶层文档；接口位于其他frame或返回不支持结构时阻断，不遍历frame写入。
 
 账号/标题选择器和“草稿箱/新的创作/图文”语义匹配都是保守候选，尚未经维护者账号验证。缺失、不唯一或账号变化停止。导航/就绪整体30秒，JSAPI每次10秒，按探测结果等待，不能因固定延时就认定就绪。标题用原生setter和input/change，之后重新确认正文仍空、标题显示一致及无可信输入。正文用官方set_content，再get_content核对规范化文本、标题和主要结构数量；不比较HTML字节完全相等。
+
+首轮人工反馈确认首页右上角名称class为weui-desktop_name，0.1.1加入该精确候选，保留名称可见/唯一性和账号复核。结构观察来自维护者；插件更新后的识别和后续流程仍待复验。
 
 尚未验证：真实入口/账号/标题内部状态、接口所在frame、实际保存后保真、章节装饰/局部颜色/头尾/表格/代码/列表/明暗阅读和中断恢复。读回结构检查不替代这些证据。能力不足保持复制出口，不转用私有编辑器实例、DOM正文赋值、模拟粘贴或私有HTTP接口。
 

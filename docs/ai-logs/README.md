@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [公众号账号名称识别修正](fix/2026/10/2026-10-12-wechat-account-detection.md)
+
 - [轻量传稿插件实现](feat/2026/10/2026-10-12-wechat-transfer-extension.md)：技术实现与打包，待人类验收。
 
 - [共用调色弹窗屏幕取色器](feat/2026/10/2026-10-11-color-eyedropper.md)

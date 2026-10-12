@@ -1,10 +1,10 @@
 # 轻量传稿插件安装与验收
 
-当前版本0.1.0，Chrome桌面最低120，稳定ID `imiclghaaoleoggfhfdbanmaehamnpmg`。真实公众号尚未验收；入口/账号/标题定位是保守候选，页面不支持时显示原因并停止。插件只新建并插入文字排版，最后由用户检查并手动保存。
+当前版本0.1.1，Chrome桌面最低120，稳定ID `imiclghaaoleoggfhfdbanmaehamnpmg`。0.1.1按维护者人工提供的weui-desktop_name补充首页账号识别。真实完整流程尚未验收；入口/标题定位是保守候选，页面不支持时显示原因并停止。插件只新建并插入文字排版，最后由用户检查并手动保存。
 
 ## 安装与更新
 
-1. 构建：根目录执行`pnpm package:extension`，得到`apps/extension/dist/production`及`apps/extension/dist/jlab-wechat-transfer-0.1.0.zip`。ZIP解压后同样可加载。
+1. 构建：根目录执行`pnpm package:extension`，得到`apps/extension/dist/production`及`apps/extension/dist/jlab-wechat-transfer-0.1.1.zip`。ZIP解压后同样可加载；版本来自extension/package.json。
 2. 在Chrome打开`chrome://extensions`，打开开发者模式，选择“加载已解压的扩展程序”，选中包含manifest.json的production目录；核对上述ID。将插件固定到工具栏。
 3. 生产Web为[组织站点](https://wechateditor.github.io/)。本次Web代码尚未推送或部署，线上旧版不会立即出现发送入口；部署Web与安装插件是两步。原复制始终可独立使用。
 4. 本地验收：执行`pnpm dev:frontend`和`pnpm build:extension:dev`，加载`apps/extension/dist/development`，打开`http://127.0.0.1:5175/`。preview使用4175。开发/生产包相同ID，只安装一份；切换前先处理待传任务。插件不搬迁不同Web origin的数据。

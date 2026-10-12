@@ -9,6 +9,8 @@ import { projectRoot } from '../lib/project.mjs'
 const root = join(projectRoot, 'apps/extension')
 const identity = JSON.parse(readFileSync(join(root, 'extension.identity.json'), 'utf8'))
 const manifest = JSON.parse(readFileSync(join(root, 'dist/production/manifest.json'), 'utf8'))
+const packageManifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
+assert.equal(manifest.version, packageManifest.version)
 const digest = createHash('sha256')
   .update(Buffer.from(identity.key, 'base64'))
   .digest()
@@ -68,7 +70,9 @@ for (const script of ['worker.js', 'content.js', 'popup.js']) {
 }
 const require = createRequire(join(root, 'package.json'))
 const { unzipSync } = require('fflate')
-const files = unzipSync(readFileSync(join(root, 'dist/jlab-wechat-transfer-0.1.0.zip')))
+const files = unzipSync(
+  readFileSync(join(root, `dist/jlab-wechat-transfer-${manifest.version}.zip`)),
+)
 assert.deepEqual(
   Object.keys(files).sort(),
   [

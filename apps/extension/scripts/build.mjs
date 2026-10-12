@@ -9,6 +9,7 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const development = process.argv.includes('--dev')
 const directory = resolve(root, 'dist', development ? 'development' : 'production')
 const identity = JSON.parse(await readFile(resolve(root, 'extension.identity.json'), 'utf8'))
+const { version } = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'))
 await mkdir(directory, { recursive: true })
 const entries = { worker: 'src/worker.ts', content: 'src/content.ts', popup: 'src/popup.ts' }
 for (const [name, path] of Object.entries(entries)) {
@@ -46,7 +47,7 @@ const devSources = ['http://127.0.0.1:5175/*', 'http://127.0.0.1:4175/*']
 const manifest = {
   manifest_version: 3,
   name: '桀士排版·公众号助手',
-  version: '0.1.0',
+  version,
   minimum_chrome_version: '120',
   description: '连接桀士排版Web工作台，新建公众号图文并插入文字排版，由用户检查后手动保存。',
   key: identity.key,
@@ -81,7 +82,7 @@ if (process.argv.includes('--zip')) {
     'LICENSES.txt',
   ])
     files[name] = new Uint8Array(await readFile(resolve(directory, name)))
-  const archive = resolve(root, 'dist', 'jlab-wechat-transfer-0.1.0.zip')
+  const archive = resolve(root, 'dist', `jlab-wechat-transfer-${version}.zip`)
   await writeFile(archive, zipSync(files))
   console.log(`Extension ZIP: ${archive}`)
 }

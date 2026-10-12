@@ -83,6 +83,8 @@ owner: project maintainers
 
 ## 实际结果、偏差、遗留与提交
 
+首轮人类试用：维护者本地打开插件/公众号首页，反馈账号无法识别，人工检查提供weui-desktop_name。关联[识别修正计划](2026-10-12-wechat-account-detection.md)交付0.1.1；此项只是当前名称结构证据，不将P0/P4完整流程标为通过。
+
 2026-10-12已实现P1至P3代码及P5安装包：四workspace、Zod/parse5契约、Web预检/抽屉/握手/快照、MV3单任务去重/租约/恢复、popup/浮层及保守官方JSAPI适配。格式、类型、模块/文档、生产和开发构建、22项治理及9项契约检查通过；Lint零错误、有现行Vue排版警告，Web构建保留大chunk提示。实现提交ba7af69cb305fc08d6823f3384889c685832a783作为已审查真实基线，最终归档CI为NOT_DUE。
 
 偏差：维护者明确设计通过而真实账号尚未验收，工程先交付以便P0/P4人工校准；没有把P0退出条件写为通过。入口/账号/标题是候选，顶层JSAPI、不同documentId的新建证据和空编辑器缺一则停止。浮层只打开可信popup，写入统一从popup确认。旧TARGET_READY/STEP_RESULT改为scripting直接返回；正常到期任务删除，uncertain过期保留匿名阻断直到人工丢弃。实际Web经维护者确认为https://wechateditor.github.io/，生产来源已同步收紧。

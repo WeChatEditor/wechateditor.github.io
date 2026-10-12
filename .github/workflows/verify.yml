@@ -40,4 +40,4 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.toolchain.node == '22'
         with:
           name: jlab-wechat-transfer
-          path: apps/extension/dist/jlab-wechat-transfer-0.1.0.zip
+          path: apps/extension/dist/jlab-wechat-transfer-*.zip
