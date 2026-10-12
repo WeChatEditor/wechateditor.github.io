@@ -3,6 +3,7 @@ import {
   connectionInfoSchema,
   clipboardResponseSchema,
   internalResponseSchema,
+  nativeTitleEditAttribute,
   targetsSchema,
   transferNoticeSchema,
   validateTextHtml,
@@ -362,6 +363,13 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
     const observer = new ResizeObserver(keepVisible)
     observer.observe(host)
     function pageActivity(event: Event): void {
+      const nativeTitle =
+        event.type === 'input' && event.target instanceof Element
+          ? event.target.closest(
+              '#js_title_main .title-editor-overlay .title-editor__input > .ProseMirror[contenteditable="true"]',
+            )
+          : null
+      if (nativeTitle?.getAttribute(nativeTitleEditAttribute) === 'active') return
       if (event.isTrusted && !event.composedPath().includes(host))
         void send({ kind: 'PAGE_ACTIVITY' }).catch(function ignore() {})
     }

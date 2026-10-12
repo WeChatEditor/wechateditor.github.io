@@ -8,6 +8,10 @@ owner: project maintainers
 
 # wechat-page模块
 
+0.1.11标题控件适配维护者提供的ProseMirror覆盖层：唯一可见、可编辑的#js_title_main .title-editor-overlay .title-editor__input > .ProseMirror优先于同容器旧textarea；无覆盖层时继续支持唯一原生输入控件。隐藏旧textarea不用于编辑，只核对同步后的值；其他独立标题候选冲突拒绝。覆盖层以浏览器原生insertText事务写入，长度取旧textarea的max-length（无有效值时64码点），原生控件继续遵守maxLength。可见文本与旧textarea值必须在2秒内一致，随后复核正文为空及账号一致，读回再次核对两者；不访问ProseMirror私有状态或DOM正文赋值。
+
+MAIN仅在同步原生标题事务内排除同节点的程序input，finally清除共享nativeTitleEditAttribute标记；外部输入仍受保护。页面service向apply传入共享固定属性名，PageCommand用该公开常量的类型约束，不能传任意属性/代码。空正文规则不变，维护者给出的空section/br和隐藏mp-style-type已满足既有判空；消息分开标题不可用、标题非空和正文非空。
+
 0.1.10只读probe/apply在传入已确认账号且官方invoke存在时，可核对新编辑页隐藏的唯一账号候选：没有非空可见名称、候选节点恰好一个、textContent去首尾空白后严格等于已确认账号。可见名称优先且必须唯一，冲突不回退；空值、多候选、不一致或无预期账号拒绝。drafts/create/article仍要求可见账号。apply既有写入前后accountName复核使用同一规则，不改变非空页保护或正文接口。接口就绪探测失败仍标记editor，让worker保留准确等待原因。公共model及依赖不变；隐藏退路只为本次新文章子标签探测和已验证绑定的apply调用使用。
 
 0.1.9创作下拉菜单名称适配：维护者实际HTML中，li.weui-desktop-dropdown__list-ele含可见.weui-desktop-dropdown__list-ele__text“文章”和隐藏同名tooltip，旧textContent将二者合并。已登记的下拉菜单项优先读取可见名称标签，其他可点击候选使用innerText，aria-label保留优先级；点击仍落在原菜单项或去重后的内部链接。精确语义、唯一可见可用入口与新标签保护保持，缺失等待、多目标停止。只修改私有bridge，不变更公共model/service或模块依赖。

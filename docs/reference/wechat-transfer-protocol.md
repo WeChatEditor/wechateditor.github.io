@@ -39,6 +39,8 @@ SAVE_ARTICLE与SUBMIT_TASK使用相同payload、来源/尺寸/摘要/文字HTML�
 
 worker向公众号content发送TRANSFER_NOTICE(message)作为一次性完成/失败提示；content校验Schema及sender.id，不接收网页window消息。它不触发状态查询或新建操作。
 
+共享公开nativeTitleEditAttribute为固定data-jlab-native-title-edit，仅协作同步浏览器原生标题事务产生的input事件，不是授权令牌或新消息字段。页面apply由service传入固定属性名，仅调用期间在已识别标题节点设置active，finally移除；content只在同一标题节点的input事件看到active时不报告PAGE_ACTIVITY，其他真实活动继续报告。PageCommand属于插件本地scripting参数，不向Web/content开放任意选择器、属性或代码。
+
 ## 快照与内部去重
 
 payload为sourceArticleId(UUID)、sourceRevision/sourceGeneration(非负安全整数)、createdAt、title(1至64 Unicode码点)、html/plainText(非空)、profile(wechat-editor-text@1-candidate)、digest(64位SHA256)。删除replaceTaskId，重新发送自动更新旧快照。

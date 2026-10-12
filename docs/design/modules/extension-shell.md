@@ -8,6 +8,8 @@ owner: project maintainers
 
 # extension-shell模块
 
+0.1.11content从已有共享契约依赖读取nativeTitleEditAttribute，只排除#js_title_main内已登记ProseMirror标题节点在同步原生insertText期间带active标记的input事件。pointerdown/keydown、其他节点input及标记移除后的input仍报告PAGE_ACTIVITY；不持续暂停用户活动，也不读取标题/正文。此标记是公开DOM协作约定，不是跨模块私有状态或新消息授权。依赖和模块边界不变。
+
 0.1.6公众号浮层宽320px并钳制到视口，导航为两列minmax(0,1fr)、文字可换行、logo与图标不收缩，正文最长受视口高度限制并独立滚动。标题栏支持可信Pointer拖动、capture/up/cancel/lostcapture/失焦清理；方向键移动、Shift加速、Home恢复右下角，移动/尺寸变化钳制12px边距。不持久化位置，不访问页面内容。收起与恢复保留操作；可信外部页面活动保护排除浮层拖动/键盘。
 
 浮层由安装插件注入，初始化一次内部PING校验实际worker连接，检测中及失效时打开传稿面板禁用；打开失败后维持禁用并提示启用/刷新。没有插件的新页面不会出现插件浮层；已打开页面的失效浮层在下一次操作失败时提示，不做轮询。Web抽屉同样按连接状态禁用面板入口。

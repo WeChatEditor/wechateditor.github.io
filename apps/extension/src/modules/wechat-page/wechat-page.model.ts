@@ -1,3 +1,5 @@
+import type { nativeTitleEditAttribute } from '@jlab-wechat-editor/wechat-transfer-contract'
+
 export interface PageProbe {
   account: string
   ready: boolean
@@ -29,4 +31,5 @@ export interface PageCommand {
   title?: string
   html?: string
   expandMenu?: boolean
+  titleEditAttribute?: typeof nativeTitleEditAttribute
 }

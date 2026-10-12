@@ -3,6 +3,7 @@ import {
   TransferError,
   wechatUrl,
   productionWebUrl,
+  nativeTitleEditAttribute,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
 import { editorBridge } from './wechat-page.bridge'
 import type { PageBinding, PageCommand, PageTarget } from './wechat-page.model'
@@ -82,7 +83,13 @@ export async function applyArticle(binding: PageBinding, title: string, html: st
   return (
     await inspectPage(
       binding.tabId,
-      { operation: 'apply', account: binding.account, title, html },
+      {
+        operation: 'apply',
+        account: binding.account,
+        title,
+        html,
+        titleEditAttribute: nativeTitleEditAttribute,
+      },
       binding.documentId,
     )
   ).page

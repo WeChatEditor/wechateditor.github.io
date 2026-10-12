@@ -176,8 +176,12 @@ async function runTask(
           await wait(500)
           continue
         }
-        if (!page.empty || !page.titleSupported)
-          throw new TransferError(errors.EDITOR_NOT_EMPTY, page.message)
+        if (!page.titleSupported) {
+          navigationMessage = page.message
+          await wait(500)
+          continue
+        }
+        if (!page.empty) throw new TransferError(errors.EDITOR_NOT_EMPTY, page.message)
         binding = current
         break
       }
@@ -227,28 +231,20 @@ async function runTask(
       })
       .catch(function pageClosed() {})
   } catch (error) {
+    const message = applying
+      ? `${error instanceof TransferError ? `${error.message}。` : ''}可能已经写入，请检查当前页面；没有自动重试`
+      : error instanceof TransferError
+        ? error.message
+        : '后台页面操作中断，请检查新建页面，没有自动重试'
     try {
-      await phase(
-        id,
-        attempt,
-        applying || sideEffects ? 'uncertain' : 'blocked',
-        applying
-          ? '可能已经写入，请检查后台，禁止自动重试'
-          : error instanceof TransferError
-            ? error.message
-            : '后台页面操作中断，请检查新建页面，没有自动重试',
-      )
+      await phase(id, attempt, applying || sideEffects ? 'uncertain' : 'blocked', message)
     } catch {
       /* A cancelled or recovered attempt must never mutate its successor. */
     }
     await chrome.tabs
       .sendMessage(noticeTab, {
         kind: 'TRANSFER_NOTICE',
-        message: applying
-          ? '可能已经写入，请检查当前页面；没有自动重试'
-          : error instanceof TransferError
-            ? error.message
-            : '自动插入已停止，请检查后台',
+        message,
       })
       .catch(function pageClosed() {})
   } finally {

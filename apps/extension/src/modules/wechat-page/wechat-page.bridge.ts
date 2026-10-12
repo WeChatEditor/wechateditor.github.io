@@ -43,7 +43,11 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
       return command.account
     return ''
   }
-  function titleInput(): HTMLInputElement | HTMLTextAreaElement | undefined {
+  type TitleControl = {
+    element: HTMLInputElement | HTMLTextAreaElement | HTMLElement
+    backing?: HTMLTextAreaElement
+  }
+  function titleInput(): TitleControl | undefined {
     const inputs = [
       ...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
         'input[name="title"], textarea[name="title"], input#title, textarea#title, #js_title, input[placeholder="请在这里输入标题"], textarea[placeholder="请在这里输入标题"]',
@@ -56,7 +60,47 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
         !input.readOnly
       )
     })
-    return inputs.length === 1 ? inputs[0] : undefined
+    const richInputs = [
+      ...document.querySelectorAll<HTMLElement>(
+        '#js_title_main .title-editor-overlay .title-editor__input > .ProseMirror[contenteditable="true"]',
+      ),
+    ].filter(function editable(element) {
+      return (
+        visible(element) &&
+        element.isContentEditable &&
+        !element.closest('[aria-disabled="true"],[aria-readonly="true"]')
+      )
+    })
+    if (richInputs.length) {
+      if (richInputs.length !== 1) return undefined
+      const element = richInputs[0]
+      const container = element.closest('#js_title_main')
+      if (
+        inputs.some(function independent(input) {
+          return input.closest('#js_title_main') !== container
+        })
+      )
+        return undefined
+      const backing = container?.querySelectorAll<HTMLTextAreaElement>(
+        'textarea#title[name="title"]',
+      )
+      return backing?.length === 1 && !backing[0].disabled && !backing[0].readOnly
+        ? { element, backing: backing[0] }
+        : undefined
+    }
+    return inputs.length === 1 ? { element: inputs[0] } : undefined
+  }
+  function titleText(control: TitleControl): string {
+    return control.element instanceof HTMLInputElement ||
+      control.element instanceof HTMLTextAreaElement
+      ? control.element.value
+      : control.element.textContent || ''
+  }
+  function titleEmpty(control: TitleControl): boolean {
+    return !titleText(control).trim() && (!control.backing || !control.backing.value.trim())
+  }
+  function titleMatches(control: TitleControl, title: string): boolean {
+    return titleText(control) === title && (!control.backing || control.backing.value === title)
   }
   function text(html: string): string {
     const dom = new DOMParser().parseFromString(html, 'text/html')
@@ -132,57 +176,107 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
   const input = titleInput()
   const editor = Boolean(api)
   const ready = state.isReady === true && state.isNew === true
-  const empty = ready && emptyBody(html) && Boolean(input) && !input?.value.trim()
+  const bodyEmpty = emptyBody(html)
+  const empty = ready && bodyEmpty && Boolean(input && titleEmpty(input))
+  let message = '后台账号已识别，可以尝试新建图文'
+  if (editor) {
+    if (!ready) message = '官方接口尚未就绪或编辑器版本不支持'
+    else if (!input) message = '标题控件尚未就绪或无法唯一识别，正在等待页面加载'
+    else if (!bodyEmpty) message = '当前正文已有文字或媒体，禁止覆盖'
+    else if (!titleEmpty(input)) message = '当前标题已有内容，禁止覆盖'
+    else message = '官方接口已就绪，标题和正文为空'
+  }
   const result: PageResult = {
     account,
     editor,
     ready,
     empty,
     titleSupported: Boolean(input),
-    message: editor
-      ? ready
-        ? empty
-          ? '官方接口已就绪，标题和正文为空'
-          : '当前编辑器已有内容，禁止覆盖'
-        : '官方接口尚未就绪或编辑器版本不支持'
-      : '后台账号已识别，可以尝试新建图文',
+    message,
   }
   if (command.operation === 'probe') return result
   if (command.operation === 'apply') {
     if (!ready || !empty || !input || !command.title || !command.html)
       return { ...result, message: '无法确认新建空编辑器，停止插入' }
-    if (input.maxLength > 0 && command.title.length > input.maxLength)
+    const maximum = input.backing
+      ? Number(input.backing.getAttribute('max-length'))
+      : (input.element as HTMLInputElement | HTMLTextAreaElement).maxLength
+    const titleLength = input.backing ? [...command.title].length : command.title.length
+    const limit = input.backing && (!Number.isInteger(maximum) || maximum <= 0) ? 64 : maximum
+    if (limit > 0 && titleLength > limit)
       return { ...result, message: '标题超过当前编辑器长度限制' }
+    if (input.backing && command.titleEditAttribute !== 'data-jlab-native-title-edit')
+      return { ...result, message: '原生标题输入保护未就绪，停止插入' }
     // Fresh read immediately before the first change. Never append to existing content.
     const fresh = record(await invoke('mp_editor_get_content'))
     if (
       typeof fresh.content !== 'string' ||
       !emptyBody(fresh.content) ||
-      input.value.trim() ||
+      !titleEmpty(input) ||
       accountName() !== account
     )
       return { ...result, message: '编辑器或账号已变化，停止插入' }
-    const descriptor = Object.getOwnPropertyDescriptor(
-      input instanceof HTMLInputElement
-        ? HTMLInputElement.prototype
-        : HTMLTextAreaElement.prototype,
-      'value',
-    )
-    if (!descriptor?.set) return { ...result, message: '标题输入能力不可用' }
     let userEdited = false
+    let editingTitle = false
     function userInput(event: Event): void {
-      if (event.isTrusted) userEdited = true
+      if (
+        event.isTrusted &&
+        !(editingTitle && event.target instanceof Node && input!.element.contains(event.target))
+      )
+        userEdited = true
     }
     document.addEventListener('input', userInput, true)
     try {
-      descriptor.set.call(input, command.title)
-      input.dispatchEvent(new Event('input', { bubbles: true }))
-      input.dispatchEvent(new Event('change', { bubbles: true }))
+      if (input.backing) {
+        const selection = window.getSelection()
+        if (!selection || typeof document.execCommand !== 'function')
+          return { ...result, message: '浏览器原生标题编辑能力不可用，停止插入' }
+        input.element.focus({ preventScroll: true })
+        const range = document.createRange()
+        range.selectNodeContents(input.element)
+        selection.removeAllRanges()
+        selection.addRange(range)
+        const attribute = command.titleEditAttribute!
+        editingTitle = true
+        input.element.setAttribute(attribute, 'active')
+        try {
+          if (!document.execCommand('insertText', false, command.title))
+            return { ...result, message: '浏览器拒绝原生标题编辑，请检查标题后手动复制' }
+        } finally {
+          input.element.removeAttribute(attribute)
+          editingTitle = false
+        }
+        input.element.blur()
+        const deadline = Date.now() + 2000
+        while (!titleMatches(input, command.title)) {
+          if (userEdited || accountName() !== account || !input.element.isConnected)
+            return { ...result, message: '标题写入期间页面或账号变化，停止正文插入' }
+          if (Date.now() >= deadline)
+            return {
+              ...result,
+              message: '可见标题与平台标题字段未同步，停止正文插入，请检查后手动复制',
+            }
+          await new Promise(function settle(resolve) {
+            setTimeout(resolve, 25)
+          })
+        }
+      } else {
+        const descriptor = Object.getOwnPropertyDescriptor(
+          input.element instanceof HTMLInputElement
+            ? HTMLInputElement.prototype
+            : HTMLTextAreaElement.prototype,
+          'value',
+        )
+        if (!descriptor?.set) return { ...result, message: '标题输入能力不可用' }
+        descriptor.set.call(input.element, command.title)
+        input.element.dispatchEvent(new Event('input', { bubbles: true }))
+        input.element.dispatchEvent(new Event('change', { bubbles: true }))
+      }
       const afterTitle = record(await invoke('mp_editor_get_content'))
       if (
         userEdited ||
         accountName() !== account ||
-        input.value !== command.title ||
+        !titleMatches(input, command.title) ||
         typeof afterTitle.content !== 'string' ||
         !emptyBody(afterTitle.content)
       )
@@ -214,7 +308,7 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
         !actualDom.querySelector('img,svg,video,audio,iframe,object,embed,picture,source') &&
         !userEdited &&
         account === command.account &&
-        input.value === command.title &&
+        titleMatches(input, command.title) &&
         text(actual) === text(command.html) &&
         structure.every(function count(tag) {
           return actualDom.querySelectorAll(tag).length === expectedDom.querySelectorAll(tag).length

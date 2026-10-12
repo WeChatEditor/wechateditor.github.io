@@ -9,6 +9,8 @@ export const maxMessageBytes = 2 * 1024 * 1024
 export const taskTtl = 24 * 60 * 60 * 1000
 export const productionWebUrl = 'https://wechateditor.github.io/'
 export const wechatUrl = 'https://mp.weixin.qq.com/'
+// Only active during a synchronous browser-native title edit; not an authorization token.
+export const nativeTitleEditAttribute = 'data-jlab-native-title-edit' as const
 export const errors = {
   SOURCE_REJECTED: 4101,
   PROTOCOL_UNSUPPORTED: 4102,

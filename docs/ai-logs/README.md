@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [ProseMirror标题适配与空页判定修正](fix/2026/10/2026-10-12-wechat-title-overlay.md)
+
 - [新文章编辑页隐藏账号核对修正](fix/2026/10/2026-10-12-wechat-hidden-editor-account.md)
 
 - [公众号文章菜单名称识别修正](fix/2026/10/2026-10-12-wechat-article-label.md)
