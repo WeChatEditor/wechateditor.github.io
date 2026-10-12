@@ -15,6 +15,7 @@ export interface PageBinding {
   account: string
 }
 export interface PageResult extends PageProbe {
+  drafts?: boolean
   clicked?: boolean
   applied?: boolean
   matches?: boolean

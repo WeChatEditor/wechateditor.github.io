@@ -8,9 +8,11 @@ owner: project maintainers
 
 # wechat-page模块
 
+0.1.7按维护者确认的“草稿箱 → 新的创作 → 文章”导航；文章优先匹配，旧图文名称兼容。菜单自身与其链接归为同一操作，独立入口仍须唯一且可见；已在草稿箱时用可见标题/选中菜单和唯一创作按钮确认。导航显式绑定documentId，保留平台链接target；文章点击前记录子标签基线，之后只接受唯一新增公众号子标签。openWechat返回本次独立后台tabId，便于pending登录任务绑定，不返回后台URL或登录凭据。
+
 apps/extension/src/modules/wechat-page隔离公众号适配，公共service/model，私有bridge由scripting序列化到MAIN。仅依赖共享wechat-transfer契约，不读取任务仓储。固定操作probe/drafts/create/article/apply；消息不能传任意代码。入口只组装。
 
-账号候选选择器、标题候选和草稿箱/新的创作/图文语义入口均为保守候选，尚未在维护者账号验证；缺失、不唯一或来源不符阻断。只识别顶层文档，不能访问真实能力所在frame时阻断，不遍历所有frame写入。选择后台首页/草稿箱后打开独立标签，绑定账号、tab/document和本次新建证据；不复用已有编辑页。
+账号候选选择器、标题候选和草稿箱/新的创作/文章语义入口均为保守适配，完整流程尚未在维护者账号验证；缺失、不唯一或来源不符阻断。只识别顶层文档，不能访问真实能力所在frame时阻断，不遍历所有frame写入。选择后台首页/草稿箱后打开独立标签，绑定账号、tab/document和本次新建证据；不复用已有编辑页。
 
 2026-10-12维护者人工检查首页右上角账号名称，确认class为weui-desktop_name；本次修正加入该精确候选，并继续要求可见名称唯一。该结构证据不代表新建/标题/正文保存流程已验收。登录/账号匹配失败与来源/frame不支持分开提示，不要求用户绕过保护。
 
@@ -22,4 +24,4 @@ apps/extension/src/modules/wechat-page隔离公众号适配，公共service/mode
 
 公众号content入口报告可信pointerdown/keydown/input活动，worker按tab/document匹配当前执行任务并转uncertain，失效租约阻断后续写入。MAIN也检测写入中的可信input，无法排除竞态时保持uncertain。
 
-新建需从create点击文档进入不同documentId的空编辑器；同document的SPA流程尚无实际证据，保守阻断并交人类校准。读回还确认没有媒体。任何活动执行租约存在时均禁止下一次新发送；没有公开取消/清空或状态检测流程。
+新建需有文章点击、之后新增子tab及不同documentId的空编辑器三项证据；同document或同tab流程保守阻断并交人类校准。读回还确认没有媒体。任何活动执行租约存在时均禁止下一次新发送；没有公开取消/清空或状态检测流程。

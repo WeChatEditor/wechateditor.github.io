@@ -211,36 +211,69 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
       document.removeEventListener('input', userInput, true)
     }
   }
+  if (editor) return { ...result, clicked: false, message: '当前不是受支持的新建入口' }
+  function controlsFor(labels: string[]): HTMLElement[] {
+    const matches = [
+      ...document.querySelectorAll<HTMLElement>(
+        'a,button,[role="button"],[role="menuitem"],.weui-desktop-dropdown__list-ele,.weui-desktop-dropdown__list-item',
+      ),
+    ].filter(function matching(element) {
+      const label = (element.getAttribute('aria-label') || element.textContent || '')
+        .replace(/\s+/g, '')
+        .trim()
+      return (
+        visible(element) &&
+        labels.includes(label) &&
+        !element.hasAttribute('disabled') &&
+        element.getAttribute('aria-disabled') !== 'true'
+      )
+    })
+    // A menu item and its own link represent one action, not two competing entries.
+    return matches.filter(function innermost(element) {
+      return !matches.some(function nested(other) {
+        return other !== element && element.contains(other)
+      })
+    })
+  }
+  if (command.operation === 'drafts' && controlsFor(['新的创作']).length === 1) {
+    const heading = [
+      ...document.querySelectorAll(
+        'h1,h2,h3,[role="heading"],[class*="title"],[class*="main__hd"]',
+      ),
+    ].some(function draftsHeading(element) {
+      return visible(element) && element.textContent?.trim() === '草稿箱'
+    })
+    const selected = controlsFor(['草稿箱']).some(function current(element) {
+      return Boolean(
+        element.closest(
+          '[aria-current="page"],.selected,.active,.weui-desktop-menu__item_selected,.weui-desktop-menu__sub_item_selected',
+        ),
+      )
+    })
+    if (heading || selected) return { ...result, drafts: true, message: '已在草稿箱，准备新的创作' }
+  }
   const labels =
     command.operation === 'drafts'
       ? ['草稿箱']
       : command.operation === 'create'
         ? ['新的创作']
-        : ['图文', '图文消息']
-  const controls = [...document.querySelectorAll<HTMLElement>('a,button,[role="button"]')].filter(
-    function matching(element) {
-      return (
-        visible(element) &&
-        labels.includes((element.getAttribute('aria-label') || element.textContent || '').trim()) &&
-        !element.hasAttribute('disabled') &&
-        element.getAttribute('aria-disabled') !== 'true'
-      )
-    },
-  )
+        : ['文章', '图文', '图文消息']
+  let controls: HTMLElement[] = []
+  for (const label of labels) {
+    controls = controlsFor([label])
+    if (controls.length) break
+  }
   if (controls.length !== 1)
     return {
       ...result,
       clicked: false,
       message: `无法唯一定位“${labels[0]}”，请手动进入草稿箱后重试`,
     }
-  if (editor && command.operation !== 'drafts')
-    return { ...result, clicked: false, message: '当前不是受支持的新建入口' }
   const control = controls[0]
   if (control instanceof HTMLAnchorElement) {
     const target = new URL(control.href, location.href)
     if (target.origin !== location.origin || !/^https:/.test(target.protocol))
       return { ...result, clicked: false, message: '后台入口不在允许来源内' }
-    control.target = '_self'
   }
   control.click()
   return { ...result, clicked: true, message: '已触发后台入口，等待页面就绪' }

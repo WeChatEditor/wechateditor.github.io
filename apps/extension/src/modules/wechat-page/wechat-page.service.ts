@@ -58,8 +58,10 @@ export async function openWeb(): Promise<void> {
     if (tabs[0].windowId) await chrome.windows.update(tabs[0].windowId, { focused: true })
   } else await chrome.tabs.create({ url })
 }
-export async function openWechat(): Promise<void> {
-  await chrome.tabs.create({ url: wechatUrl })
+export async function openWechat(): Promise<number> {
+  const tab = await chrome.tabs.create({ url: wechatUrl, active: true })
+  if (tab.id === undefined) throw new TransferError(errors.PAGE_UNSUPPORTED, '无法打开公众号后台')
+  return tab.id
 }
 export async function duplicateTarget(tabId: number, account: string): Promise<number> {
   const probe = await inspectPage(tabId)
@@ -86,18 +88,31 @@ export async function applyArticle(binding: PageBinding, title: string, html: st
   ).page
 }
 export async function navigationStep(
-  tabId: number,
+  binding: PageBinding,
   operation: 'drafts' | 'create' | 'article',
-  account: string,
 ) {
-  return (await inspectPage(tabId, { operation, account })).page
+  return (
+    await inspectPage(binding.tabId, { operation, account: binding.account }, binding.documentId)
+  ).page
 }
-export async function childTab(tabId: number): Promise<number | undefined> {
+export async function childTabs(tabId: number): Promise<number[]> {
   const tabs = await chrome.tabs.query({ url: `${wechatUrl}*` })
-  const children = tabs.filter(function child(tab) {
-    return tab.openerTabId === tabId
+  return tabs
+    .filter(function child(tab) {
+      return tab.openerTabId === tabId && tab.id !== undefined
+    })
+    .map(function id(tab) {
+      return tab.id!
+    })
+}
+export async function childTab(
+  tabId: number,
+  previous: readonly number[],
+): Promise<number | undefined> {
+  const children = (await childTabs(tabId)).filter(function created(id) {
+    return !previous.includes(id)
   })
   if (children.length > 1)
     throw new TransferError(errors.PAGE_UNSUPPORTED, '新建操作打开了多个页面，请检查后台')
-  return children[0]?.id
+  return children[0]
 }

@@ -15,6 +15,7 @@ import {
 import {
   applyArticle,
   childTab,
+  childTabs,
   duplicateTarget,
   inspectPage,
   listTargets,
@@ -22,6 +23,7 @@ import {
   openWeb,
   openWechat,
 } from '../wechat-page/wechat-page.service'
+import type { PageBinding } from '../wechat-page/wechat-page.model'
 import {
   executionPhases,
   type TransferRepository,
@@ -39,6 +41,8 @@ let queue: Promise<unknown> = Promise.resolve()
 let startup: Promise<void>
 let startupFailed = false
 let activeAttempt: string | undefined
+let openingLogin: string | undefined
+const resumingTabs = new Set<number>()
 function serialized<T>(action: () => Promise<T>): Promise<T> {
   const next = queue.then(action, action)
   queue = next.catch(function ignore() {})
@@ -72,10 +76,13 @@ async function phase(
     const state = await repository()
     const task = requireTask(state, id)
     if (task.attemptId !== attempt || !executionPhases.has(task.phase))
-      throw new TransferError(errors.RESULT_UNCERTAIN, '执行租约已失效，已停止后续操作')
+      throw new TransferError(errors.RESULT_UNCERTAIN, task.message || '自动插入已中止，请检查后台')
     task.phase = next
     task.message = message
-    if (binding) Object.assign(task, binding)
+    if (binding) {
+      if (task.tabId !== binding.tabId) delete task.documentId
+      Object.assign(task, binding)
+    }
     if (next === 'inserted') {
       delete task.account
       delete task.documentId
@@ -97,28 +104,36 @@ async function runTask(
   attempt: string,
   selectedTab: number,
   account: string,
+  ownedTab = false,
 ): Promise<void> {
   let applying = false
   let sideEffects = false
   let noticeTab = selectedTab
   try {
     sideEffects = true
-    let tabId = await duplicateTarget(selectedTab, account)
+    let tabId = ownedTab ? selectedTab : await duplicateTarget(selectedTab, account)
+    const navigationTab = tabId
     noticeTab = tabId
-    await phase(id, attempt, 'creating', '独立后台标签已打开，正在进入草稿箱', { tabId, account })
+    await phase(id, attempt, 'creating', '独立后台标签已打开，正在进入草稿箱')
     const deadline = Date.now() + 30000
-    let drafts = false
-    let create = false
-    let article = false
+    let step: 'drafts' | 'create' | 'article' | 'editor' = 'drafts'
+    let previousChildren: number[] = []
     let creationDocumentId = ''
-    let binding: { tabId: number; documentId: string; account: string } | undefined
+    let binding: PageBinding | undefined
     while (Date.now() < deadline) {
-      await phase(id, attempt, 'waiting_editor', '正在等待新的空图文编辑器')
-      const child = await childTab(tabId)
-      if (child !== undefined) {
-        tabId = child
-        noticeTab = tabId
-        await phase(id, attempt, 'waiting_editor', '新建页面已打开', { tabId, account })
+      await phase(id, attempt, 'waiting_editor', '正在等待新的文章编辑器')
+      if (step === 'editor') {
+        const child = await childTab(navigationTab, previousChildren)
+        if (child === undefined) {
+          await wait(500)
+          continue
+        }
+        if (tabId !== child) {
+          tabId = child
+          noticeTab = tabId
+          await phase(id, attempt, 'waiting_editor', '文章新标签页已打开', { tabId, account })
+          await chrome.tabs.update(tabId, { active: true })
+        }
       }
       let inspected
       try {
@@ -136,8 +151,15 @@ async function runTask(
         await wait(500)
         continue
       }
+      const current = { tabId, documentId: inspected.documentId, account }
+      await phase(id, attempt, 'waiting_editor', '正在准备新的文章', current)
       if (page.editor) {
-        if (!create || !creationDocumentId || inspected.documentId === creationDocumentId)
+        if (
+          step !== 'editor' ||
+          tabId === navigationTab ||
+          !creationDocumentId ||
+          inspected.documentId === creationDocumentId
+        )
           throw new TransferError(
             errors.PAGE_UNSUPPORTED,
             '没有本次新建操作的证据，禁止使用已有编辑页',
@@ -148,29 +170,25 @@ async function runTask(
         }
         if (!page.empty || !page.titleSupported)
           throw new TransferError(errors.EDITOR_NOT_EMPTY, page.message)
-        binding = { tabId, documentId: inspected.documentId, account }
+        binding = current
         break
       }
-      if (!drafts) {
-        const step = await navigationStep(tabId, 'drafts', account)
-        // A drafts page can lack its own navigation link; try the unique create entry.
-        if (!step.clicked) {
-          const next = await navigationStep(tabId, 'create', account)
-          if (next.clicked) {
-            drafts = true
-            create = true
-            creationDocumentId = inspected.documentId
-          } else throw new TransferError(errors.PAGE_UNSUPPORTED, step.message)
-        } else drafts = true
-      } else if (!create) {
-        const step = await navigationStep(tabId, 'create', account)
-        if (step.clicked) {
-          create = true
+      if (step === 'drafts') {
+        const result = await navigationStep(current, 'drafts')
+        if (!result.clicked && !result.drafts)
+          throw new TransferError(errors.PAGE_UNSUPPORTED, result.message)
+        step = 'create'
+      } else if (step === 'create') {
+        const result = await navigationStep(current, 'create')
+        if (result.clicked) step = 'article'
+      } else if (step === 'article') {
+        previousChildren = await childTabs(navigationTab)
+        await phase(id, attempt, 'waiting_editor', '正在打开文章新标签页', current)
+        const result = await navigationStep(current, 'article')
+        if (result.clicked) {
           creationDocumentId = inspected.documentId
+          step = 'editor'
         }
-      } else if (!article) {
-        const step = await navigationStep(tabId, 'article', account)
-        if (step.clicked) article = true
       }
       await wait(600)
     }
@@ -265,28 +283,96 @@ async function startPending(
 ): Promise<void> {
   const targets = knownTargets || (await listTargets())
   let openLogin = false
+  let pendingId: string | undefined
   const execution = await serialized(async function acquire() {
     const state = await repository()
     const task = state.task
     if (activeAttempt || !task?.payload || task.phase !== 'pending') return
     const target = chooseTarget(targets, state.selected)
     if (!target) {
-      openLogin = openWhenUnavailable
+      openLogin = openWhenUnavailable && task.tabId === undefined && openingLogin !== task.id
+      pendingId = task.id
+      if (openLogin) openingLogin = task.id
       return
     }
+    const ownedTab = task.tabId === target.tabId
     state.selected = { tabId: target.tabId, account: target.account }
     task.phase = 'creating'
-    task.message = '即将独立新建图文'
+    task.message = '即将进入草稿箱并新建文章'
     task.attemptId = crypto.randomUUID()
-    task.tabId = target.tabId
+    delete task.tabId
+    delete task.documentId
     task.account = target.account
     synchronize(state)
     await writeRepository(state)
     activeAttempt = task.attemptId
-    return { id: task.id, attempt: task.attemptId, tabId: target.tabId, account: target.account }
+    return {
+      id: task.id,
+      attempt: task.attemptId,
+      tabId: target.tabId,
+      account: target.account,
+      ownedTab,
+    }
   })
-  if (execution) await runTask(execution.id, execution.attempt, execution.tabId, execution.account)
-  else if (openLogin) await openWechat()
+  if (execution)
+    await runTask(
+      execution.id,
+      execution.attempt,
+      execution.tabId,
+      execution.account,
+      execution.ownedTab,
+    )
+  else if (openLogin && pendingId) {
+    try {
+      const tabId = await openWechat()
+      await serialized(async function bindLogin() {
+        const state = await repository()
+        const task = state.task
+        if (!task || task.id !== pendingId || task.phase !== 'pending') return
+        task.tabId = tabId
+        task.message = '请登录公众号，页面就绪后将自动进入草稿箱并新建文章'
+        await writeRepository(state)
+      })
+      // Covers a page that completed loading before its task binding was persisted.
+      await resumePendingTab(tabId)
+    } finally {
+      if (openingLogin === pendingId) openingLogin = undefined
+    }
+  }
+}
+async function resumePendingTab(tabId: number): Promise<void> {
+  if (resumingTabs.has(tabId)) return
+  resumingTabs.add(tabId)
+  try {
+    const deadline = Date.now() + 30000
+    while (Date.now() < deadline) {
+      const pending = await serialized(async function waitingLogin() {
+        const state = await repository()
+        return Boolean(
+          !activeAttempt &&
+          state.task?.payload &&
+          state.task.phase === 'pending' &&
+          state.task.tabId === tabId,
+        )
+      })
+      if (!pending) return
+      const tab = await chrome.tabs.get(tabId)
+      if (tab.status === 'complete') {
+        try {
+          const inspected = await inspectPage(tabId)
+          if (inspected.page.account && !inspected.page.editor) {
+            await startPending([{ tabId, ...inspected.page }])
+            return
+          }
+        } catch {
+          // Login redirects can replace the document while its account is being inspected.
+        }
+      }
+      await wait(500)
+    }
+  } finally {
+    resumingTabs.delete(tabId)
+  }
 }
 async function external(request: ExternalRequest) {
   if (request.kind === 'PING') return { extensionVersion: chrome.runtime.getManifest().version }
@@ -398,6 +484,12 @@ export function registerTransferWorker(): void {
     await writeRepository(state)
   })().catch(function damaged() {
     startupFailed = true
+  })
+  chrome.tabs.onUpdated.addListener(function loginPageLoaded(tabId, change, tab) {
+    if (change.status !== 'complete' && !(change.url && tab.status === 'complete')) return
+    void resumePendingTab(tabId).catch(function unavailable() {
+      // Only a still-pending login tab can resume; popup refresh remains available.
+    })
   })
   chrome.runtime.onMessageExternal.addListener(function receive(raw: unknown, sender, respond) {
     const id =
