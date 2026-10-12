@@ -236,7 +236,16 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
         'a,button,[role="button"],[role="menuitem"],.weui-desktop-dropdown__list-ele,.weui-desktop-dropdown__list-item',
       ),
     ].filter(function matching(element) {
-      const name = (element.getAttribute('aria-label') || element.textContent || '')
+      const menuText = element.matches(
+        '.weui-desktop-dropdown__list-ele,.weui-desktop-dropdown__list-item',
+      )
+        ? element.querySelector<HTMLElement>('.weui-desktop-dropdown__list-ele__text')
+        : null
+      // Menu tooltips can repeat the label in textContent even when they are hidden.
+      const name = (
+        element.getAttribute('aria-label') ||
+        (menuText && visible(menuText) ? menuText.innerText : element.innerText)
+      )
         .replace(/\s+/g, '')
         .trim()
       return visible(element) && labels.includes(name) && enabled(element)

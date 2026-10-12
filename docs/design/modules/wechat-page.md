@@ -8,6 +8,8 @@ owner: project maintainers
 
 # wechat-page模块
 
+0.1.9创作下拉菜单名称适配：维护者实际HTML中，li.weui-desktop-dropdown__list-ele含可见.weui-desktop-dropdown__list-ele__text“文章”和隐藏同名tooltip，旧textContent将二者合并。已登记的下拉菜单项优先读取可见名称标签，其他可点击候选使用innerText，aria-label保留优先级；点击仍落在原菜单项或去重后的内部链接。精确语义、唯一可见可用入口与新标签保护保持，缺失等待、多目标停止。只修改私有bridge，不变更公共model/service或模块依赖。
+
 0.1.8根据维护者提供的实际左侧结构，将草稿箱限定为.weui-desktop-menu_create内容管理分组内的a.weui-desktop-menu__link，以title/内部.weui-desktop-menu__name核对语义，不要求固定ID或复制链接参数。可见性同时排除hidden/inert和visibility:hidden/collapse；同名正文入口及隐藏副本不构成目标。子菜单未显示时允许一次点击该分组的“内容管理”span标题，返回menuExpansionRequested/retryNavigation，worker保持原草稿箱阶段等待，后续expandMenu:false防止反复切换。只有本地页面命令包含该布尔参数，不开放外部消息或任意选择器。缺失可等待，多个可见分组/入口或禁用立即停止；新的创作/文章同样区分缺失等待与多目标停止。
 
 0.1.7按维护者确认的“草稿箱 → 新的创作 → 文章”导航；文章优先匹配，旧图文名称兼容。菜单自身与其链接归为同一操作，独立入口仍须唯一且可见；已在草稿箱时用可见标题/选中菜单和唯一创作按钮确认。导航显式绑定documentId，保留平台链接target；文章点击前记录子标签基线，之后只接受唯一新增公众号子标签。openWechat返回本次独立后台tabId，便于pending登录任务绑定，不返回后台URL或登录凭据。

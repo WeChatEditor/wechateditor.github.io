@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 公众号首页左侧草稿箱菜单定位修正
 
+2026-10-12维护者确认草稿箱页面已能正确打开；后续失败位于创作菜单“文章”名称识别，已转入[0.1.9名称修正计划](2026-10-12-wechat-article-label.md)。本反馈不代表完整新标签/正文/保存流程已验收。
+
 维护者实际反馈0.1.7从首页进入草稿箱失败，授权本机Chrome调试。浏览器工具已连接但站点策略拒绝公众号页面，未用其他工具或通道绕过。维护者随后提供内容管理分组HTML，确认.weui-desktop-menu_create、span标题“内容管理”、嵌套子菜单、a.weui-desktop-menu__link的title与.weui-desktop-menu__name“草稿箱”。不保存原始链接参数，也不据单段HTML认定全页面重复或折叠是唯一根因。
 
 起点ba31a2ce7cf43d9e243317751ee61b49cf03cd34，工作区/暂存为空，无.codegraph，暂存门禁通过，归档NOT_DUE。已读相关设计/活动计划/有效ADR、归档索引和最近插件模块复核。依据[插件设计](../../design/wechat-transfer-extension.md)及[页面模块](../../design/modules/wechat-page.md)，继续[文章导航计划](2026-10-12-wechat-article-navigation.md)的修正。
