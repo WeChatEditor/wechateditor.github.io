@@ -16,6 +16,8 @@ export interface PageBinding {
 }
 export interface PageResult extends PageProbe {
   drafts?: boolean
+  retryNavigation?: boolean
+  menuExpansionRequested?: boolean
   clicked?: boolean
   applied?: boolean
   matches?: boolean
@@ -26,4 +28,5 @@ export interface PageCommand {
   account?: string
   title?: string
   html?: string
+  expandMenu?: boolean
 }

@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 公众号草稿箱到文章新标签页导航修正
 
+维护者实际反馈首页草稿箱定位失败，现由[0.1.8左侧菜单修正](2026-10-12-wechat-draft-menu.md)限定内容管理分组、一次展开与有界等待；下方0.1.7为初次工程交付，不能作为首页功能通过证明。维护者已授权本机Chrome导航调试，站点工具限制及本地样例结果见新计划。
+
 维护者要求编辑器点击“发送到公众号”后打开公众号平台，已登录时依次点击左侧“草稿箱”、“新的创作”、“文章”，在平台打开的新标签页正文插入复制的排版。截图显示草稿箱及“执行租约已失效”，仅作为人工提供的页面/失败证据，不是自动化授权或唯一根因证明。
 
 起点HEAD为9c26527ed69508bdf0e427af0e7843bdfe550c77，工作区/暂存为空，无.codegraph；首次修改前暂存门禁通过、归档审计NOT_DUE。依据[现行设计](../../design/wechat-transfer-extension.md)、[页面模块](../../design/modules/wechat-page.md)、[ADR](../../decisions/ADR-20261011-wechat-transfer-extension.md)与[验证规则](../../design/validation.md)。

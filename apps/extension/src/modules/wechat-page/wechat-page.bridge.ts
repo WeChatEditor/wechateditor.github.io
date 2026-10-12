@@ -12,7 +12,11 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
   }
   if (location.origin !== 'https://mp.weixin.qq.com' || window.top !== window) return failed
   function visible(element: Element): boolean {
-    return element.getClientRects().length > 0
+    return (
+      element.getClientRects().length > 0 &&
+      !element.closest('[hidden],[inert]') &&
+      !['hidden', 'collapse'].includes(getComputedStyle(element).visibility)
+    )
   }
   function accountName(): string {
     const names = [
@@ -212,21 +216,30 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     }
   }
   if (editor) return { ...result, clicked: false, message: '当前不是受支持的新建入口' }
+  function label(element: Element): string {
+    return (
+      element.getAttribute('aria-label') ||
+      element.getAttribute('title') ||
+      element.querySelector('.weui-desktop-menu__name')?.textContent ||
+      element.textContent ||
+      ''
+    )
+      .replace(/\s+/g, '')
+      .trim()
+  }
+  function enabled(element: Element): boolean {
+    return !element.hasAttribute('disabled') && element.getAttribute('aria-disabled') !== 'true'
+  }
   function controlsFor(labels: string[]): HTMLElement[] {
     const matches = [
       ...document.querySelectorAll<HTMLElement>(
         'a,button,[role="button"],[role="menuitem"],.weui-desktop-dropdown__list-ele,.weui-desktop-dropdown__list-item',
       ),
     ].filter(function matching(element) {
-      const label = (element.getAttribute('aria-label') || element.textContent || '')
+      const name = (element.getAttribute('aria-label') || element.textContent || '')
         .replace(/\s+/g, '')
         .trim()
-      return (
-        visible(element) &&
-        labels.includes(label) &&
-        !element.hasAttribute('disabled') &&
-        element.getAttribute('aria-disabled') !== 'true'
-      )
+      return visible(element) && labels.includes(name) && enabled(element)
     })
     // A menu item and its own link represent one action, not two competing entries.
     return matches.filter(function innermost(element) {
@@ -234,6 +247,31 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
         return other !== element && element.contains(other)
       })
     })
+  }
+  let draftControls: HTMLAnchorElement[] = []
+  let contentMenu: HTMLElement | undefined
+  let menuHeading: HTMLElement | undefined
+  if (command.operation === 'drafts') {
+    const menus = [...document.querySelectorAll<HTMLElement>('.weui-desktop-menu_create')].filter(
+      function contentManagement(menu) {
+        const heading = menu.querySelector<HTMLElement>(':scope > .weui-desktop-menu__link')
+        return visible(menu) && heading !== null && label(heading) === '内容管理'
+      },
+    )
+    if (menus.length > 1)
+      return { ...result, clicked: false, message: '左侧匹配到多个“内容管理”菜单，已停止自动导航' }
+    contentMenu = menus[0]
+    menuHeading =
+      contentMenu?.querySelector<HTMLElement>(':scope > .weui-desktop-menu__link') || undefined
+    draftControls = contentMenu
+      ? [...contentMenu.querySelectorAll<HTMLAnchorElement>('a.weui-desktop-menu__link')].filter(
+          function draftLink(link) {
+            return label(link) === '草稿箱' && visible(link)
+          },
+        )
+      : []
+    if (draftControls.length > 1)
+      return { ...result, clicked: false, message: '左侧匹配到多个“草稿箱”入口，已停止自动导航' }
   }
   if (command.operation === 'drafts' && controlsFor(['新的创作']).length === 1) {
     const heading = [
@@ -243,14 +281,41 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     ].some(function draftsHeading(element) {
       return visible(element) && element.textContent?.trim() === '草稿箱'
     })
-    const selected = controlsFor(['草稿箱']).some(function current(element) {
+    const selected = draftControls.some(function current(element) {
       return Boolean(
         element.closest(
-          '[aria-current="page"],.selected,.active,.weui-desktop-menu__item_selected,.weui-desktop-menu__sub_item_selected',
+          '[aria-current="page"],.selected,.active,.weui-desktop-menu__item_selected,.weui-desktop-menu__sub_item_selected,.weui-desktop-sub-menu__item_selected',
         ),
       )
     })
     if (heading || selected) return { ...result, drafts: true, message: '已在草稿箱，准备新的创作' }
+  }
+  if (command.operation === 'drafts' && draftControls.length === 0) {
+    if (!contentMenu || !menuHeading)
+      return {
+        ...result,
+        clicked: false,
+        retryNavigation: true,
+        message: '未找到首页左侧“内容管理”菜单，正在等待页面加载',
+      }
+    if (!visible(menuHeading) || !enabled(menuHeading))
+      return { ...result, clicked: false, message: '左侧“内容管理”菜单暂时不可点击' }
+    if (command.expandMenu !== false) {
+      menuHeading.click()
+      return {
+        ...result,
+        clicked: false,
+        retryNavigation: true,
+        menuExpansionRequested: true,
+        message: '已点击“内容管理”，正在等待草稿箱菜单展开',
+      }
+    }
+    return {
+      ...result,
+      clicked: false,
+      retryNavigation: true,
+      message: '左侧“草稿箱”入口尚未显示，正在等待菜单展开或加载',
+    }
   }
   const labels =
     command.operation === 'drafts'
@@ -259,17 +324,25 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
         ? ['新的创作']
         : ['文章', '图文', '图文消息']
   let controls: HTMLElement[] = []
-  for (const label of labels) {
-    controls = controlsFor([label])
-    if (controls.length) break
+  if (command.operation === 'drafts') controls = draftControls
+  else {
+    for (const name of labels) {
+      controls = controlsFor([name])
+      if (controls.length) break
+    }
   }
   if (controls.length !== 1)
     return {
       ...result,
       clicked: false,
-      message: `无法唯一定位“${labels[0]}”，请手动进入草稿箱后重试`,
+      retryNavigation: controls.length === 0,
+      message: controls.length
+        ? `匹配到多个“${labels[0]}”入口，已停止自动导航`
+        : `未找到“${labels[0]}”入口，正在等待页面就绪`,
     }
   const control = controls[0]
+  if (!enabled(control))
+    return { ...result, clicked: false, message: `“${labels[0]}”入口暂时不可点击` }
   if (control instanceof HTMLAnchorElement) {
     const target = new URL(control.href, location.href)
     if (target.origin !== location.origin || !/^https:/.test(target.protocol))

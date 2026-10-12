@@ -90,9 +90,14 @@ export async function applyArticle(binding: PageBinding, title: string, html: st
 export async function navigationStep(
   binding: PageBinding,
   operation: 'drafts' | 'create' | 'article',
+  expandMenu = true,
 ) {
   return (
-    await inspectPage(binding.tabId, { operation, account: binding.account }, binding.documentId)
+    await inspectPage(
+      binding.tabId,
+      { operation, account: binding.account, ...(operation === 'drafts' ? { expandMenu } : {}) },
+      binding.documentId,
+    )
   ).page
 }
 export async function childTabs(tabId: number): Promise<number[]> {

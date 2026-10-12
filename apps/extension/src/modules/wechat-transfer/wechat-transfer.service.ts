@@ -119,12 +119,15 @@ async function runTask(
     let step: 'drafts' | 'create' | 'article' | 'editor' = 'drafts'
     let previousChildren: number[] = []
     let creationDocumentId = ''
+    let menuExpansionRequested = false
+    let navigationMessage = '新建或编辑器尚未就绪'
     let binding: PageBinding | undefined
     while (Date.now() < deadline) {
       await phase(id, attempt, 'waiting_editor', '正在等待新的文章编辑器')
       if (step === 'editor') {
         const child = await childTab(navigationTab, previousChildren)
         if (child === undefined) {
+          navigationMessage = '“文章”入口已点击，尚未找到本次新开的编辑标签页'
           await wait(500)
           continue
         }
@@ -144,10 +147,11 @@ async function runTask(
       }
       const page = inspected.page
       if (Date.now() >= deadline)
-        throw new TransferError(errors.STEP_TIMEOUT, '等待新建编辑器超时，请检查后台')
+        throw new TransferError(errors.STEP_TIMEOUT, `等待公众号页面超时：${navigationMessage}`)
       if (page.account && page.account !== account)
         throw new TransferError(errors.TARGET_REQUIRED, '公众号账号已变化，已停止')
       if (!page.account) {
+        navigationMessage = page.message
         await wait(500)
         continue
       }
@@ -165,6 +169,7 @@ async function runTask(
             '没有本次新建操作的证据，禁止使用已有编辑页',
           )
         if (!page.ready) {
+          navigationMessage = page.message
           await wait(500)
           continue
         }
@@ -174,17 +179,25 @@ async function runTask(
         break
       }
       if (step === 'drafts') {
-        const result = await navigationStep(current, 'drafts')
-        if (!result.clicked && !result.drafts)
+        const result = await navigationStep(current, 'drafts', !menuExpansionRequested)
+        if (result.menuExpansionRequested) menuExpansionRequested = true
+        navigationMessage = result.message
+        if (!result.clicked && !result.drafts && !result.retryNavigation)
           throw new TransferError(errors.PAGE_UNSUPPORTED, result.message)
-        step = 'create'
+        if (result.clicked || result.drafts) step = 'create'
       } else if (step === 'create') {
         const result = await navigationStep(current, 'create')
+        navigationMessage = result.message
+        if (!result.clicked && !result.retryNavigation)
+          throw new TransferError(errors.PAGE_UNSUPPORTED, result.message)
         if (result.clicked) step = 'article'
       } else if (step === 'article') {
         previousChildren = await childTabs(navigationTab)
         await phase(id, attempt, 'waiting_editor', '正在打开文章新标签页', current)
         const result = await navigationStep(current, 'article')
+        navigationMessage = result.message
+        if (!result.clicked && !result.retryNavigation)
+          throw new TransferError(errors.PAGE_UNSUPPORTED, result.message)
         if (result.clicked) {
           creationDocumentId = inspected.documentId
           step = 'editor'
@@ -195,7 +208,7 @@ async function runTask(
     if (!binding)
       throw new TransferError(
         errors.STEP_TIMEOUT,
-        '新建或编辑器就绪超时，请检查后台，不自动重放新建操作',
+        `等待公众号页面超时：${navigationMessage}。请检查后台，不自动重放新建操作`,
       )
     const task = await phase(id, attempt, 'applying', '正在插入，请暂时不要编辑此页面', binding)
     if (!task.payload) throw new TransferError(errors.TASK_EXPIRED, '任务载荷已过期')

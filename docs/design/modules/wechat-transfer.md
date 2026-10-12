@@ -8,6 +8,8 @@ owner: project maintainers
 
 # wechat-transfer跨工作区模块
 
+0.1.8在本次尝试内记录menuExpansionRequested，只在草稿箱阶段首次允许页面适配器展开内容管理；retryNavigation不推进到新的创作，继续使用原30秒期限。后续创作/文章缺失等待，多目标或其他拒绝立即停止；超时保留最后的页面/入口原因。不新增仓储字段、共享协议或公开状态查询。
+
 0.1.7导航阶段依次进入草稿箱、打开创作菜单、点击文章、等待唯一新增文章子标签并插入。获取租约时不绑定用户原后台，检查账号后绑定独立导航页当前documentId；切换文章子标签清除旧文档绑定，旧文档活动不影响新阶段，真实用户活动仍停止执行并保留具体原因。任务处于pending且没有可用后台时打开固定首页，在task.tabId保存本次登录标签；首次及该标签加载完成/完成状态URL变化时用单个30秒就绪探测识别账号并自动继续，超时保留pending供登录事件或popup刷新继续。仅pending可以恢复，creating/applying中断不会重放；登录打开及探测均防并发重复。
 
 0.1.6连接检测：Web公共service.detect在初始化一次PING，重复检测共享同一在途Promise；model区分checking/available/unavailable/incompatible，连接或协议失败更新可用性。openPanel只在available时运行，失败提供操作反馈。panel分组展示文章、连接/安装、复制/发送结果和步骤；没有发送阶段轮询。worker的外部/内部PING只返回manifest版本，不进入repository或页面调度。固定OPEN_WECHAT允许可信公众号content调用，修复浮层既有导航入口。
