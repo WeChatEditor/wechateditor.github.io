@@ -8,6 +8,8 @@ owner: project maintainers
 
 # wechat-export模块
 
+copyRichText支持ExportResult或同一快照的Promise。用户点击内立即调用剪贴板write，ClipboardItem的HTML/纯文字Promise来自同次输出；异步图片准备及错误诊断完成后才解析Blob。两种格式保留一致内容，尺寸/图片错误拒绝整个复制，不静默降级。发送调用者在异步准备前后复核generation/冲突；插件只接收无图片文字输出。系统剪贴板失败与插件提交独立反馈，自动保存不调用此接口。
+
 ## 职责与边界
 
 接受显式只读快照，构建受控HTML、内联样式、DOMPurify清洗及HTML/纯文字剪贴板输出。

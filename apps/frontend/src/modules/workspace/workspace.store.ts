@@ -190,9 +190,70 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     focus.value = false
     const currentGeneration = generation
     const source = snapshot()
-    transferTitle.value = preflightTextArticle(source).title || '未命名文章'
-    try {
-      const result = exportTextArticle(source)
+    const preflight = preflightTextArticle(source)
+    transferTitle.value = preflight.title || '未命名文章'
+    drawer.value = 'transfer'
+    transfer.state.sendStatus = 'idle'
+    transfer.state.message = ''
+    transfer.state.actionMessage = ''
+    transfer.state.clipboardStatus = 'copying'
+    transfer.state.clipboardMessage = '正在复制当前排版…'
+    transfer.state.busy = true
+    clearCopyReset()
+    copyState.value = 'copying'
+    const job = ++exportGeneration
+    function current(): boolean {
+      return (
+        ready.value &&
+        !disposed &&
+        !restoring.value &&
+        !conflictReason.value &&
+        currentGeneration === generation &&
+        job === exportGeneration
+      )
+    }
+    const prepared = Promise.resolve().then(async function prepareSnapshot() {
+      if (!current()) throw new Error('正文或排版已变化，请重新发送')
+      const result = preflight.hasImages ? await exportArticle(source) : exportTextArticle(source)
+      if (!current()) throw new Error('正文或排版已变化，请重新发送')
+      diagnostics.value = result.diagnostics
+      exportResult.value = result
+      return result
+    })
+    void prepared.catch(function unavailable() {})
+    // Start writing before awaiting plugin detection, digest or image preparation.
+    const clipboard = copyRichText(prepared)
+      .then(function copied() {
+        if (!current()) return
+        transfer.state.clipboardStatus = 'copied'
+        transfer.state.clipboardMessage = '当前排版已复制，可直接在公众号正文编辑区粘贴。'
+        copyState.value = 'success'
+        copyResetTimer = setTimeout(function resetCopyFeedback() {
+          copyResetTimer = undefined
+          if (copyState.value === 'success') copyState.value = 'idle'
+        }, 2500)
+      })
+      .catch(function copyFailed(error) {
+        if (!current()) return
+        transfer.state.clipboardStatus = 'error'
+        transfer.state.clipboardMessage =
+          error instanceof Error ? error.message : '复制未完成，请重试'
+        copyState.value = exportResult.value ? 'ready' : 'error'
+      })
+    const submission = (async function sendToPlugin() {
+      if (transfer.state.availability === 'checking') await transfer.detect()
+      if (!current()) return
+      if (transfer.state.availability !== 'available') {
+        transfer.state.message =
+          '安装或启用传稿插件后，可使用自动新建和插入。现在也可以复制到公众号。'
+        return
+      }
+      if (preflight.hasImages)
+        throw new Error(
+          '这篇文章含图片，已尝试完整复制；请到公众号粘贴并检查图片。插件暂不支持含图传稿。',
+        )
+      const result = await prepared
+      if (!current()) return
       await transfer.submit(
         {
           sourceArticleId: source.article.id,
@@ -202,19 +263,15 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
           html: result.html,
           plainText: result.plainText,
         },
-        function current() {
-          return (
-            ready.value &&
-            !restoring.value &&
-            !conflictReason.value &&
-            currentGeneration === generation
-          )
-        },
+        current,
       )
-    } catch (error) {
+    })().catch(function submitFailed(error) {
+      if (!current()) return
+      transfer.state.sendStatus = 'error'
       transfer.state.message = error instanceof Error ? error.message : '无法准备传稿快照'
-    }
-    if (!conflictReason.value) drawer.value = 'transfer'
+    })
+    await Promise.allSettled([clipboard, submission])
+    transfer.state.busy = false
   }
   const preview = computed(function renderPreview() {
     return previewArticle(snapshot(), urls.value)
@@ -348,6 +405,12 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
   }
   function changed(): void {
     clearCopyReset()
+    transfer.state.clipboardStatus = 'idle'
+    transfer.state.clipboardMessage = '内容已修改，请重新复制当前排版。'
+    if (transfer.state.sendStatus === 'sending') {
+      transfer.state.sendStatus = 'idle'
+      transfer.state.message = '内容已修改，请检查后台已接收的文章；再次发送会使用当前排版。'
+    }
     clearTimeout(pluginSaveTimer)
     pluginSaveTimer = undefined
     transfer.state.cacheStatus = 'idle'
@@ -715,12 +778,20 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     const current = generation
     const result = exportResult.value
     copyState.value = 'copying'
+    if (drawer.value === 'transfer') {
+      transfer.state.clipboardStatus = 'copying'
+      transfer.state.clipboardMessage = '正在复制当前排版…'
+    }
     try {
       await copyRichText(result)
       if (current !== generation) {
         return
       }
       copyState.value = 'success'
+      if (drawer.value === 'transfer') {
+        transfer.state.clipboardStatus = 'copied'
+        transfer.state.clipboardMessage = '当前排版已复制，可直接在公众号正文编辑区粘贴。'
+      }
       copyResetTimer = setTimeout(function resetCopyFeedback() {
         copyResetTimer = undefined
         if (copyState.value === 'success') {
@@ -737,6 +808,10 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
         error instanceof Error && error.message.startsWith('富文本复制需要')
           ? error.message
           : '内容已准备好，浏览器未允许复制。请再次点击「复制已准备内容」，或检查剪贴板权限。'
+      if (drawer.value === 'transfer') {
+        transfer.state.clipboardStatus = 'error'
+        transfer.state.clipboardMessage = message.value
+      }
     }
   }
   function dispose(): void {
@@ -788,6 +863,8 @@ export const useWorkspaceStore = defineStore('jlab-workspace', function workspac
     transferState: transfer.state,
     transferTitle,
     openTransfer,
+    detectPlugin: transfer.detect,
+    openTransferPanel: transfer.openPanel,
     initialize,
     saveNow,
     refreshHistory,

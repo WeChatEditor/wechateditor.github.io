@@ -54,6 +54,7 @@ export const payloadSchema = z.strictObject({
 export type TransferPayload = z.infer<typeof payloadSchema>
 const envelope = { protocolVersion: z.literal(protocolVersion), requestId: z.uuid() }
 export const externalRequestSchema = z.discriminatedUnion('kind', [
+  z.strictObject({ ...envelope, kind: z.literal('PING') }),
   z.strictObject({ ...envelope, kind: z.literal('SUBMIT_TASK'), payload: payloadSchema }),
   z.strictObject({ ...envelope, kind: z.literal('SAVE_ARTICLE'), payload: payloadSchema }),
   z.strictObject({ ...envelope, kind: z.literal('OPEN_PANEL') }),
@@ -61,6 +62,7 @@ export const externalRequestSchema = z.discriminatedUnion('kind', [
 ])
 export type ExternalRequest = z.infer<typeof externalRequestSchema>
 export const internalRequestSchema = z.discriminatedUnion('kind', [
+  z.strictObject({ kind: z.literal('PING') }),
   z.strictObject({ kind: z.literal('ARTICLE') }),
   z.strictObject({ kind: z.literal('COPY_ARTICLE') }),
   z.strictObject({ kind: z.literal('TARGETS') }),
@@ -76,7 +78,9 @@ export const internalRequestSchema = z.discriminatedUnion('kind', [
 ])
 export type InternalRequest = z.infer<typeof internalRequestSchema>
 export function contentRequestAllowed(request: InternalRequest): boolean {
-  return ['ARTICLE', 'OPEN_WEB', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(request.kind)
+  return ['PING', 'ARTICLE', 'OPEN_WEB', 'OPEN_WECHAT', 'OPEN_PANEL', 'PAGE_ACTIVITY'].includes(
+    request.kind,
+  )
 }
 export const phaseSchema = z.enum([
   'pending',
@@ -113,6 +117,7 @@ export const responseSchema = z
       context.addIssue({ code: 'custom', message: '响应成功/失败字段不一致' })
   })
 export type TransferResponse = z.infer<typeof responseSchema>
+export const connectionInfoSchema = z.strictObject({ extensionVersion: z.string().min(1).max(40) })
 export const articleInfoSchema = z.strictObject({ title: titleSchema, receivedAt: integer })
 export const articleResponseSchema = z.strictObject({ article: articleInfoSchema.nullable() })
 export const clipboardArticleSchema = articleInfoSchema.extend({

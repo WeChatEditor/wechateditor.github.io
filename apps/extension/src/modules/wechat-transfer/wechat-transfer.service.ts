@@ -289,6 +289,7 @@ async function startPending(
   else if (openLogin) await openWechat()
 }
 async function external(request: ExternalRequest) {
+  if (request.kind === 'PING') return { extensionVersion: chrome.runtime.getManifest().version }
   if (request.kind === 'OPEN_PANEL') {
     await openPanel()
     return {}
@@ -317,6 +318,7 @@ async function external(request: ExternalRequest) {
   return { article: articleInfo(task) }
 }
 async function internal(request: InternalRequest, sender: chrome.runtime.MessageSender) {
+  if (request.kind === 'PING') return { extensionVersion: chrome.runtime.getManifest().version }
   if (request.kind === 'PAGE_ACTIVITY') {
     const state = await repository()
     if (

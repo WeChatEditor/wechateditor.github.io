@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [插件检测与传稿界面调整](fix/2026/10/2026-10-12-transfer-availability-layout.md)
+
 - [自动保存同步插件排版快照](feat/2026/10/2026-10-12-wechat-autosave-snapshot.md)
 
 - [插件内复制传稿退路](feat/2026/10/2026-10-12-wechat-plugin-copy-fallback.md)

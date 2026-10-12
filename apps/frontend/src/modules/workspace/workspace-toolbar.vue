@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { TypesettingConfig } from '../typesetting/typesetting.model'
 import ColorPicker from '../typesetting/typesetting-color-picker.vue'
-defineProps<{
+const props = defineProps<{
   config: TypesettingConfig
   drawer?: string
   copyState: string
   transferBusy: boolean
+  pluginAvailability: 'checking' | 'available' | 'unavailable' | 'incompatible'
   disabled: boolean
   saveState: string
   pluginSaveState: string
@@ -18,6 +20,27 @@ const emit = defineEmits<{
   transfer: []
   retry: []
 }>()
+const pluginConnected = computed(() => props.pluginAvailability === 'available')
+const copyLabel = computed(() =>
+  props.copyState === 'preparing'
+    ? '准备图文'
+    : props.copyState === 'ready'
+      ? '复制已准备内容'
+      : props.copyState === 'success'
+        ? '已复制 ✓'
+        : '复制到公众号',
+)
+const secondaryLabel = computed(() =>
+  pluginConnected.value
+    ? copyLabel.value
+    : props.pluginAvailability === 'checking'
+      ? '发送到公众号 · 正在检测插件'
+      : props.pluginAvailability === 'incompatible'
+        ? '发送到公众号 · 请更新传稿插件'
+        : '发送到公众号 · 安装传稿插件',
+)
+const sendIcon = 'm3 11 18-8-8 18-2-8-8-2Zm8 2 10-10'
+const copyIcon = 'M9 9h12v12H9ZM15 5V3H3v12h2'
 const controls = [
   ['text', '文字设置', 'M4 5h16M12 5v14M8 19h8'],
   ['chapters', '标题样式', 'M4 5h16M4 12h16M4 19h10'],
@@ -139,29 +162,34 @@ const controls = [
       </svg>
       历史版本
     </button>
-    <button
-      class="ui-button"
-      :disabled="disabled || transferBusy || ['preparing', 'copying'].includes(copyState)"
-      @click="emit('transfer')"
-    >
-      <svg
-        class="action-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.7"
-        aria-hidden="true"
+    <el-tooltip :content="secondaryLabel" placement="bottom">
+      <button
+        class="ui-button secondary-transfer-action"
+        :disabled="disabled || transferBusy || ['preparing', 'copying'].includes(copyState)"
+        :title="secondaryLabel"
+        :aria-label="secondaryLabel"
+        @click="pluginConnected ? emit('copy') : emit('transfer')"
       >
-        <path d="m3 11 18-8-8 18-2-8-8-2Zm8 2 10-10" />
-      </svg>
-      发送到公众号
-    </button>
+        <svg
+          class="action-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <path :d="pluginConnected ? copyIcon : sendIcon" />
+        </svg>
+      </button>
+    </el-tooltip>
     <el-button
       class="copy-button"
-      :type="copyState === 'success' ? 'success' : 'primary'"
-      :disabled="disabled"
-      :loading="copyState === 'preparing' || copyState === 'copying'"
-      @click="emit('copy')"
+      :type="!pluginConnected && copyState === 'success' ? 'success' : 'primary'"
+      :disabled="disabled || transferBusy || ['preparing', 'copying'].includes(copyState)"
+      :loading="
+        pluginConnected ? transferBusy : copyState === 'preparing' || copyState === 'copying'
+      "
+      @click="pluginConnected ? emit('transfer') : emit('copy')"
       ><svg
         class="action-icon"
         viewBox="0 0 24 24"
@@ -173,16 +201,8 @@ const controls = [
         aria-hidden="true"
         focusable="false"
       >
-        <path d="M9 9h12v12H9ZM15 5V3H3v12h2" /></svg
-      >{{
-        copyState === 'preparing'
-          ? '准备图文'
-          : copyState === 'ready'
-            ? '复制已准备内容'
-            : copyState === 'success'
-              ? '已复制 ✓'
-              : '复制到公众号'
-      }}</el-button
+        <path :d="pluginConnected ? sendIcon : copyIcon" /></svg
+      >{{ pluginConnected ? '发送到公众号' : copyLabel }}</el-button
     >
   </header>
 </template>
@@ -244,6 +264,13 @@ const controls = [
     background-color 0.2s,
     border-color 0.2s,
     box-shadow 0.2s;
+}
+.secondary-transfer-action {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  color: var(--ui-primary);
+  border-color: var(--ui-border);
 }
 .save-status {
   max-width: 190px;

@@ -190,6 +190,7 @@ function pageHidden(): void {
 }
 onMounted(function initialize() {
   void store.initialize()
+  void store.detectPlugin()
   observer = new ResizeObserver(function measure(entries) {
     containerWidth.value = entries[0].contentRect.width
   })
@@ -218,6 +219,7 @@ onBeforeUnmount(function cleanup() {
       :drawer="store.drawer"
       :copy-state="store.copyState"
       :transfer-busy="store.transferState.busy"
+      :plugin-availability="store.transferState.availability"
       :disabled="disabled"
       :save-state="store.saveState"
       :plugin-save-state="store.pluginSaveState"
@@ -284,6 +286,8 @@ onBeforeUnmount(function cleanup() {
         :state="store.transferState"
         :disabled="disabled || ['preparing', 'copying'].includes(store.copyState)"
         @copy="copy"
+        @detect="store.detectPlugin"
+        @panel="store.openTransferPanel"
       />
     </el-drawer>
     <div class="content-row">

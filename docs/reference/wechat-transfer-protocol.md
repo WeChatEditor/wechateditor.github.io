@@ -4,16 +4,19 @@
 
 ## 外部消息
 
+0.1.6增加无载荷PING：请求仅protocolVersion/requestId/kind，成功data为严格的{extensionVersion}，通过connectionInfoSchema校验。它不读仓储或文章/账号/执行阶段、不打开页面；仍检查真实来源、顶层frame、版本与尺寸。旧协议2插件不识别PING时提示更新。内部PING同样返回版本，允许可信popup/content调用，不扩大正文读取权限。
+
 所有请求包含protocolVersion:2和UUID requestId，严格拒绝未知字段。成功响应为同版本/同ID/status:0/data；失败为非零status/err，不附载荷或原始页面异常。
 
 | kind         | 请求字段 | 成功data                     | 行为                                                          |
 | ------------ | -------- | ---------------------------- | ------------------------------------------------------------- |
+| PING         | 无       | {extensionVersion}           | 仅检测插件连接，无仓储或页面操作                              |
 | SUBMIT_TASK  | payload  | {article:{title,receivedAt}} | 先持久化后ACK，自动选择目标并新建插入                         |
 | SAVE_ARTICLE | payload  | {article:{title,receivedAt}} | 自动保存的独立可复制快照，先持久化后ACK，无页面操作/任务/回执 |
 | OPEN_PANEL   | 无       | {}                           | 优先打开popup，失败时打开本地面板标签                         |
 | OPEN_WECHAT  | 无       | {}                           | 打开固定公众号首页                                            |
 
-不再支持PING、GET_STATUS、CANCEL_TASK，Web不查询发送阶段、不重试接收状态。手动发送接收超时提示检查后台，自动同步超时提示检查插件且本机草稿不受影响；没有自动重试同一请求。没有公开任意代码/URL/选择器/方法名参数。
+PING只检测插件连接并返回版本；不再支持GET_STATUS、CANCEL_TASK，Web不查询发送阶段、不重试接收状态。手动发送接收超时提示检查后台，自动同步超时提示检查插件且本机草稿不受影响；没有自动重试同一请求。没有公开任意代码/URL/选择器/方法名参数。
 
 worker仅接受真实组织Web根/index.html顶层来源；开发包额外支持5175/4175。来源不能由payload自报。保留整个信封2MiB UTF8限制、严格HTML/样式/媒体和digest校验。
 
@@ -28,7 +31,7 @@ worker仅接受真实组织Web根/index.html顶层来源；开发包额外支持
 | OPEN_WEB / OPEN_WECHAT / OPEN_PANEL | 无             | 打开固定界面                                                                     |
 | PAGE_ACTIVITY                       | 无             | 可信后台用户活动使匹配执行租约失效                                               |
 
-取消内部STATUS、START_INSERT、CANCEL_TASK、CLEAR_STORAGE。TARGETS/SELECT_TARGET/COPY_ARTICLE只接受popup.html来源。公众号content仅ARTICLE/OPEN_WEB/OPEN_PANEL/PAGE_ACTIVITY，使用共享contentRequestAllowed校验；Web没有正文读取消息。成功{status:0,data}、失败{status,err}。
+取消内部STATUS、START_INSERT、CANCEL_TASK、CLEAR_STORAGE。TARGETS/SELECT_TARGET/COPY_ARTICLE只接受popup.html来源。公众号content仅PING/ARTICLE/OPEN_WEB/OPEN_WECHAT/OPEN_PANEL/PAGE_ACTIVITY，使用共享contentRequestAllowed校验；Web没有正文读取消息。成功{status:0,data}、失败{status,err}。
 
 COPY_ARTICLE只返回当前独立clipboard快照（最新成功自动保存或手动发送），不返回账号、执行阶段、来源标识或历史。无论成功/失败/中断均保留供复制，TTL24小时或下次成功同步/发送替换。复制动作不检测状态、不重放写入，不改变快照。Popup可信点击内直接启动ClipboardItem异步HTML/纯文字写入，同次读取保证两个格式一致。ARTICLE返回同一快照的元信息。
 

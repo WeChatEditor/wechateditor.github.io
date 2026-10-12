@@ -8,6 +8,10 @@ owner: project maintainers
 
 # extension-shell模块
 
+0.1.6公众号浮层宽320px并钳制到视口，导航为两列minmax(0,1fr)、文字可换行、logo与图标不收缩，正文最长受视口高度限制并独立滚动。标题栏支持可信Pointer拖动、capture/up/cancel/lostcapture/失焦清理；方向键移动、Shift加速、Home恢复右下角，移动/尺寸变化钳制12px边距。不持久化位置，不访问页面内容。收起与恢复保留操作；可信外部页面活动保护排除浮层拖动/键盘。
+
+浮层由安装插件注入，初始化一次内部PING校验实际worker连接，检测中及失效时打开传稿面板禁用；打开失败后维持禁用并提示启用/刷新。没有插件的新页面不会出现插件浮层；已打开页面的失效浮层在下一次操作失败时提示，不做轮询。Web抽屉同样按连接状态禁用面板入口。
+
 apps/extension/src/modules/extension-shell公开service挂载popup和公众号closed Shadow DOM浮层。依赖共享契约和wechat-transfer消息端口，不读仓储、不导入页面适配器；用户文字用textContent创建。
 
 复用本项目logo，Web/公众号导航按钮缩小并排。Popup下拉默认已选或第一个可用账号，右侧刷新图标具备title/aria-label/键盘焦点；仅打开/刷新/选择时检查页面能力。按钮响应可信点击并使用busy锁。选择保存由worker校验，登录后刷新可自动继续用户已发送但尚未启动的快照。

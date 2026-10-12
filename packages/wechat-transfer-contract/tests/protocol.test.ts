@@ -15,6 +15,7 @@ import {
   articleResponseSchema,
   clipboardResponseSchema,
   contentRequestAllowed,
+  connectionInfoSchema,
   titleSchema,
   TransferError,
   responseSchema,
@@ -65,7 +66,7 @@ test('schemas reject unknown fields and external write commands', function () {
     internalRequestSchema.safeParse({ kind: 'CLEAR_STORAGE', inspected: false }).success,
     false,
   )
-  for (const kind of ['PING', 'GET_STATUS', 'CANCEL_TASK'])
+  for (const kind of ['GET_STATUS', 'CANCEL_TASK'])
     assert.equal(
       externalRequestSchema.safeParse({ protocolVersion, requestId: crypto.randomUUID(), kind })
         .success,
@@ -81,6 +82,20 @@ test('schemas reject unknown fields and external write commands', function () {
     false,
   )
   assert.equal(externalRequestSchema.safeParse({ ...message, protocolVersion: 1 }).success, false)
+})
+test('connection probe carries no content or commands and returns only a version', function () {
+  const probe = { protocolVersion, requestId: crypto.randomUUID(), kind: 'PING' }
+  assert.ok(externalRequestSchema.safeParse(probe).success)
+  for (const extra of [{ payload: payload() }, { tabId: 3 }, { start: true }])
+    assert.equal(externalRequestSchema.safeParse({ ...probe, ...extra }).success, false)
+  assert.ok(contentRequestAllowed(internalRequestSchema.parse({ kind: 'PING' })))
+  assert.ok(contentRequestAllowed(internalRequestSchema.parse({ kind: 'OPEN_WECHAT' })))
+  assert.ok(connectionInfoSchema.safeParse({ extensionVersion: '0.1.6' }).success)
+  for (const extra of [{ article: null }, { phase: 'inserted' }, { account: '公众号' }])
+    assert.equal(
+      connectionInfoSchema.safeParse({ extensionVersion: '0.1.6', ...extra }).success,
+      false,
+    )
 })
 test('responses distinguish success and failure without mixed fields', function () {
   const envelope = { protocolVersion, requestId: crypto.randomUUID() }

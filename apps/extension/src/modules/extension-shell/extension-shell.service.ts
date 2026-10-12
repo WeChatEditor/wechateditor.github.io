@@ -1,5 +1,6 @@
 import {
   articleResponseSchema,
+  connectionInfoSchema,
   clipboardResponseSchema,
   internalResponseSchema,
   targetsSchema,
@@ -31,12 +32,40 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
       ? document.querySelector<HTMLElement>('#app')!
       : document.createElement('aside')
   if (mode === 'content') {
-    host.style.cssText = 'position:fixed;right:18px;bottom:24px;z-index:2147483647'
+    host.style.cssText =
+      'position:fixed;right:18px;bottom:24px;max-width:calc(100vw - 24px);z-index:2147483647'
     document.body.append(host)
   }
   const root = host.attachShadow({ mode: 'closed' })
   const style = document.createElement('style')
-  style.textContent = `:host{font:14px/1.6 system-ui,sans-serif;color:#183141}*{box-sizing:border-box}section{width:${mode === 'popup' ? 360 : 258}px;padding:18px;background:#fff;border:1px solid #dce5eb;border-radius:12px;box-shadow:0 8px 28px #18314119}.brand{display:flex;align-items:center;gap:9px;margin-bottom:14px}.brand img{width:32px;height:32px;border-radius:8px}h1{font-size:16px;margin:0}p{margin:10px 0;overflow-wrap:anywhere}small{color:#637786}button,select{font:inherit;padding:8px 10px;border:1px solid #d6e0e7;border-radius:7px;background:#f5f8fa;color:#183141}button{display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}button svg{width:16px;height:16px;flex:none}button:disabled,select:disabled{opacity:.5;cursor:default}button:focus-visible,select:focus-visible{outline:2px solid #247267;outline-offset:2px}.error{color:#a3472b}.navigation{display:flex;gap:8px;margin-bottom:16px}.navigation button{flex:1;padding:6px 7px;font-size:12px;white-space:nowrap}.target-label{display:block;font-size:12px;color:#637786;margin-bottom:6px}.target-row{display:flex;align-items:center;gap:8px}.target-row select{flex:1;min-width:0;height:36px}.target-row button{width:36px;height:36px;padding:8px;flex:none}.capability{font-size:12px;color:#637786}.panel-button{width:100%;margin:12px 0;color:#fff;background:#247267;border-color:#247267}.hide{font-size:12px;margin-top:12px;padding:4px 10px}`
+  style.textContent = `
+    :host{font:14px/1.6 system-ui,sans-serif;color:#183141;color-scheme:light}
+    *{box-sizing:border-box} [hidden]{display:none!important}
+    section{width:${mode === 'popup' ? 360 : 320}px;max-width:${mode === 'popup' ? 'none' : 'calc(100vw - 24px)'};max-height:${mode === 'popup' ? '560px' : 'calc(100vh - 24px)'};overflow:auto;padding:16px;background:#fff;border:1px solid #dce5eb;border-radius:12px;box-shadow:0 8px 28px #18314119}
+    .brand{display:flex;align-items:center;gap:8px;margin-bottom:14px;min-width:0}
+    .brand img{width:28px;height:28px;border-radius:7px;flex:none}
+    h1{font-size:14px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+    .drag-handle{cursor:grab;touch-action:none;user-select:none;border-radius:5px}
+    .drag-handle.dragging{cursor:grabbing}.drag-handle:focus-visible{outline:2px solid #2563eb;outline-offset:4px}
+    .drag-handle h1{flex:1;min-width:0}.drag-hint{font-size:12px;color:#81919d;flex:none}
+    p{font-size:13px;margin:12px 0;overflow-wrap:anywhere}
+    small{display:block;font-size:12px;line-height:1.7;color:#637786}
+    button,select{font:inherit;line-height:1.4;padding:8px 10px;border:1px solid #d6e0e7;border-radius:7px;background:#f5f8fa;color:#183141;min-width:0}
+    button{display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow-wrap:anywhere}
+    button svg{width:16px;height:16px;flex:none}
+    button:disabled,select:disabled{opacity:.5;cursor:default}
+    button:focus-visible,select:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+    .error{color:#a3472b;font-size:12px;margin-bottom:0}.error:empty{display:none}
+    .navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+    .navigation button{padding:8px 6px;font-size:12px;white-space:normal}
+    .target-label{display:block;font-size:12px;color:#637786;margin-bottom:6px}
+    .target-row{display:flex;align-items:center;gap:8px}.target-row select{flex:1;min-width:0;height:36px}
+    .target-row button{width:36px;height:36px;padding:8px;flex:none}
+    .capability{font-size:12px;color:#637786}
+    .panel-button{width:100%;margin:14px 0 10px;color:#fff;background:#2563eb;border-color:#2563eb;font-size:13px}
+    .panel-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+    .connection{font-size:11px;line-height:1.5;color:#637786}.hide{font-size:12px;padding:5px 9px;flex:none}
+  `
   root.append(style)
   const section = document.createElement('section')
   root.append(section)
@@ -66,13 +95,16 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
     action: () => Promise<void>,
     parent: HTMLElement | ShadowRoot = section,
     path?: string,
+    enabled: () => boolean = function always() {
+      return true
+    },
   ): HTMLButtonElement {
     const control = document.createElement('button')
     control.type = 'button'
     if (path) control.append(icon(path))
     control.append(document.createTextNode(label))
     control.addEventListener('click', async function clicked(event) {
-      if (!event.isTrusted || busy) return
+      if (!event.isTrusted || busy || !enabled()) return
       busy = true
       control.disabled = true
       error.textContent = ''
@@ -83,7 +115,7 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
         error.textContent = failure instanceof Error ? failure.message : '操作失败，请重新打开插件'
       } finally {
         busy = false
-        control.disabled = false
+        control.disabled = !enabled()
       }
     })
     parent.append(control)
@@ -246,6 +278,89 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
       error.textContent = failure instanceof Error ? failure.message : '无法读取公众号'
     })
   } else {
+    brand.classList.add('drag-handle')
+    brand.tabIndex = 0
+    brand.setAttribute('role', 'group')
+    brand.setAttribute('aria-label', '拖动传稿面板；方向键移动，Home恢复右下角')
+    brand.title = '拖动面板 · 方向键移动 · Home恢复位置'
+    const grip = document.createElement('span')
+    grip.className = 'drag-hint'
+    grip.textContent = '⠿'
+    grip.setAttribute('aria-hidden', 'true')
+    brand.append(grip)
+    let drag: { pointerId: number; x: number; y: number; left: number; top: number } | undefined
+    let positioned = false
+    function position(left: number, top: number): void {
+      const rect = host.getBoundingClientRect()
+      const inset = 12
+      const maxLeft = Math.max(inset, window.innerWidth - rect.width - inset)
+      const maxTop = Math.max(inset, window.innerHeight - rect.height - inset)
+      host.style.left = `${Math.max(inset, Math.min(maxLeft, left))}px`
+      host.style.top = `${Math.max(inset, Math.min(maxTop, top))}px`
+      host.style.right = 'auto'
+      host.style.bottom = 'auto'
+      positioned = true
+    }
+    function stopDrag(): void {
+      const pointer = drag?.pointerId
+      drag = undefined
+      brand.classList.remove('dragging')
+      if (pointer !== undefined && brand.hasPointerCapture(pointer))
+        brand.releasePointerCapture(pointer)
+    }
+    brand.addEventListener('pointerdown', function startDrag(event) {
+      if (!event.isTrusted || event.button !== 0) return
+      event.preventDefault()
+      const rect = host.getBoundingClientRect()
+      drag = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        left: rect.left,
+        top: rect.top,
+      }
+      brand.setPointerCapture(event.pointerId)
+      brand.classList.add('dragging')
+      brand.focus({ preventScroll: true })
+    })
+    brand.addEventListener('pointermove', function move(event) {
+      if (!drag || drag.pointerId !== event.pointerId) return
+      position(drag.left + event.clientX - drag.x, drag.top + event.clientY - drag.y)
+    })
+    brand.addEventListener('pointerup', stopDrag)
+    brand.addEventListener('pointercancel', stopDrag)
+    brand.addEventListener('lostpointercapture', stopDrag)
+    window.addEventListener('blur', stopDrag)
+    brand.addEventListener('keydown', function moveWithKeyboard(event) {
+      if (
+        !event.isTrusted ||
+        !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home'].includes(event.key)
+      )
+        return
+      event.preventDefault()
+      stopDrag()
+      const rect = host.getBoundingClientRect()
+      const step = event.shiftKey ? 40 : 12
+      position(
+        event.key === 'Home'
+          ? window.innerWidth - rect.width - 18
+          : rect.left + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0),
+        event.key === 'Home'
+          ? window.innerHeight - rect.height - 24
+          : rect.top + (event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0),
+      )
+    })
+    function keepVisible(): void {
+      if (!positioned) return
+      const rect = host.getBoundingClientRect()
+      position(rect.left, rect.top)
+    }
+    window.addEventListener('resize', function resized() {
+      stopDrag()
+      keepVisible()
+    })
+    const observer = new ResizeObserver(keepVisible)
+    observer.observe(host)
     function pageActivity(event: Event): void {
       if (event.isTrusted && !event.composedPath().includes(host))
         void send({ kind: 'PAGE_ACTIVITY' }).catch(function ignore() {})
@@ -259,22 +374,65 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
         error.textContent = parsed.data.message
       }
     })
-    const panel = button('打开传稿面板', async function panel() {
-      await send({ kind: 'OPEN_PANEL' })
-    })
+    let connected = false
+    const connection = document.createElement('span')
+    connection.className = 'connection'
+    connection.setAttribute('role', 'status')
+    connection.textContent = '正在检测插件…'
+    const panel = button(
+      '打开传稿面板',
+      async function panel() {
+        try {
+          await send({ kind: 'OPEN_PANEL' })
+        } catch (failure) {
+          connected = false
+          connection.textContent = '插件未连接，请启用插件并刷新网页'
+          throw failure
+        }
+      },
+      section,
+      undefined,
+      function available() {
+        return connected
+      },
+    )
     panel.className = 'panel-button'
-    const hide = button('收起', async function close() {
-      section.hidden = true
-      const show = button(
-        '桀士传稿',
-        async function reopen() {
-          section.hidden = false
-          show.remove()
-        },
-        root,
-      )
-    })
+    panel.disabled = true
+    const footer = document.createElement('div')
+    footer.className = 'panel-footer'
+    footer.append(connection)
+    section.append(footer)
+    const hide = button(
+      '收起',
+      async function close() {
+        stopDrag()
+        section.hidden = true
+        const show = button(
+          '桀士传稿',
+          async function reopen() {
+            section.hidden = false
+            show.remove()
+          },
+          root,
+        )
+      },
+      footer,
+    )
     hide.className = 'hide'
+    void send({ kind: 'PING' })
+      .then(function detected(raw) {
+        connectionInfoSchema.parse(raw)
+        connected = true
+        connection.textContent = '插件已连接 · 拖动标题可移动'
+        panel.disabled = false
+        panel.title = '打开插件传稿面板'
+      })
+      .catch(function unavailable() {
+        connected = false
+        panel.disabled = true
+        panel.title = '请先安装或启用传稿插件，并刷新网页'
+        connection.textContent = '插件未连接，请启用插件并刷新网页'
+      })
   }
   const hint = document.createElement('small')
   hint.textContent = '发送后尝试自动插入；未完成时可直接在插件面板复制。请在后台检查并手动保存。'

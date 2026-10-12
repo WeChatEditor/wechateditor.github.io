@@ -227,10 +227,7 @@ function finishExport(
   }
 }
 
-export async function copyRichText(result: ExportResult): Promise<void> {
-  if (result.diagnostics.some((d) => d.level === 'error')) {
-    throw new Error('请先处理图片或内容问题，再复制。')
-  }
+export async function copyRichText(result: ExportResult | Promise<ExportResult>): Promise<void> {
   if (
     !window.isSecureContext ||
     !navigator.clipboard?.write ||
@@ -238,10 +235,25 @@ export async function copyRichText(result: ExportResult): Promise<void> {
   ) {
     throw new Error('富文本复制需要 HTTPS 或本机 localhost，以及支持剪贴板的桌面浏览器。')
   }
-  await navigator.clipboard.write([
-    new ClipboardItem({
-      'text/html': new Blob([result.html], { type: 'text/html' }),
-      'text/plain': new Blob([result.plainText], { type: 'text/plain' }),
+  const snapshot = Promise.resolve(result).then(function validate(prepared) {
+    if (prepared.diagnostics.some((d) => d.level === 'error'))
+      throw new Error('请先处理图片或内容问题，再复制。')
+    return prepared
+  })
+  const formats = {
+    'text/html': snapshot.then(function html(prepared) {
+      return new Blob([prepared.html], { type: 'text/html' })
     }),
-  ])
+    'text/plain': snapshot.then(function plain(prepared) {
+      return new Blob([prepared.plainText], { type: 'text/plain' })
+    }),
+  }
+  for (const format of Object.values(formats)) void format.catch(function unavailable() {})
+  try {
+    // Initiate during the click, even when image preparation is still asynchronous.
+    await navigator.clipboard.write([new ClipboardItem(formats)])
+  } catch (error) {
+    await snapshot
+    throw error
+  }
 }
