@@ -2,7 +2,7 @@
 title: 桀士排版·公众号助手
 status: accepted
 created: 2026-10-08
-updated: 2026-10-14
+updated: 2026-10-15
 owner: project maintainers
 ---
 
@@ -10,7 +10,7 @@ owner: project maintainers
 
 ## 产品和范围
 
-桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手”，顶栏“桀士排版”/“公众号助手”。完整保留源产品界面与能力，首次无本地草稿时加载内置新手示例稿，已有草稿（包括空稿）优先恢复；默认六组配色、排版与结尾启停规则沿用。
+桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手”，顶栏“桀士排版”/“公众号助手”。完整保留源产品界面与能力，首次无本地草稿时加载内置新手示例稿，已有草稿（包括空稿）优先恢复；默认九组配色，排版与结尾启停规则沿用。
 
 ## 首次示例稿
 
@@ -22,7 +22,9 @@ owner: project maintainers
 
 左Markdown原稿 → article受控解析/序列化局部标注 → typesetting公共规则与ending片段 → article预览 → assets准备 → wechat-export清洗/内联 → HTML和纯文字剪贴板。workspace编排命令并拥有草稿仓储；App/main只组装。原始HTML禁用并显示为文本，不将输入直接插入预览。
 
-保留UTF-8单个.md/.txt导入（2MB/50万字符）、Markdown快捷格式/IME/撤销、实时预览、正文/局部颜色、八种标题样式/独立编号、字号/间距/字体、六组默认/总计1至9配色、固定头尾、双栏比例/专注/阅读宽度、历史和保存诊断。数学、Mermaid、复杂SVG、插图和下载、文章包、IP/提色/教程、账号/云同步/AI排版不在范围。
+保留UTF-8单个.md/.txt导入（2MB/50万字符）、Markdown快捷格式/IME/撤销、实时预览、正文/局部颜色、八种标题样式/独立编号、字号/间距/字体、九组默认/总计1至9配色、固定头尾、双栏比例/专注/阅读宽度、历史和保存诊断。数学、Mermaid、复杂SVG、插图和下载、文章包、IP/提色/教程、账号/云同步/AI排版不在范围。
+
+九组默认配色统一重设计，覆盖简洁朴素、自然、科技、复古和撞色风格，名称与五种颜色角色见[排版模块](modules/typesetting.md)。新配置默认澄空科技；已有配色列表及文章颜色保留，确认“重置所有配色”才恢复新版九组。静态工程验证与人工验收见[配色计划](../plans/active/2026-10-15-nine-default-palettes.md)。
 
 ## 布局和存储
 

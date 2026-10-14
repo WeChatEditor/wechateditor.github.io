@@ -5,6 +5,7 @@ import {
   chapterPreview,
   contrastRatio,
   defaultTypesetting,
+  presets,
   maxPalettes,
   saveColorPreset,
   deleteColorPreset,
@@ -100,7 +101,7 @@ function savePalette(): void {
   }
 }
 function resetPalettes(): void {
-  if (window.confirm('重置所有配色将移除现有配色，恢复默认六个配色。是否继续？')) {
+  if (window.confirm(`重置所有配色将移除现有配色，恢复默认${presets.length}个配色。是否继续？`)) {
     emit('change', resetColorPresets())
     paletteName.value = ''
   }

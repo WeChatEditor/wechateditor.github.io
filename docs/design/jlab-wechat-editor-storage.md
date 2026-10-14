@@ -2,7 +2,7 @@
 title: 桀士排版数据存储与文章版本
 status: accepted
 created: 2026-10-08
-updated: 2026-10-14
+updated: 2026-10-15
 owner: project maintainers
 ---
 
@@ -31,6 +31,8 @@ Web本机保存成功后异步同步受控文字HTML/纯文字到插件独立cli
 恢复/删除需确认；恢复替换正文/标注/旧素材，保持当前配置和结尾，不自动创建版本；合并结尾仍引用的必要素材。恢复期间禁用编辑、旧选区失效，失败保留内存文章；删除不改current。关闭页补保存是尽力操作，不保证浏览器退出前事务完成。
 
 ## 兼容与失败
+
+默认配色扩为九组，仅影响无配置初始化、旧配置缺少palettes时的默认填充及用户确认重置。已有合法列表（包括原六组、改名/改色、自定义和删除后的列表）及config.colors/preset继续完整恢复，不按内置id更新或自动补齐；重置替换列表并将preset设为custom，当前文章颜色保留。默认clear-blue对应澄空科技，六个原id保留；配置schemaVersion仍为1，不改变localStorage键或IndexedDB草稿/版本。
 
 原稿固定头尾展示偏好showFixedFragments为配置格式1的可选布尔字段，localStorage即时覆盖，无文章历史。缺失补true以延续旧展示，false保持关闭，存在但类型错误则拒绝读写。偏好不改变FixedEnding启用状态、IndexedDB草稿或文章版本协议。
 
