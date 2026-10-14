@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [扩展默认新手示例稿](feat/2026/10/2026-10-14-expanded-example-draft.md)
+
 - [ProseMirror标题适配与空页判定修正](fix/2026/10/2026-10-12-wechat-title-overlay.md)
 
 - [新文章编辑页隐藏账号核对修正](fix/2026/10/2026-10-12-wechat-hidden-editor-account.md)

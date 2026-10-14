@@ -79,4 +79,4 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 ## 独立迁移
 
-源六模块保留，首次无本地草稿时显示原版示例稿与默认设置，已有草稿（包括空稿）优先恢复；旧浏览器数据不搬迁。目标工具链以package/锁为准，来源依赖列表不是当前安装结果。实测与人工验收状态见[实施计划](../../docs/plans/active/2026-10-08-jlab-independent-migration.md)。
+源六模块保留，首次无本地草稿时显示内置示例稿与默认设置，已有草稿（包括空稿）优先恢复；旧浏览器数据不搬迁。2026-10-14示例扩展为长篇Markdown，包含16种自然语言文字和30种编程、标记、配置及命令代码块，语言标签不代表语法高亮或可运行代码。请人工检查首次显示、长文阅读、各种字符/代码块及已有草稿恢复，见[示例稿计划](../../docs/plans/active/2026-10-14-expanded-example-draft.md)。目标工具链以package/锁为准，来源依赖列表不是当前安装结果。迁移当时的实测与人工验收状态见[实施计划](../../docs/plans/active/2026-10-08-jlab-independent-migration.md)。
