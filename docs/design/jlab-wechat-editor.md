@@ -2,7 +2,7 @@
 title: 桀士排版·公众号助手
 status: accepted
 created: 2026-10-08
-updated: 2026-10-15
+updated: 2026-10-16
 owner: project maintainers
 ---
 
@@ -10,7 +10,9 @@ owner: project maintainers
 
 ## 产品和范围
 
-桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手”，顶栏“桀士排版”/“公众号助手”。完整保留源产品界面与能力，首次无本地草稿时加载内置新手示例稿，已有草稿（包括空稿）优先恢复；默认九组配色，排版与结尾启停规则沿用。
+桀士排版，英文JLab WeChat Editor，是独立仓库apps/frontend中的Vue/Pinia/Element Plus纯前端桌面单页。无需Router、认证、后端或HTTP业务契约。浏览器标题“桀士排版·公众号助手｜微信公众号 Markdown 排版工具”，顶栏继续“桀士排版”/“公众号助手”。完整保留源产品界面与能力，首次无本地草稿时加载内置新手示例稿，已有草稿（包括空稿）优先恢复；默认九组配色，排版与结尾启停规则沿用。
+
+2026-10-16新增[搜索发现](search-discovery.md)：编辑器根入口保留，独立静态产品介绍、Markdown转公众号教程、插件安装与隐私说明通过工作台状态栏普通链接在新标签打开，不加载编辑器或读取草稿。目录HTML、canonical、分享元信息、JSON-LD、robots和sitemap由既有Vite静态发布路径交付；公开说明不增加编辑器业务能力、Router或后端。此前排除的交互教程模块仍不在范围。
 
 ## 首次示例稿
 

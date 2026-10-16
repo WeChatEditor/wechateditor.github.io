@@ -1,10 +1,12 @@
 # 轻量传稿插件安装与验收
 
-当前版本0.1.11，协议2，Chrome桌面最低120。支持维护者提供的首页weui-desktop_name及其他页面acount_box-nickname。自动保存同步最新文字排版供插件复制，手动发送才尝试自动插入；完整公众号流程仍待人类验收，构建和接收应答不证明插入或保存成功。
+当前版本0.1.12，协议2，Chrome桌面最低120。支持维护者提供的首页weui-desktop_name及其他页面acount_box-nickname。自动保存同步最新文字排版供插件复制，手动发送才尝试自动插入；完整公众号流程仍待人类验收，构建和接收应答不证明插入或保存成功。
+
+0.1.12新增面向用户的manifest摘要和公开插件主页，未改ID/权限/传稿行为。网站发布后安装帮助为https://wechateditor.github.io/extension/，隐私说明为https://wechateditor.github.io/privacy/；商店字段和发布文案见[参考](../reference/chrome-web-store-listing.md)。
 
 ## 安装与更新
 
-1. 执行pnpm package:extension，得到apps/extension/dist/production及apps/extension/dist/jlab-wechat-transfer-0.1.11.zip。
+1. 执行pnpm package:extension，得到apps/extension/dist/production及apps/extension/dist/jlab-wechat-transfer-0.1.12.zip。
 2. Chrome打开chrome://extensions，打开开发者模式，加载production目录或解压后的ZIP目录。插件稳定ID与extension.identity.json一致，可固定到工具栏。
 3. 已安装旧版时在扩展管理页重新加载，再刷新Web和公众号标签。协议仍为2，连接检测需0.1.6、自动同步需0.1.5；旧0.1.4保留的快照兼容迁移，旧v1快照不执行，0.1.3已清除正文无法恢复。更新后修改正文或排版并等待保存，或者手动发送，即可在插件复制。
 4. 生产Web为[组织站点](https://wechateditor.github.io/)。本轮仅本地修改/打包，线上更新需另行推送部署。

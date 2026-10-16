@@ -2,7 +2,7 @@
 title: GitHub Pages 自动部署
 status: accepted
 created: 2026-10-08
-updated: 2026-10-12
+updated: 2026-10-16
 owner: project maintainers
 ---
 
@@ -19,6 +19,8 @@ master 推送或在 master 手动运行触发独立部署工作流。Ubuntu 使�
 部署使用固定 pages 并发组，不取消正在运行的发布。检查或构建失败不产生新的部署；GitHub Pages 未设置为 GitHub Actions、环境限制或权限不足会使远端失败，应修复配置后重跑。原 Verify project 保留 Windows/Linux 工具链矩阵，部署自身检查负责阻止未通过验证的版本发布。
 
 ## 浏览器数据与验收
+
+2026-10-16新增的产品、教程、插件与隐私HTML、共用site.css、robots/sitemap和404来自frontend/public，随原有完整dist上传，不改工作流或来源同步。各目录index.html无需SPA路由回退；生产SEO来源固定为https://wechateditor.github.io/。根编辑器入口与浏览器数据origin保持，404明确noindex。见[搜索发现设计](search-discovery.md)与[收录指南](../guides/search-discovery.md)。
 
 实际地址为https://wechateditor.github.io/。浏览器存储按origin隔离，旧tanghaojie.github.io来源的数据不由插件迁移；本项目既有存储键不变。维护者应避免在同一origin发布使用相同存储键的应用，页面路径不能提供数据隔离。生产HTTPS支持剪贴板，图片CORS仍受来源限制。
 

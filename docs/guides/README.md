@@ -1,5 +1,7 @@
 # 操作指南
 
+- [SEO发布、收录与持续维护](search-discovery.md)
+
 - [启动与真实归档基线](getting-started.md)
 
 - [静态部署](static-deployment.md)

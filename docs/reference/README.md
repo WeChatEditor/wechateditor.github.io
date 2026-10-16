@@ -1,5 +1,7 @@
 # 参考资料
 
+- [Chrome Web Store发布文案](chrome-web-store-listing.md)：摘要、详细介绍、官网/隐私链接和真实截图要求。
+
 - [Web 与轻量插件消息协议设计](wechat-transfer-protocol.md)
 - [轻量传稿插件来源与证据](wechat-transfer-research.md)
 

@@ -2,7 +2,7 @@
 title: workspace模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-14
+updated: 2026-10-16
 owner: project maintainers
 ---
 
@@ -17,6 +17,8 @@ owner: project maintainers
 多标签冲突独立conflictReason状态，覆盖通知/配置storage事件/事务writeId冲突；锁定文章和配置写入，清除待保存、关闭抽屉、使复制快照失效，排队命令与晚到导入/恢复拒绝执行。page用inert和原生dialog顶层Modal阻断所有工作台操作，禁止Esc/遮罩关闭。确认关闭当前标签页，拒绝时提示手动关闭并保持锁定；冲突关闭页不触发补保存。普通权限/配额/损坏失败保留原流程。
 
 ## 职责与边界
+
+2026-10-16状态栏增加产品介绍、排版教程、传稿插件和隐私说明四个普通链接，均在新标签打开静态HTML，不挂载第二份编辑器或读取草稿。保留原作者/GitHub及统计；状态栏横向空间不足可滚动，不改变编辑区高度、存储或模块依赖。
 
 workspace拥有原稿头尾展示偏好showFixedFragments，默认true、即时保存到配置localStorage；仅控制原稿只读块，不影响实际头尾组合或文章版本。旧配置缺失补true，损坏类型拒绝；多标签冲突同样阻断偏好写入。
 

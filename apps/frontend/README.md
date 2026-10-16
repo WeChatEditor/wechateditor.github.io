@@ -7,12 +7,12 @@ JLab WeChat Editor 是独立 Vue 3 / Pinia / Element Plus / Vite / TypeScript �
 ```powershell
 pnpm --filter @jlab-wechat-editor/frontend dev
 pnpm --filter @jlab-wechat-editor/frontend typecheck
-pnpm --filter @jlab-wechat-editor/frontend architecture:check
+pnpm modules:check
 pnpm --filter @jlab-wechat-editor/frontend build
 pnpm --filter @jlab-wechat-editor/frontend preview
 ```
 
-开发地址 http://127.0.0.1:5175，构建预览 http://127.0.0.1:4175。静态部署 apps/frontend/dist；相对 base 支持子路径。请使用独立 HTTPS origin，与管理系统隔离。支持具备 IndexedDB、ResizeObserver、PointerEvent、ClipboardItem 的现代桌面 Chrome/Edge；复制需安全上下文。生产域名本轮未指定。
+开发地址 http://127.0.0.1:5175，构建预览 http://127.0.0.1:4175。静态部署 apps/frontend/dist；相对 base 支持子路径。请使用独立 HTTPS origin，与管理系统隔离。支持具备 IndexedDB、ResizeObserver、PointerEvent、ClipboardItem 的现代桌面 Chrome/Edge；复制需安全上下文。当前生产来源为https://wechateditor.github.io/，SEO规范网址和404链接按此根路径配置。
 
 ## 使用
 
@@ -27,12 +27,17 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 - 保存状态统一在顶栏，事务完成才显示文章已保存；配置/文章失败分别提示，可点击「重试」。未知格式或多页面冲突暂停对应写入。旧完整草稿自动拆分迁移，配置写入失败时保留旧记录。
 - 原稿和排版预览默认独立滚动，预览顶部「同步滚动」开启后按正文块源行锚点双向平滑联动。同步、阅读外壳与专注均用按钮active背景表示状态，点击切换且支持键盘，禁用时不响应。相邻正文块内插值，图片和固定头尾占用的空间按局部锚点处理。专注/恢复期间暂停同步，关闭立即停止。
 - 仅启用阅读外壳且选择手机时，模型上方横排「自适应 / 原始大小」radio button与「当前缩放比例: N%」，窄栏保持单行可横移。默认自适应；原始大小保留所选375/390/414px视口宽度与CSS字号，在视窗内壳体中滚动长文，窄栏可横向滚动。1:1仍受浏览器/系统缩放影响。缩放与同步偏好仅驻留本页，刷新回默认。
-- 底部左侧显示排版文字非空白字符数（包含启用头尾）及按 600 字/分钟估算的阅读时长，右侧显示作者桀士和项目GitHub链接。浏览器存储提示收进顶栏保存状态的悬停说明。
+- 底部左侧显示排版文字非空白字符数（包含启用头尾）及按 600 字/分钟估算的阅读时长，右侧保留作者桀士和项目GitHub链接，并增加产品介绍、排版教程、传稿插件和隐私说明。说明在新标签打开，不读取草稿；状态栏保持35px，窄宽度可横向滚动。浏览器存储提示收进顶栏保存状态的悬停说明。
+
 - 改稿后无法确定的局部标注会失效；再次选择文字即可重设。需要备份时手动复制原稿到本地文件。
 - 复制包含 HTML 和纯文字；图片失败会阻止复制。权限拒绝后可点击「复制已准备内容」重试。站外链接转换为可见网址。
 - 复制成功显示绿色「已复制 ✓」2.5秒后自动复位为「复制到公众号」，连续复制重新计时。固定结尾片段按钮追加成功时自动启用结尾并保留旧内容，修改即时保存。
 
-初始化九组、总计1至9组的可编辑配色、九种章节为独立实现，视觉取原研究方向，未声明与原站逐像素一致。明确 Markdown 标题参与章节样式，TXT 不自动猜章节。微信输出为 `wechat-clipboard@0.1-candidate`，未经真实公众号验收。
+初始化九组、总计1至9组的可编辑配色、八种标题装饰和无装饰选项为独立实现，视觉取原研究方向，未声明与原站逐像素一致。明确 Markdown 标题参与章节样式，TXT 不自动猜章节。微信输出为 `wechat-clipboard@0.1-candidate`，未经真实公众号验收。
+
+## 公开说明与SEO
+
+根路径继续打开编辑器，浏览器标题增加“微信公众号 Markdown 排版工具”用途，界面品牌不变。public下提供/about/、/guides/markdown-to-wechat/、/extension/、/privacy/静态页面及site.css、robots.txt、sitemap.xml和404.html，构建时原样复制。元信息、静态正文与抓取配置见[搜索发现设计](../../docs/design/search-discovery.md)，搜索账号验证、商店发布及人工页面验收见[操作指南](../../docs/guides/search-discovery.md)。
 
 ## 人工验收
 
@@ -63,7 +68,7 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 ## 依赖与边界
 
-依赖范围与许可证见根docs/reference/dependencies.md，锁文件记录实际组合。应用独立维护，不依赖 apps/frontend/backend 或私有代码；无路由、后端、登录、云备份、IP、教程、文章包和自动发布。
+依赖范围与许可证见根docs/reference/dependencies.md，锁文件记录实际组合。应用独立维护，不依赖后端或其他项目私有代码；无路由、后端、登录、云备份、IP、交互教程模块、文章包和自动发布。公开静态教程不改变工作台模块范围。
 
 设计见 [独立应用](../../docs/design/jlab-wechat-editor.md) 与 [模块边界](../../docs/design/modules/README.md)。
 

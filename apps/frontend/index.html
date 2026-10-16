@@ -3,15 +3,101 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="桀士排版·公众号助手" />
+    <meta
+      name="description"
+      content="桀士排版是一款无需注册的微信公众号 Markdown 排版工具，支持实时预览、九组主题配色、标题样式、固定头尾和本地草稿保存，可复制排版到公众号，并通过 Chrome 插件辅助文字传稿。"
+    />
+    <meta name="theme-color" content="#f6f5f1" />
+    <link rel="canonical" href="https://wechateditor.github.io/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="桀士排版·公众号助手" />
+    <meta property="og:title" content="桀士排版·公众号助手｜微信公众号 Markdown 排版工具" />
+    <meta
+      property="og:description"
+      content="用 Markdown 写作，实时调整配色与标题样式，复制排版到公众号。无需注册，草稿保存在当前浏览器。"
+    />
+    <meta property="og:url" content="https://wechateditor.github.io/" />
+    <meta property="og:image" content="https://wechateditor.github.io/favicon-192x192.png" />
+    <meta property="og:image:width" content="192" />
+    <meta property="og:image:height" content="192" />
+    <meta property="og:image:alt" content="桀士排版品牌图标" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="桀士排版·公众号助手｜微信公众号 Markdown 排版工具" />
+    <meta
+      name="twitter:description"
+      content="无需注册的 Markdown 公众号排版工具，支持本地草稿与实时预览。"
+    />
+    <meta name="twitter:image" content="https://wechateditor.github.io/favicon-192x192.png" />
     <link rel="icon" type="image/x-icon" href="./favicon.ico" sizes="16x16 32x32 48x48 64x64" />
     <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="./favicon-192x192.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
-    <title>桀士排版·公众号助手</title>
+    <title>桀士排版·公众号助手｜微信公众号 Markdown 排版工具</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://wechateditor.github.io/#website",
+            "name": "桀士排版·公众号助手",
+            "url": "https://wechateditor.github.io/",
+            "inLanguage": "zh-CN"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://wechateditor.github.io/#application",
+            "name": "桀士排版·公众号助手",
+            "url": "https://wechateditor.github.io/",
+            "description": "无需注册的微信公众号 Markdown 排版工具，支持实时预览、主题配色、标题样式、固定头尾、本地草稿与复制排版。",
+            "applicationCategory": "ProductivityApplication",
+            "operatingSystem": "Web browser",
+            "browserRequirements": "需要启用 JavaScript，建议使用桌面浏览器",
+            "isAccessibleForFree": true,
+            "inLanguage": "zh-CN"
+          }
+        ]
+      }
+    </script>
+    <style>
+      .app-loading {
+        max-width: 640px;
+        margin: 12vh auto;
+        padding: 32px;
+        color: #20343a;
+        font:
+          16px/1.8 system-ui,
+          sans-serif;
+      }
+      .app-loading h1 {
+        font-size: 30px;
+        line-height: 1.4;
+      }
+      .app-loading a {
+        color: #245e56;
+        margin-right: 18px;
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <main class="app-loading">
+        <p>桀士排版·公众号助手</p>
+        <h1>微信公众号 Markdown 排版工具</h1>
+        <p>写作、配色、实时预览，再将排版复制到公众号。无需注册，草稿保存在当前浏览器。</p>
+        <p role="status">正在打开写作工作台。若长时间未打开，请刷新页面或检查网络。</p>
+        <nav aria-label="产品与使用帮助">
+          <a href="./about/">产品介绍</a>
+          <a href="./guides/markdown-to-wechat/">排版教程</a>
+          <a href="./extension/">传稿插件</a>
+          <a href="./privacy/">隐私说明</a>
+        </nav>
+        <noscript
+          ><p>编辑器需要启用 JavaScript。你仍可直接阅读产品介绍、教程和插件安装说明。</p></noscript
+        >
+      </main>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wechateditor.github.io/sitemap.xml

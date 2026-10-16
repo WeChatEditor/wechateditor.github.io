@@ -31,6 +31,9 @@ const contractSource = readFileSync(
 assert.equal(/export const extensionId = ['"]([a-p]{32})['"]/.exec(contractSource)?.[1], id)
 assert.equal(manifest.key, identity.key)
 assert.equal(manifest.manifest_version, 3)
+assert.equal(manifest.name, '桀士排版·公众号助手')
+assert.equal(manifest.homepage_url, 'https://wechateditor.github.io/extension/')
+assert.ok(manifest.description.length > 0 && manifest.description.length <= 132)
 assert.deepEqual(manifest.permissions, ['storage', 'scripting'])
 assert.deepEqual(manifest.host_permissions, [
   'https://mp.weixin.qq.com/*',

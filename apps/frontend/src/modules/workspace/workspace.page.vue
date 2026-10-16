@@ -373,15 +373,21 @@ onBeforeUnmount(function cleanup() {
         <span class="status-dot">/</span>
         预计阅读 {{ store.statistics.readingMinutes }} 分钟
       </span>
-      <span class="author-info"
-        >作者：桀士
+      <nav class="author-info" aria-label="产品与使用帮助">
+        <a href="./about/" target="_blank" rel="noopener noreferrer">产品介绍</a>
+        <a href="./guides/markdown-to-wechat/" target="_blank" rel="noopener noreferrer"
+          >排版教程</a
+        >
+        <a href="./extension/" target="_blank" rel="noopener noreferrer">传稿插件</a>
+        <a href="./privacy/" target="_blank" rel="noopener noreferrer">隐私说明</a>
+        <span>作者：桀士</span>
         <a
           href="https://github.com/tanghaojie/JLabWeChatEditor"
           target="_blank"
           rel="noopener noreferrer"
           >GitHub ↗</a
-        ></span
-      >
+        >
+      </nav>
     </footer>
   </main>
   <dialog
@@ -503,18 +509,33 @@ onBeforeUnmount(function cleanup() {
   border-top: 1px solid var(--ui-border);
   font-size: 12px;
   color: var(--ui-muted);
+  gap: 16px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 .status-dot {
   padding: 0 12px;
   color: var(--ui-border);
 }
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.status-bar > span {
+  flex-shrink: 0;
+}
 .author-info a {
-  margin-left: 12px;
   color: var(--ui-primary);
   text-decoration: none;
 }
 .author-info a:hover {
   text-decoration: underline;
+}
+.author-info a:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
 }
 .conflict-dialog {
   width: min(460px, calc(100vw - 40px));

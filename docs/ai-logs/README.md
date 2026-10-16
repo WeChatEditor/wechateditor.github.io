@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [网站与插件SEO实施](feat/2026/10/2026-10-16-search-discovery.md)
+
 - [九组默认配色重设计](feat/2026/10/2026-10-15-nine-default-palettes.md)
 
 - [扩展默认新手示例稿](feat/2026/10/2026-10-14-expanded-example-draft.md)

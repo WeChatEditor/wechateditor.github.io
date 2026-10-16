@@ -49,7 +49,9 @@ const manifest = {
   name: '桀士排版·公众号助手',
   version,
   minimum_chrome_version: '120',
-  description: '连接桀士排版Web工作台，新建公众号图文并插入文字排版，由用户检查后手动保存。',
+  description:
+    '配合桀士排版同步微信公众号文字排版，支持复制正文与标题，辅助新建文章并插入内容，由你检查后手动保存。',
+  homepage_url: 'https://wechateditor.github.io/extension/',
   key: identity.key,
   icons: { 32: 'logo-32.png', 192: 'logo.png' },
   permissions: ['storage', 'scripting'],

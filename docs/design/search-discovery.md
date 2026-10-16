@@ -1,0 +1,33 @@
+---
+title: 网站与插件搜索发现
+status: accepted
+created: 2026-10-16
+updated: 2026-10-16
+owner: project maintainers
+---
+
+# 网站与插件搜索发现
+
+## 目标与范围
+
+维护者授权按SEO建议优化整个项目。生产来源为https://wechateditor.github.io/。根路径继续打开既有编辑器；品牌保留“桀士排版·公众号助手”，浏览器标题增加微信公众号Markdown排版用途。新增公开产品、教程、插件安装和隐私说明，帮助搜索用户判断与使用产品。不移动编辑器，不迁移origin或本地数据，不增加账号、追踪、后端、Router或依赖。
+
+## 静态内容和发布边界
+
+公开页面作为apps/frontend/public中的静态HTML及共用CSS，Vite原样复制至dist，GitHub Pages直接按目录index.html提供服务。它们是产品说明资产，不新增业务模块或模块依赖。每页提供独立标题、摘要、绝对canonical、Open Graph/Twitter元信息、一个主标题、语义导航和完整正文；页面可在禁用JavaScript时阅读。根HTML包含真实加载说明和公开页面链接，挂载后由既有编辑器替换；工作台状态栏保留通往公开页面的普通链接，在新标签打开，避免离开正在写作的草稿。
+
+产品介绍、Markdown转公众号教程、插件安装和隐私分别位于/about/、/guides/markdown-to-wechat/、/extension/、/privacy/。根路径和四页进入sitemap.xml，robots.txt指向生产站点地图。canonical逐页自引用，不把所有页面指向根路径；不添加meta keywords、虚构评价或富结果承诺。根页使用WebSite/WebApplication结构化数据，说明页使用WebPage和BreadcrumbList。分享图片沿用现有192px品牌图标，使用summary卡片。404页明确noindex，不进入站点地图。
+
+## 插件与商店
+
+插件保留名称、ID、权限、来源与传稿行为，版本升至0.1.12，manifest摘要改为用户场景，homepage_url指向公开插件页。商店可复制文案在docs/reference，发布指南说明Public/地区、网站/支持/隐私链接和真实截图要求。网站安装入口指向现有GitHub Verify project工作流的安装包工件，明确GitHub登录、手动安装及版本核对步骤；不虚构商店地址或已公开状态。
+
+自动插入只描述为辅助尝试，用户检查后手动保存，含图文章使用Web原复制流程。隐私说明依据现行localStorage/IndexedDB、插件chrome.storage.local、账号识别和24小时快照清理机制，说明外链图片请求、静态托管访问日志及浏览器清理风险，不声称完全离线或从不发生网络请求。
+
+## 数据流、失败和验证
+
+搜索/官网链接 → 静态说明页 → 编辑器或插件安装帮助；静态说明页不加载编辑器脚本、不访问草稿或锁。构建仅复制静态资产。部署遗漏public文件、canonical域名漂移、无链接入口、商店未公开或未提交搜索平台，分别记录，不能以本地构建证明线上收录。
+
+按仓库执行格式、Lint、类型、构建、模块/文档/归档检查、治理与契约测试、插件打包检查。只静态核对构建HTML、元数据、JSON-LD、站点地图与本地链接，不创建或运行前端自动化测试。产品页面布局、链接体验、公众号传稿由人类验收。Search Console/Bing/百度所有权、商店后台和搜索表现需维护者账号，交付可操作指南，不伪造验证token或提交结果。
+
+依据见[静态页面决策](../decisions/ADR-20261016-static-discovery-pages.md)、[实施计划](../plans/active/2026-10-16-search-discovery.md)。

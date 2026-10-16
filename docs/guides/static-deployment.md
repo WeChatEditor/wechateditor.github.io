@@ -2,6 +2,8 @@
 
 执行pnpm build，发布apps/frontend/dist整个目录（含assets）。Vite base为./，支持根路径和子路径，不依赖服务端路由回退。不要直接用file://打开；使用本地preview或静态HTTP服务。
 
+公开产品/教程/插件/隐私HTML、site.css、robots.txt、sitemap.xml和404.html也属于发布产物。当前SEO规范网址固定为组织站点https://wechateditor.github.io/，404使用生产根路径；若变更域名或改为子目录，需要同步canonical/分享地址/站点地图/404链接及插件来源配置。发布后收录操作与人工核对见[SEO指南](search-discovery.md)。
+
 生产使用 HTTPS。浏览器数据按 origin 隔离，不能与源应用同 origin 只换路径来隔离浏览器数据。GitHub 默认地址下同一用户的其他项目共享 origin，应避免发布使用相同存储键的应用。剪贴板需要安全上下文；127.0.0.1开发环境可用于人工预览。CORS图片失败沿用产品诊断，不以服务配置承诺任意远程图可复制。
 
 ## GitHub Pages 自动部署

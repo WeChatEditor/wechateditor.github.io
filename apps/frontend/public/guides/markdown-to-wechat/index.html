@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown 如何排版到微信公众号：写作、预览与复制教程｜桀士排版</title>
+    <meta
+      name="description"
+      content="使用桀士排版将 Markdown 文章排版到微信公众号：学习导入原稿、主题配色、标题样式、固定头尾、复制粘贴和公众号内检查，并了解图片与本地保存注意事项。"
+    />
+    <link rel="canonical" href="https://wechateditor.github.io/guides/markdown-to-wechat/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="桀士排版·公众号助手" />
+    <meta property="og:title" content="Markdown 如何排版到微信公众号｜桀士排版教程" />
+    <meta
+      property="og:description"
+      content="从 Markdown 原稿、主题配色到复制粘贴，走完公众号排版的每一步。"
+    />
+    <meta property="og:url" content="https://wechateditor.github.io/guides/markdown-to-wechat/" />
+    <meta property="og:image" content="https://wechateditor.github.io/favicon-192x192.png" />
+    <meta property="og:image:width" content="192" />
+    <meta property="og:image:height" content="192" />
+    <meta property="og:image:alt" content="桀士排版品牌图标" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Markdown 如何排版到微信公众号｜桀士排版教程" />
+    <meta
+      name="twitter:description"
+      content="原稿、配色、标题、复制与公众号内检查，一篇完整的使用教程。"
+    />
+    <meta name="twitter:image" content="https://wechateditor.github.io/favicon-192x192.png" />
+    <meta name="theme-color" content="#f6f5f1" />
+    <link rel="icon" href="../../favicon.ico" sizes="16x16 32x32 48x48 64x64" />
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+    <link rel="stylesheet" href="../../site.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://wechateditor.github.io/guides/markdown-to-wechat/#webpage",
+            "url": "https://wechateditor.github.io/guides/markdown-to-wechat/",
+            "name": "Markdown 如何排版到微信公众号：写作、预览与复制教程｜桀士排版",
+            "description": "用桀士排版完成 Markdown 原稿、配色、标题、复制与公众号内检查。",
+            "inLanguage": "zh-CN",
+            "isPartOf": { "@id": "https://wechateditor.github.io/#website" }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "写作工作台",
+                "item": "https://wechateditor.github.io/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Markdown 排版教程",
+                "item": "https://wechateditor.github.io/guides/markdown-to-wechat/"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="../../about/" aria-label="桀士排版·公众号助手，产品介绍"
+          ><img src="../../favicon-192x192.png" alt="" width="38" height="38" /><span
+            ><strong>桀士排版</strong><small>公众号助手</small></span
+          ></a
+        >
+        <nav class="site-nav" aria-label="网站导航">
+          <a href="../../about/">产品介绍</a><a href="./" aria-current="page">排版教程</a
+          ><a href="../../extension/">传稿插件</a><a class="button" href="../../">开始写作 ↗</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="container">
+      <nav class="breadcrumbs" aria-label="当前位置">
+        <a href="../../">写作工作台</a><span aria-hidden="true">/</span>Markdown 排版教程
+      </nav>
+      <div class="article-layout">
+        <article class="prose">
+          <header class="article-header">
+            <p class="eyebrow">使用教程</p>
+            <h1>Markdown 如何排版到微信公众号</h1>
+            <p class="lead">
+              先写原稿，再调整样式，最后把排版带到公众号后台。这篇教程使用桀士排版的现行按钮名称，你可以边读边打开工作台操作。
+            </p>
+          </header>
+          <section id="draft">
+            <h2>1. 写下或导入 Markdown 原稿</h2>
+            <p>
+              打开<a href="../../">写作工作台</a
+              >，在左侧“原稿”区域输入文字，右侧“公众号预览”会随内容更新。首次打开会显示可编辑的新手示例；浏览器已有草稿时，会优先恢复原来的内容。
+            </p>
+            <p>
+              你也可以使用原稿标题栏的导入入口，选择一个 UTF-8 编码的 <code>.md</code> 或
+              <code>.txt</code> 文件。单个文件不超过 2MB，正文不超过 50 万字符。
+            </p>
+            <pre><code># 一篇文章的标题
+
+先用一段话，把你最想说的事情讲清楚。
+
+## 第一个小节
+
+用 **加粗** 标记重点，用列表整理并列的内容。
+
+&gt; 引用可以留给一句值得停下来读的话。
+
+- 一个具体的观察
+- 一个可以执行的建议</code></pre>
+            <p>
+              原稿支持标题、强调、列表、引用、表格和代码块。代码块用于展示内容，不会执行；直接输入的
+              HTML 不会作为网页运行。
+            </p>
+          </section>
+          <section id="style">
+            <h2>2. 选择配色，调整标题与文字</h2>
+            <p>
+              打开顶栏“配色”，先挑一组适合文章的方案。九组默认配色覆盖朴素、自然、科技、复古与撞色风格；你可以继续调整正文色、强调色和其他角色颜色。
+            </p>
+            <ul>
+              <li>
+                <strong>标题样式：</strong>选择章节装饰、编号和左中右对齐，查看标题与正文的层级。
+              </li>
+              <li>
+                <strong>文字设置：</strong>调整字号、行距等参数。字号范围为 11 至
+                32px，优先保证长段落读起来舒服。
+              </li>
+              <li>
+                <strong>固定头尾：</strong>为常用的开场、作者介绍或结尾设置独立片段，再按需启用。
+              </li>
+            </ul>
+            <p>
+              已有的配色列表会保留。想恢复新版九组默认方案，需要在配色面板确认“重置所有配色”；重置前先考虑是否保留自己的配色。
+            </p>
+          </section>
+          <section id="preview">
+            <h2>3. 在公众号预览里通读文章</h2>
+            <p>
+              使用“手机 /
+              电脑”切换阅读视图，按需打开“阅读外壳”。这些外壳和模拟公众号信息只用于查看，不会混入复制的文章正文。
+            </p>
+            <p>
+              长文章可以打开“同步滚动”，对照原稿与预览检查。复制前重点看小节层级、段落间距、表格宽度、代码块、强调色，以及固定头尾是否符合本篇文章。
+            </p>
+            <div class="note">
+              <p>
+                工作台适合桌面浏览器，最小宽度为
+                800px。手机阅读视图是桌面工作台中的预览模拟；本教程可以直接在手机阅读。
+              </p>
+            </div>
+          </section>
+          <section id="copy">
+            <h2>4. 复制排版，粘贴到公众号正文</h2>
+            <ol>
+              <li>
+                点击“复制到公众号”，等待成功反馈。如果按钮提示“复制已准备内容”，再次点击完成剪贴板写入。
+              </li>
+              <li>打开微信公众号后台，新建或进入你要编辑的文章。</li>
+              <li>将光标放在正文编辑区域，再粘贴排版。文章标题栏需要单独填写。</li>
+              <li>检查正文格式、图片、链接和头尾，再在公众号后台手动保存。</li>
+            </ol>
+            <p>
+              安装插件后，顶栏主要按钮可能显示“发送到公众号”，旁边的复制按钮仍可复制排版；也可以在插件面板复制文字正文和标题。见<a
+                href="../../extension/"
+                >Chrome 插件安装与传稿说明</a
+              >。
+            </p>
+            <p>
+              网页复制可能需要先准备图片。远程图片受来源跨域权限影响，无法读取时会提示失败；请根据提示处理图片，不要把预览可见当成复制成功。带图片文章使用网页复制流程，插件当前不接收含图文章。
+            </p>
+          </section>
+          <section id="check">
+            <h2>5. 在公众号里做最后一遍检查</h2>
+            <p>公众号可能调整粘贴后的样式，不同设备的字体也可能不同。保存前逐项确认：</p>
+            <ul>
+              <li>标题与正文是否完整，图片是否需要重新上传；</li>
+              <li>标题装饰、表格、代码、列表和颜色是否符合预期；</li>
+              <li>文章链接、封面、摘要和作者等后台字段是否已补全；</li>
+              <li>用公众号自己的预览功能检查手机效果，再手动保存或发布。</li>
+            </ul>
+          </section>
+          <section id="save">
+            <h2>本地草稿与历史版本怎么用？</h2>
+            <p>
+              正文会自动保存到当前浏览器。需要留一个明确的修改节点时，打开“历史版本”主动创建版本；自动保存不会替你无限新增历史。
+            </p>
+            <p>
+              排版配置和固定头尾单独保存，恢复某个文章版本不会回滚这些设置。没有账号和云端同步，换设备、换浏览器或清除网站数据后不会自动恢复原稿。重要内容请保留原始
+              Markdown 备份，完整说明见<a href="../../privacy/">隐私与本地数据</a>。
+            </p>
+          </section>
+          <section id="faq">
+            <h2>常见问题</h2>
+            <details>
+              <summary>复制按钮没成功，应该怎么办？</summary>
+              <p>
+                确认使用 HTTPS
+                或本地开发安全环境，允许浏览器剪贴板权限，并保持当前页面激活。如果图片准备失败，先处理提示的图片来源；如果内容已准备好，再次点击复制。
+              </p>
+            </details>
+            <details>
+              <summary>为什么插件插入后还要手动保存？</summary>
+              <p>
+                插件辅助将文字排版放入文章编辑器，不代替你检查内容，也不自动发布。后台页面变化、登录状态或账号识别都可能导致自动插入停止，此时可以使用插件内复制。
+              </p>
+            </details>
+            <details>
+              <summary>原稿突然进入冲突提示怎么办？</summary>
+              <p>
+                同一浏览器多个编辑标签可能同时访问一份草稿。出现冲突后按提示关闭冲突标签，避免同时修改；这些静态帮助页面不会读写草稿。
+              </p>
+            </details>
+          </section>
+          <div class="cta">
+            <div>
+              <h2>回到文章里试一试</h2>
+              <p>从标题、配色和一段正文开始。</p>
+            </div>
+            <a class="button" href="../../">打开工作台 ↗</a>
+          </div>
+        </article>
+        <aside class="toc" aria-label="本页目录">
+          <strong>这篇教程</strong><a href="#draft">写作与导入</a><a href="#style">配色与标题</a
+          ><a href="#preview">预览与阅读</a><a href="#copy">复制到公众号</a
+          ><a href="#check">后台检查</a><a href="#save">草稿与版本</a><a href="#faq">常见问题</a
+          ><a class="button secondary" href="../../extension/">了解传稿插件</a>
+        </aside>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>桀士排版·公众号助手 · 作者：桀士</p>
+        <nav class="footer-links" aria-label="更多信息">
+          <a href="../../privacy/">隐私说明</a
+          ><a
+            href="https://github.com/tanghaojie/JLabWeChatEditor/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            >帮助与反馈 ↗</a
+          ><a
+            href="https://github.com/tanghaojie/JLabWeChatEditor"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub ↗</a
+          >
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,5 +1,7 @@
 # 现行设计
 
+- [网站与插件搜索发现](search-discovery.md)：静态产品/教程/插件/隐私页、元信息与收录边界。
+
 - [Web 与 Chrome 轻量传稿插件](wechat-transfer-extension.md)：自动保存同步快照，手动发送经草稿箱/创作/文章新标签插入；公众号手动保存，实际功能待人工验收。
 
 - [产品](jlab-wechat-editor.md)

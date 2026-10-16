@@ -2,11 +2,15 @@
 title: Web 与 Chrome 轻量传稿插件
 status: accepted
 created: 2026-10-11
-updated: 2026-10-12
+updated: 2026-10-16
 owner: project maintainers
 ---
 
 # Web 与 Chrome 轻量传稿插件
+
+## 搜索发现与官网说明
+
+0.1.12保留插件名称、稳定ID、权限、协议和传稿行为，仅把manifest摘要调整为微信公众号文字排版/复制/辅助插入用途，homepage_url指向https://wechateditor.github.io/extension/。网站独立静态安装页、隐私页与商店文案见[搜索发现设计](search-discovery.md)；商店发布与实际插入仍需独立验收。
 
 ## ProseMirror标题与空页判定
 
