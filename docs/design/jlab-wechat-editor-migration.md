@@ -2,7 +2,7 @@
 title: 桀士排版独立仓库迁移
 status: accepted
 created: 2026-10-08
-updated: 2026-10-14
+updated: 2026-10-19
 owner: project maintainers
 ---
 
@@ -14,7 +14,7 @@ owner: project maintainers
 
 完整保留当前产品功能/UI，六模块进入apps/frontend/src/modules；app.config.ts为登记的组装配置，App/main只组装。替换模板introduction示例。采用模板Vue/Vite/TypeScript工具链，迁入实际业务依赖，逐项严格peer/类型/构建验证。无后台、契约、Router或Forge同步关系。
 
-首次无本地草稿时加载内置示例稿“把想法，排成好文章”；2026-10-14按维护者要求扩展为新手长篇示例，内容以[产品设计](jlab-wechat-editor.md)为准。默认配色/排版和结尾启停规则保留；历史/标注/素材/最近色为空。不搬旧数据，不清除源origin存储，开发/预览使用127.0.0.1:5175/4175 strictPort；生产平台/域名待定，仅交付相对base静态产物。
+首次无本地草稿时加载内置示例稿“把想法，排成好文章”；2026-10-19按维护者澄清改为简短Markdown语法与卡片示例，内容以[产品设计](jlab-wechat-editor.md)为准。默认配色/排版和结尾启停规则保留；历史/标注/素材/最近色为空。不搬旧数据，不清除源origin存储，开发/预览使用127.0.0.1:5175/4175 strictPort；生产平台/域名待定，仅交付相对base静态产物。
 
 ## 文档和来源
 
@@ -36,4 +36,4 @@ workspace私有CSS通过相对import引入。目标模块检查器应将存在�
 
 ## 最终实现与技术边界
 
-六模块与产品文档已迁入，模板introduction已移除，app.config与组装注册齐备；首次无本地草稿时使用内置示例稿，默认设置与原存储规则保留；已有草稿（包括空稿）优先恢复。正式部署与人类验收未完成。[技术验证](../reference/migration-validation.md)记录迁移当时的实际结果及遗留，不继承来源通过结论；后续示例稿扩展见[当前计划](../plans/active/2026-10-14-expanded-example-draft.md)。
+六模块与产品文档已迁入，模板introduction已移除，app.config与组装注册齐备；首次无本地草稿时使用内置示例稿，默认设置与原存储规则保留；已有草稿（包括空稿）优先恢复。正式部署与人类验收未完成。[技术验证](../reference/migration-validation.md)记录迁移当时的实际结果及遗留，不继承来源通过结论；现行示例稿见[精简计划](../plans/active/2026-10-19-concise-example-draft.md)。

@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [精简默认 Markdown 语法示例稿](fix/2026/10/2026-10-19-concise-example-draft.md)
+
 - [Markdown 封面与总结卡片](feat/2026/10/2026-10-19-markdown-cards.md)
 
 - [代码随主题配色与暖纸工作台](fix/2026/10/2026-10-19-themed-code-warm-workspace.md)
