@@ -52,8 +52,12 @@ assert.deepEqual(manifest.web_accessible_resources, [
   { resources: ['logo.png'], matches: ['https://mp.weixin.qq.com/*'] },
 ])
 assert.deepEqual(manifest.icons, { 32: 'logo-32.png', 192: 'logo.png' })
+assert.deepEqual(manifest.action.default_icon, { 32: 'logo-32-gray.png' })
+assert.equal(manifest.action.default_popup, 'popup.html')
+assert.notEqual(manifest.action.default_state, 'disabled')
 for (const [name, size] of [
   ['logo-32.png', 32],
+  ['logo-32-gray.png', 32],
   ['logo.png', 192],
 ]) {
   const png = readFileSync(join(root, 'dist/production', name))
@@ -100,6 +104,7 @@ assert.deepEqual(
     'worker.js',
     'logo.png',
     'logo-32.png',
+    'logo-32-gray.png',
   ].sort(),
 )
 for (const [name, bytes] of Object.entries(files))

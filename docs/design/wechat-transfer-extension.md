@@ -2,11 +2,17 @@
 title: Web 与 Chrome 轻量传稿插件
 status: accepted
 created: 2026-10-11
-updated: 2026-10-16
+updated: 2026-10-19
 owner: project maintainers
 ---
 
 # Web 与 Chrome 轻量传稿插件
+
+## 工具栏图标按站点切换
+
+0.1.13工具栏默认使用灰色logo，每个标签独立设置图标；当前标签的origin精确为https://wechateditor.github.io或https://mp.weixin.qq.com时使用原蓝色logo，其他站点、Chrome内部页及无法读取URL时为灰色。开发包额外匹配已有127.0.0.1:5175/4175。桀士排版域内的说明页也属于本站；不依据标题或网址子串点亮。图标表示站点匹配，不表示已登录、连接、插入或保存成功；灰色不禁用面板。
+
+extension-shell私有工具栏服务由已有公共service导出，worker入口只调用注册函数。安装、浏览器启动、worker唤醒时初始化现有标签；新建、激活、URL/加载变化与标签替换时更新对应tabId，关闭标签清理迟到任务。异步读取使用每标签令牌，只允许最新结果设置图标。现有host权限提供允许站点的URL，未申请全局tabs或额外权限，不记录网址、不读正文、不访问仓储。蓝/灰资源随包提供，默认灰色避免不支持页面短暂显示蓝色。工程检查与真实Chrome人工验收见[计划](../plans/active/2026-10-19-extension-toolbar-icon.md)。
 
 ## 搜索发现与官网说明
 

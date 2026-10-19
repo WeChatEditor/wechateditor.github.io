@@ -2,11 +2,15 @@
 title: extension-shell模块
 status: accepted
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-19
 owner: project maintainers
 ---
 
 # extension-shell模块
+
+0.1.13增加工具栏站点指示。已登记的公共extension-shell.service.ts显式导出registerToolbarIcon，worker只组装注册；私有extension-shell-toolbar.ts负责origin判断、Chrome标签事件和每标签action.setIcon，不读取传稿仓储或页面内容。公共文件和依赖登记无需变更。蓝色对应生产桀士排版及公众号精确origin；开发包沿用两个本机origin；其他和URL不可读为灰色，保持面板可点击。默认灰色资源随包提供，品牌logo继续蓝色。
+
+数据流为标签事件→读取该tab当前可见URL→精确origin分类→设置该tab图标，启动/安装/worker唤醒先同步已有标签。每标签最新令牌阻断迟到读取；移除标签时释放令牌，读取/设置失败由本次更新吸收，不影响传稿。只使用既有host权限；不记录URL、不新增状态存储、轮询或全局tabs权限。资源存在性、PNG尺寸/灰阶与ZIP一致性由打包检查覆盖；切换、导航、重启、多窗口和面板交互由维护者人工验收。依据[实施计划](../../plans/active/2026-10-19-extension-toolbar-icon.md)。
 
 0.1.11content从已有共享契约依赖读取nativeTitleEditAttribute，只排除#js_title_main内已登记ProseMirror标题节点在同步原生insertText期间带active标记的input事件。pointerdown/keydown、其他节点input及标记移除后的input仍报告PAGE_ACTIVITY；不持续暂停用户活动，也不读取标题/正文。此标记是公开DOM协作约定，不是跨模块私有状态或新消息授权。依赖和模块边界不变。
 

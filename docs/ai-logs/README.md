@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [插件工具栏图标按站点切换](feat/2026/10/2026-10-19-extension-toolbar-icon.md)
+
 - [网站与插件SEO实施](feat/2026/10/2026-10-16-search-discovery.md)
 
 - [九组默认配色重设计](feat/2026/10/2026-10-15-nine-default-palettes.md)

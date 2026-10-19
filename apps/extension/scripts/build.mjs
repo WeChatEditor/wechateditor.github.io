@@ -64,7 +64,11 @@ const manifest = {
     matches: ['https://wechateditor.github.io/*', ...(development ? devSources : [])],
   },
   background: { service_worker: 'worker.js', type: 'module' },
-  action: { default_popup: 'popup.html', default_title: '桀士排版·公众号助手' },
+  action: {
+    default_popup: 'popup.html',
+    default_title: '桀士排版·公众号助手',
+    default_icon: { 32: 'logo-32-gray.png' },
+  },
   content_scripts: [
     { matches: ['https://mp.weixin.qq.com/*'], js: ['content.js'], run_at: 'document_idle' },
   ],
@@ -82,6 +86,10 @@ await copyFile(
   resolve(root, '../frontend/public/favicon-32x32.png'),
   resolve(directory, 'logo-32.png'),
 )
+await copyFile(
+  resolve(root, 'src/modules/extension-shell/toolbar-inactive.png'),
+  resolve(directory, 'logo-32-gray.png'),
+)
 if (process.argv.includes('--zip')) {
   const files = {}
   for (const name of [
@@ -94,6 +102,7 @@ if (process.argv.includes('--zip')) {
     'LICENSES.txt',
     'logo.png',
     'logo-32.png',
+    'logo-32-gray.png',
   ])
     files[name] = new Uint8Array(await readFile(resolve(directory, name)))
   const archive = resolve(root, 'dist', `jlab-wechat-transfer-${version}.zip`)

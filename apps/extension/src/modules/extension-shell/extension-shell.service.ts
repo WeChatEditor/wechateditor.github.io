@@ -10,6 +10,8 @@ import {
   type InternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
 
+export { registerToolbarIcon } from './extension-shell-toolbar'
+
 async function send(request: InternalRequest): Promise<unknown> {
   const response = internalResponseSchema.parse(await chrome.runtime.sendMessage(request))
   if (response.status !== 0) throw new Error(response.err || '插件操作失败')

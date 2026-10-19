@@ -1,8 +1,10 @@
 # 桀士排版·公众号助手
 
-Chrome MV3轻量传稿插件，0.1.12、协议2。Web自动保存后同步当前文字排版到插件，打开插件面板即可复制正文排版或标题。点击“发送到公众号”才调度打开后台，依次进入“草稿箱 → 新的创作 → 文章”，在平台新开的文章标签尝试插入。用户检查后手动保存。创作菜单读取可见名称，避免隐藏同名tooltip导致“文章”定位失败。
+Chrome MV3轻量传稿插件，0.1.13、协议2。Web自动保存后同步当前文字排版到插件，打开插件面板即可复制正文排版或标题。点击“发送到公众号”才调度打开后台，依次进入“草稿箱 → 新的创作 → 文章”，在平台新开的文章标签尝试插入。用户检查后手动保存。创作菜单读取可见名称，避免隐藏同名tooltip导致“文章”定位失败。
 
-pnpm package:extension生成dist/production和dist/jlab-wechat-transfer-0.1.12.zip；pnpm build:extension:dev生成dist/development。生产/开发稳定ID一致，只安装一份。更新插件后重新加载，并刷新Web和公众号；旧0.1.4快照兼容保留。
+pnpm package:extension生成dist/production和dist/jlab-wechat-transfer-0.1.13.zip；pnpm build:extension:dev生成dist/development。生产/开发稳定ID一致，只安装一份。更新插件后重新加载，并刷新Web和公众号；旧0.1.4快照兼容保留。
+
+0.1.13按当前标签切换工具栏图标：https://wechateditor.github.io及https://mp.weixin.qq.com显示原蓝色logo，其他页面显示同形灰色logo，灰色仍可点击面板。新建、切换、导航、浏览器启动和worker唤醒自动更新，每个标签独立设置；不新增全局tabs权限、URL记录或轮询。开发包额外识别127.0.0.1:5175/4175，生产包不识别本机地址。图标只表示站点匹配，不表示登录或传稿成功，真实Chrome显示待人工验收。
 
 0.1.12只更新用户场景摘要和homepage_url（https://wechateditor.github.io/extension/），名称、ID、权限、协议与传稿行为不变。[商店发布文案](../../docs/reference/chrome-web-store-listing.md)已准备；[公开隐私说明](../frontend/public/privacy/index.html)随Web静态发布，不表示商店已公开或审核通过。
 
