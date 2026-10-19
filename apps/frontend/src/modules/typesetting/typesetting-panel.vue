@@ -5,6 +5,7 @@ import {
   chapterPreview,
   contrastRatio,
   defaultTypesetting,
+  defaultPresetId,
   presets,
   maxPalettes,
   saveColorPreset,
@@ -32,6 +33,21 @@ const roles: [ColorRole, string][] = [
 ]
 const chapters = computed(() =>
   chapterStyles.map(([id, name]) => ({ id, name, html: chapterPreview(id, props.config) })),
+)
+const palettePreviews = computed(
+  () =>
+    new Map(
+      props.config.palettes.map((preset) => [
+        preset.id,
+        chapterPreview('editorial', {
+          ...props.config,
+          colors: preset.colors,
+          chapterNumberEnabled: true,
+          chapterDecorationTight: false,
+          chapterAlignment: 'left',
+        }),
+      ]),
+    ),
 )
 const paletteName = ref('')
 const paletteActionPending = ref(false)
@@ -295,32 +311,54 @@ function resetText(): void {
           </button>
         </div>
         <p v-if="config.palettes.length > maxPalettes" class="settings-note">
-          旧版保存了超过九个配色，已完整保留。请删除至九个以内或重置所有配色后保存。
+          旧版保存了超过{{ maxPalettes }}个配色，已完整保留。请删除至{{
+            maxPalettes
+          }}个以内或重置所有配色后保存。
         </p>
         <div class="preset-grid">
-          <div v-for="preset in config.palettes" :key="preset.id" class="palette-entry">
+          <div
+            v-for="(preset, index) in config.palettes"
+            :key="preset.id"
+            class="palette-entry"
+            :style="{ '--palette-accent': preset.colors.accent }"
+          >
             <button
               class="preset-card"
               :class="{ active: config.preset === preset.id }"
               :aria-pressed="config.preset === preset.id"
+              :aria-label="`应用配色：${preset.name}${config.preset === preset.id ? '，已选中' : ''}`"
               @click="emit('preset', preset.id)"
             >
+              <span class="palette-index" aria-hidden="true">{{
+                String(index + 1).padStart(2, '0')
+              }}</span>
               <span class="mini-article" :style="{ color: preset.colors.body }"
-                ><strong
-                  :style="{ color: preset.colors.heading, borderColor: preset.colors.accent }"
-                  >阅读的节奏</strong
-                ><span class="mini-line" /><span class="mini-line short" /><span
+                ><span class="mini-heading" v-html="palettePreviews.get(preset.id)" />
+                <span class="mini-copy">把日常，写成好文章。</span>
+                <span class="mini-line" /><span class="mini-line short" /><span
                   class="mini-quote"
                   :style="{
                     color: preset.colors.muted,
                     background: preset.colors.background,
                     borderColor: preset.colors.accent,
                   }"
-                  >给观点一点留白</span
+                  >让阅读慢下来</span
                 ></span
               ><span class="preset-name"
-                >{{ preset.name }}<span v-if="config.preset === preset.id"> ✓</span></span
+                ><span>{{ preset.name }}</span
+                ><span v-if="config.preset === preset.id" class="palette-badge">已选</span
+                ><span
+                  v-else-if="preset.id === defaultPresetId && !preset.custom"
+                  class="palette-badge recommended"
+                  >推荐</span
+                ></span
               >
+              <span class="palette-swatches" aria-hidden="true"
+                ><span
+                  v-for="[role] in roles"
+                  :key="role"
+                  :style="{ backgroundColor: preset.colors[role] }"
+              /></span>
             </button>
             <div class="palette-actions">
               <el-tooltip content="用当前颜色更新配色" placement="top" :show-after="250">
@@ -427,7 +465,7 @@ function resetText(): void {
         </button>
       </div>
       <p class="settings-note">
-        全部配色合计最多九个、至少一个。默认配色也可改名、更新颜色或删除。
+        全部配色合计最多{{ maxPalettes }}个、至少一个。默认配色也可改名、更新颜色或删除。
       </p>
       <div class="role-list">
         <div v-for="[role, label] in roles" :key="role" class="color-row">
@@ -500,9 +538,9 @@ function resetText(): void {
   margin-top: 12px;
 }
 .chapter-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 .chapter-alignment {
   display: flex;
@@ -519,19 +557,21 @@ function resetText(): void {
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius);
   background: var(--ui-surface);
+  min-width: 0;
 }
 .chapter-option:hover,
 .preset-card:hover {
   border-color: var(--ui-primary);
 }
-.chapter-option.active,
-.preset-card.active {
+.chapter-option.active {
   border-color: var(--ui-primary);
   background: var(--ui-active);
 }
 .chapter-preview {
   display: block;
-  margin-bottom: 10px;
+  min-height: 64px;
+  margin-bottom: 12px;
+  padding-top: 8px;
 }
 .chapter-label {
   display: flex;
@@ -550,29 +590,47 @@ function resetText(): void {
 .preset-card {
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
-  border-radius: var(--ui-radius);
-  padding: 42px 10px 12px;
+  border-radius: 10px;
+  padding: 38px 12px 12px;
   text-align: left;
   min-width: 0;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.preset-card.active {
+  border-color: var(--palette-accent);
+  box-shadow: 0 0 0 1px var(--palette-accent);
+}
+.palette-index {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  color: var(--ui-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
 }
 .mini-article {
   display: block;
   background: #fff;
-  padding: 5px 4px 12px;
+  padding: 4px 0 10px;
 }
-.mini-article strong {
+.mini-heading {
   display: block;
-  border-left: 3px solid;
-  padding-left: 7px;
-  margin-bottom: 12px;
-  font-size: 13px;
+  margin-bottom: 8px;
+}
+.mini-copy {
+  display: block;
+  font-size: 11px;
+  line-height: 1.7;
 }
 .mini-line {
   display: block;
   background: currentColor;
-  opacity: 0.3;
-  height: 3px;
-  margin: 8px 0;
+  opacity: 0.18;
+  height: 2px;
+  margin: 7px 0;
   width: 90%;
 }
 .mini-line.short {
@@ -581,15 +639,39 @@ function resetText(): void {
 .mini-quote {
   display: block;
   font-size: 11px;
-  padding: 8px 5px;
-  margin-top: 12px;
+  padding: 8px 6px;
+  margin-top: 10px;
   border-left: 2px solid;
+  line-height: 1.6;
 }
 .preset-name {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
   font-size: 12px;
   color: var(--ui-text);
   margin-top: 6px;
+  font-weight: 600;
+}
+.palette-badge {
+  color: var(--palette-accent);
+  font-size: 11px;
+  font-weight: 500;
+}
+.palette-badge.recommended {
+  color: var(--ui-muted);
+}
+.palette-swatches {
+  display: flex;
+  height: 5px;
+  gap: 3px;
+  margin-top: 10px;
+}
+.palette-swatches > span {
+  flex: 1;
+  border-radius: 2px;
 }
 .role-list {
   margin-top: 18px;
@@ -638,6 +720,7 @@ function resetText(): void {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s;
+  z-index: 1;
 }
 .palette-actions .ui-button {
   width: 26px;

@@ -2,7 +2,7 @@
 title: 桀士排版数据存储与文章版本
 status: accepted
 created: 2026-10-08
-updated: 2026-10-15
+updated: 2026-10-19
 owner: project maintainers
 ---
 
@@ -32,7 +32,7 @@ Web本机保存成功后异步同步受控文字HTML/纯文字到插件独立cli
 
 ## 兼容与失败
 
-默认配色扩为九组，仅影响无配置初始化、旧配置缺少palettes时的默认填充及用户确认重置。已有合法列表（包括原六组、改名/改色、自定义和删除后的列表）及config.colors/preset继续完整恢复，不按内置id更新或自动补齐；重置替换列表并将preset设为custom，当前文章颜色保留。默认clear-blue对应澄空科技，六个原id保留；配置schemaVersion仍为1，不改变localStorage键或IndexedDB草稿/版本。
+默认配色18套、总计1至24套。仅影响无配置初始化、旧配置缺少palettes时的填充及显式重置。已有合法列表及config.colors/preset/章节偏好原样恢复，不按内置id覆盖或补齐。新配置默认editorial（青黛朱砂）/杂志刊头/编号开启，旧缺省编号继续false；重置配色仅替换列表并将preset设为custom，保留文章颜色。原九id保留；chapterStyles增加editorial/label/frame/minimal四值，读写通过同一枚举与maxPalettes校验，消除旧读取15套上限。schemaVersion仍为1，键、current/版本与并发保护不变。
 
 原稿固定头尾展示偏好showFixedFragments为配置格式1的可选布尔字段，localStorage即时覆盖，无文章历史。缺失补true以延续旧展示，false保持关闭，存在但类型错误则拒绝读写。偏好不改变FixedEnding启用状态、IndexedDB草稿或文章版本协议。
 
@@ -42,7 +42,7 @@ Web本机保存成功后异步同步受控文字HTML/纯文字到插件独立cli
 
 旧完整格式1兼容分支保留：已有localStorage配置优先，没有配置时先保证旧配置写入成功，再拆分为草稿2。配置失败保留旧current；未知/损坏记录暂停相应写入而不覆盖。本次不搬源数据，opening仅扩展配置可选字段，不变更IndexedDB文章协议。
 
-文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。文章通知、配置storage事件或writeId冲突进入独立冲突锁，文章和配置自动保存均暂停，待保存取消，原生Modal与工作台inert阻断全部操作；确认关闭当前标签页，浏览器拒绝则提示手动关闭并继续锁定。已开始的事务不能撤销，事务writeId检查继续保证拒绝过期正文覆盖；收到冲突后的新命令/排队写入/晚到内容应用被拒绝。权限/配额/损坏等非标签冲突保留对应编辑/重试流程。新字段缺失补默认值，但损坏字段不默认覆盖。旧超限配色完整读，写入严格总计1至9。手机档位仅内存，不改变配置格式。
+文章事务比较writeId，其他页面写入拒绝覆盖；BroadcastChannel jlab-wechat-editor-draft用于通知，事务检查不依赖通知。文章通知、配置storage事件或writeId冲突进入独立冲突锁，文章和配置自动保存均暂停，待保存取消，原生Modal与工作台inert阻断全部操作；确认关闭当前标签页，浏览器拒绝则提示手动关闭并继续锁定。已开始的事务不能撤销，事务writeId检查继续保证拒绝过期正文覆盖；收到冲突后的新命令/排队写入/晚到内容应用被拒绝。权限/配额/损坏等非标签冲突保留对应编辑/重试流程。新字段缺失补默认值，但损坏字段不默认覆盖。配色读写均接受1至24套；超过24套视为异常，保留原记录并暂停相应写入。手机档位仅内存，不改变配置格式。
 
 ## 隔离与验证
 

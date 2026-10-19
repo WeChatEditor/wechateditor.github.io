@@ -71,7 +71,8 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
     (draft.config.palettes === undefined ||
       (Array.isArray(draft.config.palettes) &&
         draft.config.palettes.length >= 1 &&
-        draft.config.palettes.length <= (allowLegacyPalettes ? 15 : maxPalettes) &&
+        draft.config.palettes.length <=
+          (allowLegacyPalettes ? Math.max(15, maxPalettes) : maxPalettes) &&
         new Set(draft.config.palettes.map((p) => p?.id)).size === draft.config.palettes.length &&
         draft.config.palettes.every(
           (p) =>
@@ -123,7 +124,7 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
       draft.config.palettes.length > maxPalettes &&
       !allowLegacyPalettes
     ) {
-      throw new Error('配色最多九个，请删除多余配色或重置所有配色后保存。')
+      throw new Error(`配色最多${maxPalettes}个，请删除多余配色或重置所有配色后保存。`)
     }
     throw new Error('本地配置版本或数据异常，已暂停配置保存，原记录保留。请备份后处理。')
   }

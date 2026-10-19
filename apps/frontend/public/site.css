@@ -199,22 +199,24 @@ p {
 }
 .sample-heading {
   padding-bottom: 16px;
-  border-bottom: 2px solid #3b7d8d;
-  color: #285b69;
+  border-bottom: 1px solid #b04432;
+  color: #193549;
   font-size: 25px;
   font-weight: 700;
 }
 .sample-number {
-  color: #3b7d8d;
-  font-size: 14px;
+  color: #b04432;
+  font-size: 30px;
+  font-family: Georgia, serif;
+  font-weight: 400;
   margin-right: 8px;
 }
 .sample blockquote {
   margin: 20px 0;
   padding: 16px 18px;
-  color: #305c64;
-  background: #eff6f6;
-  border-left: 3px solid #5a929d;
+  color: #59656e;
+  background: #f7f0e9;
+  border-left: 2px solid #b04432;
   font-size: 14px;
 }
 .sample p {

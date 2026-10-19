@@ -1,4 +1,8 @@
 export const chapterStyles = [
+  ['editorial', '杂志刊头'],
+  ['label', '色签标题'],
+  ['frame', '双线专栏'],
+  ['minimal', '极简细线'],
   ['underline', '下划线'],
   ['thick-underline', '粗下划线'],
   ['slash', '斜线'],

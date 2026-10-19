@@ -2,7 +2,7 @@
 title: 网站与插件搜索发现
 status: accepted
 created: 2026-10-16
-updated: 2026-10-16
+updated: 2026-10-19
 owner: project maintainers
 ---
 
@@ -17,6 +17,8 @@ owner: project maintainers
 公开页面作为apps/frontend/public中的静态HTML及共用CSS，Vite原样复制至dist，GitHub Pages直接按目录index.html提供服务。它们是产品说明资产，不新增业务模块或模块依赖。每页提供独立标题、摘要、绝对canonical、Open Graph/Twitter元信息、一个主标题、语义导航和完整正文；页面可在禁用JavaScript时阅读。根HTML包含真实加载说明和公开页面链接，挂载后由既有编辑器替换；工作台状态栏保留通往公开页面的普通链接，在新标签打开，避免离开正在写作的草稿。
 
 产品介绍、Markdown转公众号教程、插件安装和隐私分别位于/about/、/guides/markdown-to-wechat/、/extension/、/privacy/。根路径和四页进入sitemap.xml，robots.txt指向生产站点地图。canonical逐页自引用，不把所有页面指向根路径；不添加meta keywords、虚构评价或富结果承诺。根页使用WebSite/WebApplication结构化数据，说明页使用WebPage和BreadcrumbList。分享图片沿用现有192px品牌图标，使用summary卡片。404页明确noindex，不进入站点地图。
+
+2026-10-19产品介绍与教程同步18套默认/24套上限和12款标题；静态示意采用青黛朱砂，色票取现行默认数据。示意仍与实际工作台/公众号验收分开。
 
 ## 插件与商店
 

@@ -1,15 +1,28 @@
 import type { TypesettingConfig, ChapterStyle, ColorPreset } from './typesetting.model'
 
+export const defaultPresetId = 'editorial'
+
 const originalPresets = [
   {
-    id: 'clear-blue',
-    name: '澄空科技',
+    id: 'editorial',
+    name: '青黛朱砂',
     colors: {
-      body: '#303b4b',
-      heading: '#12366a',
-      accent: '#245cce',
-      muted: '#526580',
-      background: '#eef4ff',
+      body: '#34404a',
+      heading: '#193549',
+      accent: '#b04432',
+      muted: '#59656e',
+      background: '#f7f0e9',
+    },
+  },
+  {
+    id: 'ink',
+    name: '素纸墨灰',
+    colors: {
+      body: '#343434',
+      heading: '#222222',
+      accent: '#525252',
+      muted: '#626262',
+      background: '#f4f4f2',
     },
   },
   {
@@ -24,6 +37,39 @@ const originalPresets = [
     },
   },
   {
+    id: 'rose-news',
+    name: '玫瑰晨报',
+    colors: {
+      body: '#3e3437',
+      heading: '#632f42',
+      accent: '#9e3951',
+      muted: '#70545e',
+      background: '#faf0ef',
+    },
+  },
+  {
+    id: 'coffee',
+    name: '摩卡手札',
+    colors: {
+      body: '#403932',
+      heading: '#4e382b',
+      accent: '#88612f',
+      muted: '#706255',
+      background: '#f7f2eb',
+    },
+  },
+  {
+    id: 'burgundy',
+    name: '酒红墨金',
+    colors: {
+      body: '#44373b',
+      heading: '#6b293e',
+      accent: '#856020',
+      muted: '#715b62',
+      background: '#f8f1eb',
+    },
+  },
+  {
     id: 'teal',
     name: '松间青绿',
     colors: {
@@ -35,38 +81,47 @@ const originalPresets = [
     },
   },
   {
-    id: 'ink',
-    name: '素纸墨灰',
+    id: 'celadon',
+    name: '雨后青瓷',
     colors: {
-      body: '#343434',
-      heading: '#222222',
-      accent: '#525252',
-      muted: '#626262',
-      background: '#f4f4f2',
+      body: '#34423e',
+      heading: '#245549',
+      accent: '#416e5b',
+      muted: '#58695e',
+      background: '#eef5ef',
     },
   },
-
   {
-    id: 'retro',
-    name: '复古棕绿',
+    id: 'olive',
+    name: '橄榄手记',
     colors: {
-      body: '#403b34',
-      heading: '#774b35',
-      accent: '#526b45',
-      muted: '#716455',
-      background: '#f5f1e8',
+      body: '#3e4034',
+      heading: '#444b2a',
+      accent: '#687126',
+      muted: '#656950',
+      background: '#f4f5e9',
     },
   },
-
   {
-    id: 'orange',
-    name: '落日橘蓝',
+    id: 'ocean',
+    name: '雾海蓝调',
     colors: {
-      body: '#3d3c42',
-      heading: '#23466c',
-      accent: '#b84c25',
-      muted: '#6f5d56',
-      background: '#fff2e9',
+      body: '#34404a',
+      heading: '#234a60',
+      accent: '#306e86',
+      muted: '#546a75',
+      background: '#edf4f7',
+    },
+  },
+  {
+    id: 'clear-blue',
+    name: '澄空科技',
+    colors: {
+      body: '#303b4b',
+      heading: '#12366a',
+      accent: '#245cce',
+      muted: '#526580',
+      background: '#eef4ff',
     },
   },
   {
@@ -81,6 +136,28 @@ const originalPresets = [
     },
   },
   {
+    id: 'indigo',
+    name: '靛蓝档案',
+    colors: {
+      body: '#373d4b',
+      heading: '#2d386c',
+      accent: '#4a55a0',
+      muted: '#5d657c',
+      background: '#f0f2fa',
+    },
+  },
+  {
+    id: 'violet',
+    name: '鸢尾来信',
+    colors: {
+      body: '#41384b',
+      heading: '#55416f',
+      accent: '#795396',
+      muted: '#70617c',
+      background: '#f6f0fa',
+    },
+  },
+  {
     id: 'cobalt-lime',
     name: '蓝柠撞色',
     colors: {
@@ -89,6 +166,28 @@ const originalPresets = [
       accent: '#66751b',
       muted: '#62694b',
       background: '#f5f8df',
+    },
+  },
+  {
+    id: 'orange',
+    name: '落日橘蓝',
+    colors: {
+      body: '#3d3c42',
+      heading: '#23466c',
+      accent: '#b84c25',
+      muted: '#6f5d56',
+      background: '#fff2e9',
+    },
+  },
+  {
+    id: 'retro',
+    name: '复古棕绿',
+    colors: {
+      body: '#403b34',
+      heading: '#774b35',
+      accent: '#526b45',
+      muted: '#716455',
+      background: '#f5f1e8',
     },
   },
   {
@@ -104,23 +203,16 @@ const originalPresets = [
   },
 ]
 
-export const presets: ColorPreset[] = [
-  'ink',
-  'warm-gold',
-  'teal',
-  'clear-blue',
-  'aurora',
-  'cobalt-lime',
-  'retro',
-  'orange',
-  'berry',
-].map((id) => ({ ...originalPresets.find((preset) => preset.id === id)!, custom: false }))
+export const presets: ColorPreset[] = originalPresets.map((preset) => ({
+  ...preset,
+  custom: false,
+}))
 
 export function defaultPalettes(): ColorPreset[] {
   return presets.map((preset) => ({ ...preset, colors: { ...preset.colors } }))
 }
 
-export const maxPalettes = 9
+export const maxPalettes = 24
 
 export function saveColorPreset(
   config: TypesettingConfig,
@@ -181,16 +273,16 @@ export function normalizeTypesetting(config: TypesettingConfig): TypesettingConf
 
 export function defaultTypesetting(): TypesettingConfig {
   return {
-    preset: 'clear-blue',
-    colors: { ...presets.find((preset) => preset.id === 'clear-blue')!.colors },
-    chapterStyle: 'bar',
-    chapterNumberEnabled: false,
+    preset: defaultPresetId,
+    colors: { ...presets.find((preset) => preset.id === defaultPresetId)!.colors },
+    chapterStyle: 'editorial',
+    chapterNumberEnabled: true,
     chapterDecorationTight: true,
     chapterAlignment: 'left',
     palettes: defaultPalettes(),
     fontSize: 16,
     lineHeight: 1.9,
-    paragraphGap: 20,
+    paragraphGap: 18,
     letterSpacing: 0.5,
     font: 'default',
     backgroundEnabled: true,
@@ -246,13 +338,42 @@ function decorateChapter(
   const content = document.createElement('span')
   content.style.cssText = 'display:block;min-width:0;overflow-wrap:anywhere;'
   content.append(...heading.childNodes)
+  const labelInk = contrastRatio(accent, '#ffffff') >= 4.5 ? '#ffffff' : '#000000'
   if (config.chapterNumberEnabled) {
     const sequence = document.createElement('span')
     sequence.dataset.decoration = 'true'
     sequence.textContent = String(number).padStart(2, '0')
     sequence.style.color = accent
     sequence.style.marginRight = '0.5em'
+    if (style === 'editorial') {
+      sequence.style.cssText += `font-family:Georgia,serif;font-size:1.25em;font-weight:normal;`
+    } else if (style === 'label') {
+      sequence.style.color = labelInk
+    }
     content.prepend(sequence)
+  }
+  if (['editorial', 'label', 'frame', 'minimal'].includes(style)) {
+    const plate = document.createElement('span')
+    plate.style.cssText =
+      'display:inline-block;max-width:100%;box-sizing:border-box;vertical-align:top;'
+    if (!config.chapterDecorationTight) {
+      plate.style.width = '100%'
+    }
+    if (style === 'editorial') {
+      plate.style.cssText += `border-bottom:1px solid ${accent};padding:0 0 9px;`
+      content.style.fontFamily = 'Georgia,"Noto Serif CJK SC","Songti SC",SimSun,serif'
+    } else if (style === 'label') {
+      plate.style.cssText += `background-color:${accent};color:${labelInk};padding:7px 13px;border-radius:3px;`
+    } else if (style === 'frame') {
+      plate.style.cssText += `border-top:2px solid ${accent};border-bottom:1px solid ${accent};padding:9px 2px;`
+    } else {
+      plate.style.cssText += `border-left:1px solid ${accent};padding:0 0 0 12px;`
+      content.style.fontWeight = '500'
+    }
+    plate.append(content)
+    heading.style.paddingBottom = '0'
+    heading.append(plate)
+    return
   }
   if (style === 'underline' || style === 'thick-underline') {
     const underlineTarget = config.chapterDecorationTight ? content : heading
@@ -287,7 +408,7 @@ function decorateChapter(
 
 export function chapterPreview(style: ChapterStyle, config: TypesettingConfig): string {
   const heading = document.createElement('span')
-  heading.textContent = '章节标题示例'
+  heading.textContent = '阅读的节奏'
   heading.style.cssText = `display:block;color:${config.colors.heading};font-size:15px;line-height:24px;font-weight:bold;padding-bottom:4px;`
   decorateChapter(heading, style, 1, config)
   return heading.outerHTML
@@ -315,14 +436,20 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
       const level = Number(tag[1])
       const size =
         level === 1 ? fontSize + 12 : level === chapterLevel ? fontSize + 5 : fontSize + 2
-      element.style.cssText = `color:${colors.heading};font-size:${size}px;line-height:${size * 1.6}px;font-weight:bold;margin:28px 0 18px;padding-bottom:6px;`
+      element.style.cssText = `color:${colors.heading};font-size:${size}px;line-height:${size * 1.5}px;font-weight:bold;margin:26px 0 14px;padding-bottom:6px;`
+      if (level === 1) {
+        element.style.cssText += `line-height:1.4;letter-spacing:0.02em;padding-bottom:16px;border-bottom:1px solid ${colors.background};`
+        if (element === root.firstElementChild) {
+          element.style.marginTop = '0'
+        }
+      }
       if (numbered && level === chapterLevel) {
         decorateChapter(element, config.chapterStyle, ++chapter, config)
       }
     } else if (tag === 'strong') {
-      element.style.cssText = `color:${colors.accent};font-weight:bold;`
+      element.style.cssText = `color:${element.closest('h1,h2,h3,h4,h5,h6') ? 'inherit' : colors.accent};font-weight:bold;`
     } else if (tag === 'blockquote') {
-      element.style.cssText = `border-left:3px solid ${colors.accent};padding:14px 18px;margin:20px 0;color:${colors.muted};`
+      element.style.cssText = `border-left:2px solid ${colors.accent};padding:12px 16px;margin:18px 0;color:${colors.muted};border-radius:0 4px 4px 0;`
       if (config.backgroundEnabled) {
         element.style.backgroundColor = colors.background
       }
@@ -339,7 +466,9 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
       element.prepend(chrome)
     } else if (tag === 'code') {
       element.style.fontFamily = 'monospace'
-      if (element.parentElement?.tagName !== 'PRE') {
+      if (element.closest('h1,h2,h3,h4,h5,h6')) {
+        element.style.color = 'inherit'
+      } else if (element.parentElement?.tagName !== 'PRE') {
         element.style.cssText += `color:${colors.accent};background-color:#f4f5f7;padding:2px 4px;`
       }
     } else if (tag === 'table') {
@@ -350,7 +479,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
       if (tag === 'th') {
         element.style.color = colors.heading
         element.style.fontWeight = 'bold'
-        element.style.backgroundColor = '#f1f5f9'
+        element.style.backgroundColor = colors.background
       } else if (element.parentElement?.parentElement?.tagName === 'TBODY') {
         const row = element.parentElement
         if (row && [...row.parentElement!.children].indexOf(row) % 2 === 1) {
@@ -364,11 +493,16 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
     } else if (tag === 'img') {
       element.style.cssText = 'max-width:100%;height:auto;display:block;margin:18px auto;'
     } else if (tag === 'a') {
-      element.style.cssText = `color:${colors.accent};text-decoration:underline;overflow-wrap:anywhere;`
+      element.style.cssText = `color:${element.closest('h1,h2,h3,h4,h5,h6') ? 'inherit' : colors.accent};text-decoration:underline;overflow-wrap:anywhere;`
       element.setAttribute('target', '_blank')
       element.setAttribute('rel', 'noopener noreferrer')
     } else if (tag === 'hr') {
       element.style.cssText = `border:0;border-top:1px solid ${colors.accent};margin:28px 0;`
     }
+  }
+  for (const paragraph of root.querySelectorAll<HTMLElement>(
+    'blockquote > p:last-child,li > p:last-child',
+  )) {
+    paragraph.style.marginBottom = '0'
   }
 }

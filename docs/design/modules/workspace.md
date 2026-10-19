@@ -2,7 +2,7 @@
 title: workspace模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-16
+updated: 2026-10-19
 owner: project maintainers
 ---
 
@@ -44,4 +44,4 @@ Pinia命令编排、覆盖抽屉、拖拽双栏、保存状态、配置localStor
 
 ## 首次原稿
 
-无本地current时，article以app.config中的内置exampleMarkdown初始化；2026-10-14正文扩为包含Markdown、多语言文字与代码块的新手长篇示例。有current时恢复已保存内容，空正文也属于有效草稿。默认配置、存储格式、保存时机和历史规则保持原有语义。
+无本地current时，article以app.config中的exampleMarkdown初始化；2026-10-19开场先展示配色五角色与多层标题，后接Markdown、多语言和代码长篇示例。存在current时恢复保存内容，空正文同样有效。新配置由typesetting提供18套/24套上限及青黛朱砂默认；私有workspace.service读写均使用maxPalettes与chapterStyles，读取不再限定15套。存储格式、保存时机和历史语义不变。

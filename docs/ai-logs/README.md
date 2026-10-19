@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [编辑式标题与十八套配色系统](feat/2026/10/2026-10-19-editorial-color-system.md)
+
 - [插件工具栏图标按站点切换](feat/2026/10/2026-10-19-extension-toolbar-icon.md)
 
 - [网站与插件SEO实施](feat/2026/10/2026-10-16-search-discovery.md)
