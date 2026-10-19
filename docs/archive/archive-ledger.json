@@ -1,22 +1,25 @@
 {
   "schemaVersion": 1,
   "baseline": {
-    "commit": "ba7af69cb305fc08d6823f3384889c685832a783",
-    "reviewedAt": "2026-10-11T17:22:50.860Z",
+    "commit": "ff3e9e7b12624130991209b0a8922a0fa5bc7f65",
+    "reviewedAt": "2026-10-19T12:32:30.086Z",
     "acceptedAdrIds": [
       "decisions/ADR-20261004-jlab-wechat-editor-standalone-app.md",
       "decisions/ADR-20261005-jlab-local-storage-history.md",
       "decisions/ADR-20261008-fixed-head-tail.md",
       "decisions/ADR-20261008-github-pages-deployment.md",
       "decisions/ADR-20261008-jlab-independent-repository.md",
-      "decisions/ADR-20261011-wechat-transfer-extension.md"
+      "decisions/ADR-20261011-wechat-transfer-extension.md",
+      "decisions/ADR-20261016-static-discovery-pages.md",
+      "decisions/ADR-20261019-markdown-cards.md"
     ],
     "completedPlanIds": [
       "archive/plans/2026-10-08-migration-archive-review.md",
       "archive/plans/2026-10-08-toolchain-compatibility.md",
       "archive/plans/2026-10-11-ui-storage-archive-review.md",
       "archive/plans/2026-10-11-wechat-transfer-extension-design.md",
-      "archive/plans/2026-10-12-extension-archive-review.md"
+      "archive/plans/2026-10-12-extension-archive-review.md",
+      "archive/plans/2026-10-19-cards-archive-review.md"
     ],
     "acknowledgedTriggerIds": []
   }
