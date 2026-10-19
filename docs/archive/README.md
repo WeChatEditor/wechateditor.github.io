@@ -1,5 +1,7 @@
 # 历史归档
 
+- [2026-10-19卡片交付与近期实现复核](plans/2026-10-19-cards-archive-review.md)：20次有效提交触发，插件/静态说明/主题/卡片与现行设计已复核；[协作记录](ai-logs/docs/2026/10/2026-10-19-cards-archive-review.md)，各产品人工验收计划继续活动。
+
 - [2026-10-12轻量插件跨工作区模块复核](plans/2026-10-12-extension-archive-review.md)：当前契约、模块、权限、组织来源及实现文档已复核；[协作记录](ai-logs/docs/2026/10/2026-10-12-extension-archive-review.md)，实际公众号实施计划仍待人类验收。
 
 - [2026-10-11轻量传稿插件设计交付](plans/2026-10-11-wechat-transfer-extension-design.md)：只完成设计和实施计划；[协作记录](ai-logs/docs/2026/10/2026-10-11-wechat-transfer-extension-design.md)已归档，未来代码实施仍在活动计划。

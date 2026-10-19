@@ -22,7 +22,7 @@ owner: project maintainers
 
 ## 插件与商店
 
-插件保留名称、ID、权限、来源与传稿行为，版本升至0.1.12，manifest摘要改为用户场景，homepage_url指向公开插件页。商店可复制文案在docs/reference，发布指南说明Public/地区、网站/支持/隐私链接和真实截图要求。网站安装入口指向现有GitHub Verify project工作流的安装包工件，明确GitHub登录、手动安装及版本核对步骤；不虚构商店地址或已公开状态。
+插件保留名称、ID、权限、来源与传稿行为，0.1.12时将manifest摘要改为用户场景，当前0.1.13继续保留并增加站点图标指示，homepage_url指向公开插件页。商店可复制文案在docs/reference，发布指南说明Public/地区、网站/支持/隐私链接和真实截图要求。网站安装入口指向现有GitHub Verify project工作流的安装包工件，明确GitHub登录、手动安装及版本核对步骤；不虚构商店地址或已公开状态。
 
 自动插入只描述为辅助尝试，用户检查后手动保存，含图文章使用Web原复制流程。隐私说明依据现行localStorage/IndexedDB、插件chrome.storage.local、账号识别和24小时快照清理机制，说明外链图片请求、静态托管访问日志及浏览器清理风险，不声称完全离线或从不发生网络请求。
 
