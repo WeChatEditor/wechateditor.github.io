@@ -2,11 +2,13 @@
 title: article模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-11
+updated: 2026-10-19
 owner: project maintainers
 ---
 
 # article模块
+
+2026-10-19背景层次改为workspace提供的暖纸tokens：编辑器/阅读纸面用ui-paper，标题条/编辑工具用ui-surface，预览画板用ui-bg至ui-canvas轻渐变，手机导航/电脑工具条用ui-chrome，外壳边框/阴影改为暖灰。开关外壳、手机/电脑及既有尺寸/滚动/缩放规则保留。只修改组件私有CSS，不向文章DOM写入画板或纸面颜色；代码主题继续由typesetting公共服务提供，见[UI设计](../jlab-wechat-editor-ui.md)。
 
 手机预览公开组件内使用375/390/414px内存档位，适应/原始大小按档位测量，关壳保留阅读视口宽度。原稿新增可选opening/ending字符串props（undefined表示未启用），上下只读文本块不写入markdown或参与正文锚点，单块独立滚动。辅助字号统一至少11px，保持48px标题栏和工具可达性。
 

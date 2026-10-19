@@ -442,7 +442,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   min-width: 0;
   height: 100%;
   min-height: 0;
-  background: var(--ui-bg);
+  background: var(--ui-canvas);
 }
 .preview-heading {
   height: var(--ui-pane-heading-height);
@@ -488,6 +488,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   min-height: 0;
   overflow: auto;
   padding: 20px 18px 16px;
+  background: linear-gradient(155deg, var(--ui-bg), var(--ui-canvas) 68%);
 }
 .phone-scale-toolbar {
   flex-shrink: 0;
@@ -527,7 +528,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
 }
 .paper {
   margin: 0 auto;
-  background: #fff;
+  background: var(--ui-paper);
   box-shadow: var(--ui-shadow);
   border: 1px solid var(--ui-border);
   overflow: hidden;
@@ -553,7 +554,7 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   height: 38px;
   padding: 0 20px;
   font-size: 12px;
-  color: #1e293b;
+  color: var(--ui-text);
 }
 .island {
   width: 66px;
@@ -570,10 +571,10 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   justify-content: space-between;
   height: 40px;
   padding: 0 20px;
-  background: #fafafa;
-  border-bottom: 1px solid #f1f5f9;
+  background: var(--ui-chrome);
+  border-bottom: 1px solid var(--ui-border);
   font-size: 13px;
-  color: #334155;
+  color: var(--ui-text);
 }
 .reader-meta {
   display: flex;
@@ -582,10 +583,10 @@ defineExpose({ captureSelection, getScrollElement, getScrollAnchors })
   gap: 8px;
   padding: 24px 24px 0;
   font-size: 12px;
-  color: #64748b;
+  color: var(--ui-muted);
 }
 .original {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ui-border);
   padding: 1px 4px;
   border-radius: 3px;
 }
@@ -700,10 +701,10 @@ article :deep(::selection) {
   width: var(--phone-frame-width);
   max-width: none;
   height: var(--phone-frame-height);
-  border: 3px solid #cbd2da;
+  border: 3px solid #c8c1b6;
   box-shadow:
-    0 0 0 1px #e2e8f0,
-    0 8px 24px #0f172a0a;
+    0 0 0 1px var(--ui-border),
+    0 14px 36px #51432d18;
   border-radius: 58px;
 }
 .preview-scroll.actual-pixels {
@@ -721,7 +722,7 @@ article :deep(::selection) {
   max-height: 100%;
   width: 100%;
   max-width: 1100px;
-  border: 1px solid #bfc5ce;
+  border: 1px solid #c8c1b6;
   border-radius: 10px;
 }
 .framed .phone-status {
@@ -745,6 +746,7 @@ article :deep(::selection) {
   overscroll-behavior: contain;
 }
 .reader-content {
+  background: var(--ui-paper);
   scrollbar-width: thin;
   scrollbar-color: #94a3b855 transparent;
 }
@@ -753,9 +755,9 @@ article :deep(::selection) {
   align-items: center;
   gap: 10px;
   padding: 7px 12px;
-  background: #ededf0;
-  border-bottom: 1px solid #e1e3e8;
-  color: #51545b;
+  background: var(--ui-chrome);
+  border-bottom: 1px solid var(--ui-border);
+  color: var(--ui-muted);
   font-size: 13px;
   flex-shrink: 0;
 }
@@ -770,16 +772,16 @@ article :deep(::selection) {
   gap: 10px;
   min-width: 0;
   padding: 7px 12px;
-  border: 1px solid #e1e3e8;
+  border: 1px solid var(--ui-border);
   border-radius: 5px;
-  background: white;
+  background: var(--ui-paper);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .browser-search {
   padding: 5px 8px;
-  border: 1px solid #dcdfe4;
+  border: 1px solid var(--ui-border);
   border-radius: 5px;
 }
 .window-controls {
@@ -791,7 +793,7 @@ article :deep(::selection) {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  background: white;
+  background: var(--ui-paper);
 }
 .phone-home i {
   width: 140px;

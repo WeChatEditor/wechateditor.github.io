@@ -302,6 +302,28 @@ export function contrastRatio(first: string, second: string): number {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
 }
 
+function readableCodeColor(preferred: string, fallback: string, background: string): string {
+  for (const color of [preferred, fallback]) {
+    if (contrastRatio(color, background) >= 4.5) {
+      return color
+    }
+  }
+  return contrastRatio('#000000', background) >= contrastRatio('#ffffff', background)
+    ? '#000000'
+    : '#ffffff'
+}
+
+function mixCodeBorder(accent: string, background: string): string {
+  const channels = [1, 3, 5].map(function channel(index) {
+    const foreground = parseInt(accent.slice(index, index + 2), 16)
+    const base = parseInt(background.slice(index, index + 2), 16)
+    return Math.round(foreground * 0.22 + base * 0.78)
+      .toString(16)
+      .padStart(2, '0')
+  })
+  return '#' + channels.join('')
+}
+
 function chapterDecoration(style: ChapterStyle, accent: string, trailing = false): HTMLElement {
   const decoration = document.createElement('span')
   decoration.dataset.decoration = 'true'
@@ -416,6 +438,9 @@ export function chapterPreview(style: ChapterStyle, config: TypesettingConfig): 
 
 export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbered = true): void {
   const { colors, fontSize, lineHeight, paragraphGap, letterSpacing } = config
+  const codeText = readableCodeColor(colors.body, colors.heading, colors.background)
+  const inlineCodeText = readableCodeColor(colors.accent, colors.body, colors.background)
+  const codeBorder = mixCodeBorder(colors.accent, colors.background)
   root.style.cssText = `color:${colors.body};font-size:${fontSize}px;line-height:${fontSize * lineHeight}px;letter-spacing:${letterSpacing}px;word-wrap:break-word;text-align:left;`
   if (config.font !== 'default') {
     root.style.fontFamily =
@@ -454,11 +479,11 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
         element.style.backgroundColor = colors.background
       }
     } else if (tag === 'pre') {
-      element.style.cssText = `padding:16px 18px 18px;margin:24px 0;background-color:#f6f8fa;color:#30323d;border:1px solid #e2e8f0;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:24px;`
+      element.style.cssText = `padding:16px 18px 18px;margin:24px 0;background-color:${colors.background};color:${codeText};border:1px solid ${codeBorder};border-top:2px solid ${colors.accent};border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:24px;`
       const chrome = document.createElement('span')
       chrome.dataset.decoration = 'true'
       chrome.style.cssText = 'display:block;margin-bottom:12px;line-height:12px;'
-      for (const color of ['#ff5f56', '#ffbd2e', '#27c93f']) {
+      for (const color of [colors.accent, colors.heading, colors.muted]) {
         const dot = document.createElement('span')
         dot.style.cssText = `display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;background-color:${color};`
         chrome.append(dot)
@@ -466,10 +491,13 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
       element.prepend(chrome)
     } else if (tag === 'code') {
       element.style.fontFamily = 'monospace'
-      if (element.closest('h1,h2,h3,h4,h5,h6')) {
+      if (element.parentElement?.tagName === 'PRE') {
+        element.style.cssText +=
+          'display:block;color:inherit;background-color:transparent;font-size:inherit;line-height:inherit;white-space:inherit;padding:0;margin:0;'
+      } else if (element.closest('h1,h2,h3,h4,h5,h6')) {
         element.style.color = 'inherit'
-      } else if (element.parentElement?.tagName !== 'PRE') {
-        element.style.cssText += `color:${colors.accent};background-color:#f4f5f7;padding:2px 4px;`
+      } else {
+        element.style.cssText += `color:${inlineCodeText};background-color:${colors.background};padding:2px 5px;border-radius:3px;`
       }
     } else if (tag === 'table') {
       element.style.cssText = `width:100%;table-layout:fixed;border-collapse:collapse;font-size:${Math.max(14, fontSize - 1)}px;line-height:${fontSize * lineHeight}px;margin:20px 0;`

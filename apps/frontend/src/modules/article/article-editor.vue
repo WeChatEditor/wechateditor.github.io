@@ -245,7 +245,7 @@ function tab(event: KeyboardEvent): void {
   height: 100%;
   min-height: 0;
   min-width: 0;
-  background: var(--ui-surface);
+  background: var(--ui-paper);
 }
 .pane-heading {
   flex-shrink: 0;
@@ -256,6 +256,7 @@ function tab(event: KeyboardEvent): void {
   gap: 12px;
   border-bottom: 1px solid var(--ui-border);
   color: var(--ui-text);
+  background: var(--ui-surface);
   font-size: 13px;
 }
 .import-button {
@@ -320,6 +321,7 @@ textarea::placeholder {
   gap: 2px;
   padding: 6px 20px;
   border-bottom: 1px solid var(--ui-border);
+  background: var(--ui-surface);
 }
 .format-toolbar button {
   min-width: 30px;

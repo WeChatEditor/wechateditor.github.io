@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1280" viewBox="0 0 1400 1280" role="img" aria-labelledby="title desc"><title id="title">暖纸工作台与代码配色示意</title><desc id="desc">按现行颜色数据绘制的设计示意，不是页面截图。</desc><rect width="100%" height="100%" fill="#f7f5f1"/>
+<text x="60" y="35" font-family="Microsoft YaHei,sans-serif" font-size="17" fill="#5e6966" dominant-baseline="text-before-edge">桀士排版 / WARM PAPER</text>
+<text x="60" y="77" font-family="SimSun,serif" font-size="38" fill="#26343b" dominant-baseline="text-before-edge">让写作空间，温柔一点。</text>
+<text x="1030" y="81" font-family="Microsoft YaHei,sans-serif" font-size="17" fill="#5e6966" dominant-baseline="text-before-edge">设计示意 · 非页面截图</text>
+<rect x="60" y="155" width="1280" height="520" rx="14" fill="#fcfbf8" stroke="#dedbd3"/>
+<text x="84" y="173" font-family="Microsoft YaHei,sans-serif" font-size="20" fill="#26343b" dominant-baseline="text-before-edge">桀士排版</text>
+<text x="228" y="177" font-family="Microsoft YaHei,sans-serif" font-size="15" fill="#5e6966" dominant-baseline="text-before-edge">正文色    强调色      文字设置      标题样式      配色</text>
+<rect x="1174" y="167" width="144" height="32" rx="5" fill="#2563eb"/>
+<text x="1190" y="174" font-family="Microsoft YaHei,sans-serif" font-size="15" fill="#ffffff" dominant-baseline="text-before-edge">复制到公众号</text>
+<rect x="61" y="209" width="638" height="419" rx="0" fill="#fffdf8"/>
+<rect x="700" y="209" width="639" height="419" rx="0" fill="#ebe7df"/>
+<rect x="61" y="209" width="638" height="43" rx="0" fill="#fcfbf8"/>
+<rect x="700" y="209" width="639" height="43" rx="0" fill="#fcfbf8"/>
+<text x="84" y="220" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">原稿  /  MARKDOWN</text>
+<text x="722" y="220" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">公众号预览</text>
+<text x="1154" y="222" font-family="Microsoft YaHei,sans-serif" font-size="14" fill="#5e6966" dominant-baseline="text-before-edge">手机  /  电脑</text>
+<text x="88" y="274" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge"># 把想法，排成好文章</text>
+<text x="88" y="299" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge"></text>
+<text x="88" y="324" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">## 让内容，有自己的气质</text>
+<text x="88" y="349" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge"></text>
+<text x="88" y="374" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">用 **朱砂色标记重点**，用深青黛安放标题。</text>
+<text x="88" y="399" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge"></text>
+<text x="88" y="424" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">&gt; 好的配色，像一句恰到好处的话。</text>
+<text x="88" y="449" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#26343b" dominant-baseline="text-before-edge"></text>
+<text x="88" y="474" font-family="Consolas,monospace" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">```javascript</text>
+<text x="88" y="499" font-family="Consolas,monospace" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">const theme = &quot;editorial&quot;;</text>
+<text x="88" y="524" font-family="Consolas,monospace" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="88" y="549" font-family="Consolas,monospace" font-size="16" fill="#26343b" dominant-baseline="text-before-edge">```</text>
+<rect x="802" y="270" width="435" height="335" rx="10" fill="#fffdf8" stroke="#dedbd3"/>
+<text x="828" y="292" font-family="SimSun,serif" font-size="27" fill="#193549" dominant-baseline="text-before-edge">把想法，排成好文章</text>
+<text x="828" y="343" font-family="SimSun,serif" font-size="20" fill="#193549" dominant-baseline="text-before-edge">01 让内容，有自己的气质</text>
+<rect x="828" y="375" width="375" height="1" rx="0" fill="#b04432"/>
+<text x="828" y="394" font-family="Microsoft YaHei,sans-serif" font-size="17" fill="#34404a" dominant-baseline="text-before-edge">用朱砂标记重点，给正文一点呼吸。</text>
+<rect x="828" y="442" width="375" height="115" rx="8" fill="#f7f0e9" stroke="#e7cac1"/>
+<rect x="828" y="442" width="375" height="2" rx="0" fill="#b04432"/>
+<rect x="846" y="459" width="8" height="8" rx="4" fill="#b04432"/>
+<rect x="863" y="459" width="8" height="8" rx="4" fill="#193549"/>
+<rect x="880" y="459" width="8" height="8" rx="4" fill="#59656e"/>
+<text x="846" y="487" font-family="Consolas,monospace" font-size="15" fill="#34404a" dominant-baseline="text-before-edge">const theme = &quot;editorial&quot;;</text>
+<text x="846" y="514" font-family="Consolas,monospace" font-size="15" fill="#34404a" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<rect x="61" y="629" width="1278" height="45" rx="0" fill="#fcfbf8"/>
+<text x="84" y="644" font-family="Microsoft YaHei,sans-serif" font-size="15" fill="#5e6966" dominant-baseline="text-before-edge">暖灰背景  #F7F5F1      柔白纸面  #FFFDF8      预览画板  #EBE7DF</text>
+<text x="60" y="713" font-family="SimSun,serif" font-size="28" fill="#26343b" dominant-baseline="text-before-edge">代码，也有文章的颜色。</text>
+<text x="60" y="759" font-family="Microsoft YaHei,sans-serif" font-size="17" fill="#5e6966" dominant-baseline="text-before-edge">背景、文字、边框与终端装饰，统一取自当前主题。</text>
+<text x="60" y="809" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#193549" dominant-baseline="text-before-edge">青黛朱砂</text>
+<rect x="60" y="844" width="408" height="130" rx="8" fill="#f7f0e9" stroke="#e7cac1"/>
+<rect x="60" y="844" width="408" height="2" rx="0" fill="#b04432"/>
+<rect x="78" y="861" width="8" height="8" rx="4" fill="#b04432"/>
+<rect x="95" y="861" width="8" height="8" rx="4" fill="#193549"/>
+<rect x="112" y="861" width="8" height="8" rx="4" fill="#59656e"/>
+<text x="78" y="889" font-family="Consolas,monospace" font-size="16" fill="#34404a" dominant-baseline="text-before-edge">const theme = &quot;editorial&quot;;</text>
+<text x="78" y="916" font-family="Consolas,monospace" font-size="16" fill="#34404a" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="496" y="809" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#4b3d2c" dominant-baseline="text-before-edge">燕麦暖金</text>
+<rect x="496" y="844" width="408" height="130" rx="8" fill="#f7f2e8" stroke="#dfd3bf"/>
+<rect x="496" y="844" width="408" height="2" rx="0" fill="#8a652d"/>
+<rect x="514" y="861" width="8" height="8" rx="4" fill="#8a652d"/>
+<rect x="531" y="861" width="8" height="8" rx="4" fill="#4b3d2c"/>
+<rect x="548" y="861" width="8" height="8" rx="4" fill="#6f6252"/>
+<text x="514" y="889" font-family="Consolas,monospace" font-size="16" fill="#403b35" dominant-baseline="text-before-edge">const theme = &quot;warm-gold&quot;;</text>
+<text x="514" y="916" font-family="Consolas,monospace" font-size="16" fill="#403b35" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="932" y="809" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#164b3b" dominant-baseline="text-before-edge">松间青绿</text>
+<rect x="932" y="844" width="408" height="130" rx="8" fill="#edf5ee" stroke="#c1d9ce"/>
+<rect x="932" y="844" width="408" height="2" rx="0" fill="#26745c"/>
+<rect x="950" y="861" width="8" height="8" rx="4" fill="#26745c"/>
+<rect x="967" y="861" width="8" height="8" rx="4" fill="#164b3b"/>
+<rect x="984" y="861" width="8" height="8" rx="4" fill="#536b60"/>
+<text x="950" y="889" font-family="Consolas,monospace" font-size="16" fill="#30413b" dominant-baseline="text-before-edge">const theme = &quot;teal&quot;;</text>
+<text x="950" y="916" font-family="Consolas,monospace" font-size="16" fill="#30413b" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="60" y="999" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#12366a" dominant-baseline="text-before-edge">澄空科技</text>
+<rect x="60" y="1034" width="408" height="130" rx="8" fill="#eef4ff" stroke="#c2d3f4"/>
+<rect x="60" y="1034" width="408" height="2" rx="0" fill="#245cce"/>
+<rect x="78" y="1051" width="8" height="8" rx="4" fill="#245cce"/>
+<rect x="95" y="1051" width="8" height="8" rx="4" fill="#12366a"/>
+<rect x="112" y="1051" width="8" height="8" rx="4" fill="#526580"/>
+<text x="78" y="1079" font-family="Consolas,monospace" font-size="16" fill="#303b4b" dominant-baseline="text-before-edge">const theme = &quot;clear-blue&quot;;</text>
+<text x="78" y="1106" font-family="Consolas,monospace" font-size="16" fill="#303b4b" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="496" y="999" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#493a7a" dominant-baseline="text-before-edge">极光青紫</text>
+<rect x="496" y="1034" width="408" height="130" rx="8" fill="#f0f5fa" stroke="#bdd9e0"/>
+<rect x="496" y="1034" width="408" height="2" rx="0" fill="#087783"/>
+<rect x="514" y="1051" width="8" height="8" rx="4" fill="#087783"/>
+<rect x="531" y="1051" width="8" height="8" rx="4" fill="#493a7a"/>
+<rect x="548" y="1051" width="8" height="8" rx="4" fill="#59627b"/>
+<text x="514" y="1079" font-family="Consolas,monospace" font-size="16" fill="#353950" dominant-baseline="text-before-edge">const theme = &quot;aurora&quot;;</text>
+<text x="514" y="1106" font-family="Consolas,monospace" font-size="16" fill="#353950" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="932" y="999" font-family="Microsoft YaHei,sans-serif" font-size="19" fill="#733b62" dominant-baseline="text-before-edge">玫瑰莓紫</text>
+<rect x="932" y="1034" width="408" height="130" rx="8" fill="#fbf0f5" stroke="#e9c7d5"/>
+<rect x="932" y="1034" width="408" height="2" rx="0" fill="#aa3562"/>
+<rect x="950" y="1051" width="8" height="8" rx="4" fill="#aa3562"/>
+<rect x="967" y="1051" width="8" height="8" rx="4" fill="#733b62"/>
+<rect x="984" y="1051" width="8" height="8" rx="4" fill="#76576c"/>
+<text x="950" y="1079" font-family="Consolas,monospace" font-size="16" fill="#413640" dominant-baseline="text-before-edge">const theme = &quot;berry&quot;;</text>
+<text x="950" y="1106" font-family="Consolas,monospace" font-size="16" fill="#413640" dominant-baseline="text-before-edge">write(&quot;把想法，排成好文章&quot;);</text>
+<text x="60" y="1226" font-family="Microsoft YaHei,sans-serif" font-size="16" fill="#5e6966" dominant-baseline="text-before-edge">现行配色数据示意 · 预览画板与纸面属于UI · 代码配色由文章公共排版服务输出</text>
+</svg>

@@ -42,6 +42,10 @@ owner: project maintainers
 
 ## 空间与视觉
 
+2026-10-19[暖纸工作台](../plans/active/2026-10-19-themed-code-warm-workspace.md)以设计板#f7f5f1和现行About#f6f5f1为依据：ui-bg=#f7f5f1暖灰，ui-surface=#fcfbf8工具/抽屉，ui-paper=#fffdf8编辑/预览纸面，ui-canvas=#ebe7df画板，ui-chrome=#f2efe8手机导航/电脑工具条。预览画板采用155度ui-bg至ui-canvas的轻渐变，68%进入画板色；暖灰边框#dedbd3，正文#26343b，辅助文字#5e6966，悬停底#efede7。辅助文字在最深画板上的静态对比度约4.62。蓝色交互主色#2563eb和active状态保留。Element Plus弹层/输入/抽屉背景与边框映射到同一tokens，原稿工具/标题条和状态栏用surface，textarea在paper上编辑。手机金属边框、电脑边框与阴影采用暖灰，保留真实黑色灵动岛/底条。文章外壳开关、手机/电脑模式均使用相同柔白纸面，布局、宽度、滚动与缩放不变。
+
+应用tokens保持workspace私有所有权，article组件仅使用统一CSS变量；UI纸面和画板不进入文章输出。文章代码背景单独依当前主题由typesetting内联生成，详见[排版模块](modules/typesetting.md)。
+
 沿用来源完整UI。52px单层顶栏：品牌、正文色/强调色、设置、保存与复制；不足时仅顶栏内部横向滚动。800px最小宽度，编辑建议最小280px、预览320px，双栏比例以容器动态钳制而不覆盖用户偏好。分隔手柄无占位列、支持Pointer capture/取消/失焦与键盘。网格和flex零最小高度，原稿和预览独立滚动，标题/状态栏保留。
 
 应用tokens归workspace私有样式；中性底色、蓝交互强调与状态色不进入文章导出，文章主题独立。底部非空白文字计数与600字/分钟估算包含启用头尾，首次示例稿按实际内容计数；正文及启用头尾为空时为0字/0分钟，保存状态集中顶栏。
