@@ -2,11 +2,13 @@
 title: wechat-export模块
 status: accepted
 created: 2026-10-08
-updated: 2026-10-12
+updated: 2026-10-19
 owner: project maintainers
 ---
 
 # wechat-export模块
+
+2026-10-19[Markdown 卡片](../markdown-cards.md)继续走同一articleDom/styleArticle，无独立导出分支或白名单扩张；section/p/span/标题/列表均为既有允许标签。卡片类型和源行属性在最终导出剔除，data-decoration装饰不进入纯文字；品牌落款为可见内容，包含在HTML/纯文字中。文字插件预检可从封面内H1取标题，卡片没有图片，不改变文字profile。公众号粘贴/保存仍待人类验收。
 
 copyRichText支持ExportResult或同一快照的Promise。用户点击内立即调用剪贴板write，ClipboardItem的HTML/纯文字Promise来自同次输出；异步图片准备及错误诊断完成后才解析Blob。两种格式保留一致内容，尺寸/图片错误拒绝整个复制，不静默降级。发送调用者在异步准备前后复核generation/冲突；插件只接收无图片文字输出。系统剪贴板失败与插件提交独立反馈，自动保存不调用此接口。
 

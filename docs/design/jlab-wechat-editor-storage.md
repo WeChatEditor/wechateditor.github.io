@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 桀士排版数据存储与文章版本
 
+2026-10-19卡片配置为原config格式1的兼容扩展：cardSymbol 为 spark/diamond/none，cardBrand 为0至40字符字符串，旧字段缺失补 spark/空字符串，存在但非法则保留记录并暂停对应写入。配置即时覆盖localStorage，不进入文章历史。卡片原稿沿用Markdown字符串；article/current/versions的格式与键、写入队列和writeId均不变。历史标题从受控解析的首个H1或首块可见文字生成，封面类型标记不作为历史名称；只改变列表展示，不重写记录。
+
 固定头尾扩展沿用格式1和ending旧enabled/markdown结尾字段，增加可选opening（enabled/markdown）。缺失补空且关闭；已有但损坏或超过50万字符的opening拒绝读写。开头与结尾均属于localStorage配置，不进入current/主动文章版本；恢复历史保留当前头尾及引用的必要素材。见[决策](../decisions/ADR-20261008-fixed-head-tail.md)。
 
 ## 数据所有权和键

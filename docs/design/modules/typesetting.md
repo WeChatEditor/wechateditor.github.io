@@ -8,6 +8,8 @@ owner: project maintainers
 
 # typesetting模块
 
+2026-10-19新增[封面与总结卡片](../markdown-cards.md)：styleArticle 在基础规则后生成受控内联样式；卡片内部标题不影响章节级别和编号。hero 为浅色刊头/白底正文/可选落款，总结为主题渐变浅底和独立列表行；仅直接列表项添加对勾或有序号，嵌套列表保留。符号标记为装饰，正文位置映射不含装饰。标题样式抽屉增加刊头符号和0至40字符品牌落款，cardSymbol 默认 spark、cardBrand 默认空；读取缺失补相同值，损坏值拒绝。普通引用底色开关只控制普通引用，卡片保留自身底色。预览/复制/插件复用同一服务，原始HTML仍禁用，不增加图片、外部CSS或跨模块依赖。
+
 2026-10-19编辑式视觉系统参考[研究](../../reference/editorial-color-study.md)，实施与人工验收见[计划](../../plans/active/2026-10-19-editorial-color-system.md)。
 
 ## 职责与边界

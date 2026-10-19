@@ -15,6 +15,7 @@ import {
 } from './typesetting.service'
 import {
   chapterStyles,
+  cardSymbols,
   fontSizeRange,
   fontSizePresets,
   type TypesettingConfig,
@@ -287,6 +288,32 @@ function resetText(): void {
           >
         </button>
       </div>
+      <section class="card-settings" aria-label="卡片设置">
+        <h3 class="palette-heading">封面与总结卡片</h3>
+        <p class="settings-intro">原稿工具栏可插入卡片，颜色跟随当前配色。</p>
+        <label class="setting-label">刊头符号</label>
+        <div class="chapter-alignment" role="group" aria-label="刊头符号">
+          <button
+            v-for="[id, glyph, name] in cardSymbols"
+            :key="id"
+            class="ui-button bordered"
+            :class="{ active: config.cardSymbol === id }"
+            :aria-pressed="config.cardSymbol === id"
+            @click="emit('change', { cardSymbol: id })"
+          >
+            {{ glyph }} {{ name }}
+          </button>
+        </div>
+        <label class="setting-label" for="card-brand">品牌落款</label>
+        <input
+          id="card-brand"
+          class="card-brand-input"
+          :value="config.cardBrand"
+          maxlength="40"
+          placeholder="留空隐藏，例如：内容工作札记"
+          @input="emit('change', { cardBrand: ($event.target as HTMLInputElement).value })"
+        />
+      </section>
     </template>
     <template v-else>
       <section>
@@ -549,6 +576,24 @@ function resetText(): void {
 }
 .chapter-alignment button {
   flex: 1;
+}
+.card-settings {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ui-border);
+}
+.card-settings .setting-label {
+  margin: 16px 0 10px;
+}
+.card-brand-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 11px;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  color: var(--ui-text);
+  background: var(--ui-paper);
+  font: inherit;
 }
 .chapter-option {
   display: block;

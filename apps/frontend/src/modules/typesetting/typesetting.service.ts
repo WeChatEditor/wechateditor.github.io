@@ -1,4 +1,5 @@
 import type { TypesettingConfig, ChapterStyle, ColorPreset } from './typesetting.model'
+import { cardSymbols } from './typesetting.model'
 
 export const defaultPresetId = 'editorial'
 
@@ -268,6 +269,8 @@ export function normalizeTypesetting(config: TypesettingConfig): TypesettingConf
       ? 'bar'
       : config.chapterStyle,
     palettes: config.palettes ?? defaultPalettes(),
+    cardSymbol: config.cardSymbol ?? 'spark',
+    cardBrand: config.cardBrand ?? '',
   }
 }
 
@@ -286,6 +289,8 @@ export function defaultTypesetting(): TypesettingConfig {
     letterSpacing: 0.5,
     font: 'default',
     backgroundEnabled: true,
+    cardSymbol: 'spark',
+    cardBrand: '',
   }
 }
 
@@ -448,7 +453,9 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
         ? '"Microsoft YaHei", "Noto Sans CJK SC", sans-serif'
         : '"Noto Serif CJK SC", "Songti SC", serif'
   }
-  const headingElements = [...root.querySelectorAll<HTMLElement>('h1,h2,h3,h4,h5,h6')]
+  const headingElements = [...root.querySelectorAll<HTMLElement>('h1,h2,h3,h4,h5,h6')].filter(
+    (heading) => !heading.closest('[data-card]'),
+  )
   const chapterLevel = Math.min(
     ...headingElements.filter((h) => h.tagName !== 'H1').map((h) => Number(h.tagName[1])),
   )
@@ -468,7 +475,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
           element.style.marginTop = '0'
         }
       }
-      if (numbered && level === chapterLevel) {
+      if (numbered && level === chapterLevel && !element.closest('[data-card]')) {
         decorateChapter(element, config.chapterStyle, ++chapter, config)
       }
     } else if (tag === 'strong') {
@@ -532,5 +539,83 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
     'blockquote > p:last-child,li > p:last-child',
   )) {
     paragraph.style.marginBottom = '0'
+  }
+  styleCards(root, config)
+}
+
+function styleCards(root: HTMLElement, config: TypesettingConfig): void {
+  const { colors, fontSize } = config
+  const surface = '#ffffff'
+  const border = mixCodeBorder(colors.accent, colors.background)
+  const accent = readableCodeColor(colors.accent, colors.heading, colors.background)
+  for (const card of root.querySelectorAll<HTMLElement>('[data-card]')) {
+    card.style.cssText = `box-sizing:border-box;max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:break-word;margin:0 0 28px;border:1px solid ${border};border-radius:14px;overflow:hidden;`
+    if (card.dataset.card === 'hero') {
+      card.style.cssText += `background-color:${surface};box-shadow:0 4px 16px ${border}55;`
+      const eyebrow = card.querySelector<HTMLElement>(':scope > [data-card-part="eyebrow"]')
+      const symbol = cardSymbols.find(([id]) => id === config.cardSymbol)?.[1] || ''
+      let masthead: HTMLElement | undefined
+      if (eyebrow || symbol) {
+        masthead = document.createElement('section')
+        masthead.style.cssText = `display:flex;align-items:center;gap:10px;padding:12px 18px;background-color:${colors.background};border-bottom:1px solid ${border};`
+        if (symbol) {
+          const mark = document.createElement('span')
+          mark.dataset.decoration = 'true'
+          mark.textContent = symbol
+          mark.style.cssText = `display:inline-block;flex-shrink:0;font-family:Georgia,serif;font-size:22px;line-height:1;color:${accent};`
+          masthead.append(mark)
+        }
+        if (eyebrow) {
+          eyebrow.style.cssText = `flex:1;min-width:0;margin:0;color:${accent};font-size:${Math.max(11, fontSize - 3)}px;font-weight:bold;line-height:1.6;letter-spacing:0.08em;`
+          masthead.append(eyebrow)
+        }
+        card.prepend(masthead)
+      }
+      const content = document.createElement('section')
+      content.style.cssText = 'padding:24px 20px 22px;min-width:0;'
+      for (const child of [...card.children]) {
+        if (child !== masthead) content.append(child)
+      }
+      card.append(content)
+      const title = content.querySelector<HTMLElement>('[data-card-part="title"]')
+      if (title) {
+        const size = fontSize + 10
+        title.style.cssText = `color:${readableCodeColor(colors.heading, colors.body, surface)};font-size:${size}px;line-height:1.45;font-weight:800;letter-spacing:0.01em;margin:0 0 14px;padding:0;border:0;`
+      }
+      const last = content.lastElementChild as HTMLElement | null
+      if (last) last.style.marginBottom = '0'
+      if (config.cardBrand.trim()) {
+        const footer = document.createElement('p')
+        footer.dataset.cardBrand = 'true'
+        footer.textContent = config.cardBrand.trim()
+        footer.style.cssText = `margin:0;padding:10px 18px;text-align:right;background-color:${colors.background};border-top:1px solid ${border};color:${readableCodeColor(colors.muted, colors.body, colors.background)};font-size:${Math.max(11, fontSize - 3)}px;font-weight:bold;line-height:1.6;letter-spacing:0.06em;`
+        card.append(footer)
+      }
+    } else {
+      card.style.cssText += `padding:18px;background-color:${colors.background};background-image:linear-gradient(180deg,${colors.background},${surface});color:${readableCodeColor(colors.body, colors.heading, colors.background)};`
+      const title = card.querySelector<HTMLElement>(':scope > [data-card-part="summary-title"]')
+      if (title) {
+        title.style.cssText = `margin:0 0 14px;color:${readableCodeColor(colors.heading, colors.body, colors.background)};font-size:${fontSize + 1}px;font-weight:800;line-height:1.6;`
+      }
+      for (const list of card.querySelectorAll<HTMLElement>(':scope > ul,:scope > ol')) {
+        list.style.cssText = 'list-style:none;margin:12px 0 0;padding:0;'
+        const start = Number(list.getAttribute('start') || '1')
+        for (const [index, item] of [...list.children].entries()) {
+          if (!(item instanceof HTMLElement) || item.tagName !== 'LI') continue
+          item.style.cssText = `display:flex;align-items:flex-start;gap:10px;margin:0 0 9px;padding:11px 12px;border:1px solid ${border};border-radius:8px;background-color:${surface};color:${readableCodeColor(colors.body, colors.heading, surface)};line-height:1.8;list-style:none;`
+          const marker = document.createElement('span')
+          marker.dataset.decoration = 'true'
+          marker.textContent = list.tagName === 'OL' ? String(start + index) : '✓'
+          const markerInk = contrastRatio(colors.accent, surface) >= 4.5 ? surface : '#000000'
+          marker.style.cssText = `display:inline-block;flex-shrink:0;min-width:20px;padding:0 3px;box-sizing:border-box;margin-top:3px;text-align:center;border-radius:12px;background-color:${colors.accent};color:${markerInk};font-size:12px;line-height:20px;font-weight:bold;`
+          const content = document.createElement('section')
+          content.style.cssText = 'flex:1;min-width:0;overflow-wrap:anywhere;'
+          content.append(...item.childNodes)
+          item.append(marker, content)
+        }
+        const last = list.lastElementChild as HTMLElement | null
+        if (last) last.style.marginBottom = '0'
+      }
+    }
   }
 }

@@ -1,5 +1,7 @@
 # 有效决策
 
+- [以 Callout 承载 Markdown 视觉卡片](ADR-20261019-markdown-cards.md)
+
 - [独立静态说明页承接网站与插件搜索](ADR-20261016-static-discovery-pages.md)
 
 - [保留 Web 编辑器并通过 Chrome 轻量插件传稿](ADR-20261011-wechat-transfer-extension.md)

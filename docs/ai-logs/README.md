@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [Markdown 封面与总结卡片](feat/2026/10/2026-10-19-markdown-cards.md)
+
 - [代码随主题配色与暖纸工作台](fix/2026/10/2026-10-19-themed-code-warm-workspace.md)
 
 - [编辑式标题与十八套配色系统](feat/2026/10/2026-10-19-editorial-color-system.md)

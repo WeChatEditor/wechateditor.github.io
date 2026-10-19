@@ -89,7 +89,34 @@ const formats = [
   ['code', '<>', '行内代码'],
   ['ordered', '1.', '有序列表'],
   ['unordered', '•', '无序列表'],
+  ['hero', '封面卡', '插入封面卡，选中文字可转为封面'],
+  ['summary', '总结卡', '插入总结卡，选中文字可转为要点'],
 ] as const
+function trimBlankLines(value: string): string {
+  return value.replace(/^(?:[ \t]*\n)+|(?:\n[ \t]*)+$/g, '')
+}
+function cardMarkdown(kind: 'hero' | 'summary', selected: string): string {
+  const text = selected.trim() ? trimBlankLines(selected) : ''
+  let body: string
+  if (kind === 'hero') {
+    const [title, ...rest] = (text || '写完之后，让观点被看见').split('\n')
+    body = `[!hero] 内容工作札记\n\n# ${title.trim().replace(/^#{1,6}\s+/, '')}\n\n${text ? trimBlankLines(rest.join('\n')) : '一篇文章的阅读体验，藏在标题、留白与重点之间。'}`
+  } else {
+    const items = !text
+      ? '- 标题是否说清文章的主题\n- 每一节是否只解释一个重点\n- 结尾是否留下可以采取的行动'
+      : /^\s*(?:[-+*]|\d+[.)])\s+/m.test(text)
+        ? text
+        : text
+            .split('\n')
+            .map((line) => (line.trim() ? `- ${line}` : ''))
+            .join('\n')
+    body = `[!summary] ${text ? '总结要点' : '发布前，检查这三件事'}\n\n${items}`
+  }
+  return trimBlankLines(body)
+    .split('\n')
+    .map((line) => (line ? `> ${line}` : '>'))
+    .join('\n')
+}
 let composing = false
 function format(kind: string): void {
   const area = input.value
@@ -102,7 +129,22 @@ function format(kind: string): void {
   let from = start
   let to = end
   let replacement: string
-  if (inline) {
+  if (kind === 'hero' || kind === 'summary') {
+    if (start !== end) {
+      from = start === 0 ? 0 : area.value.lastIndexOf('\n', start - 1) + 1
+      to = area.value.indexOf('\n', end > start && area.value[end - 1] === '\n' ? end - 1 : end)
+      if (to === -1) to = area.value.length
+    } else {
+      const lineEnd = area.value.indexOf('\n', start)
+      from = to = lineEnd === -1 ? area.value.length : lineEnd
+    }
+    const before = area.value.slice(0, from)
+    const after = area.value.slice(to)
+    const prefix = before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : ''
+    const suffix = after.startsWith('\n\n') ? '' : after.startsWith('\n') ? '\n' : '\n\n'
+    replacement =
+      prefix + cardMarkdown(kind, start === end ? '' : area.value.slice(from, to)) + suffix
+  } else if (inline) {
     replacement = `${inline}${area.value.slice(start, end) || '文字'}${inline}`
   } else {
     from = start === 0 ? 0 : area.value.lastIndexOf('\n', start - 1) + 1

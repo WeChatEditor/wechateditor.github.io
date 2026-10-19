@@ -8,6 +8,8 @@ owner: project maintainers
 
 # workspace模块
 
+2026-10-19[卡片设置](../markdown-cards.md)沿用现有config localStorage：可选旧字段 cardSymbol/cardBrand 缺失补默认，存在时校验公共枚举和40字符上限，错误保留记录并暂停保存。历史列表调用 article 公共 articleTitle 提取渲染标题（包括封面H1），不改写历史正文、版本键或存储协议。默认示例只在无current时加载，空草稿仍优先。
+
 2026-10-19私有workspace-theme.css提供暖灰/柔白/画板/外壳tokens并同步Element Plus背景、文字与边框变量；article通过既有全局CSS变量使用，不改变模块公共文件或依赖方向。主交互蓝色、布局和持久化保持，确切色值见[UI设计](../jlab-wechat-editor-ui.md)。
 
 0.1.6启动一次插件连接检测并按结果切换顶栏主按钮。点击发送立即打开分组反馈抽屉，workspace持有本次busy锁并捕获同一排版快照，在点击内启动HTML/纯文字复制，再独立提交插件文字任务。复制与发送分别反馈；无插件也可复制，含图完整复制但插件整篇阻断，复制失败不取消发送。准备前后和摘要后检查generation/恢复/冲突，迟到反馈不覆盖新内容。抽屉安装指南、手动重新检测、复制、打开后台与面板入口由公开service/model/panel组成，不增加存储字段或历史。

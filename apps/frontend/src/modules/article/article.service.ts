@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it'
+import { registerArticleCards } from './article-cards'
 import type { Annotation, RenderedArticle, TextSelection } from './article.model'
 
 export function escapeHtml(value: string): string {
@@ -13,6 +14,7 @@ export function isColor(value: unknown): value is string {
 
 export function renderMarkdown(markdown: string, annotations: Annotation[] = []): RenderedArticle {
   const md = new MarkdownIt({ html: false, breaks: true, linkify: true })
+  registerArticleCards(md)
   const validate = md.validateLink
   md.validateLink = function validateUrl(url) {
     return /^asset:[\da-f-]+$/i.test(url) || validate(url)
@@ -66,6 +68,12 @@ export function renderMarkdown(markdown: string, annotations: Annotation[] = [])
     }
   }
   return { html: md.renderer.render(tokens, md.options, env), text }
+}
+
+export function articleTitle(markdown: string): string {
+  const root = document.createElement('section')
+  root.innerHTML = renderMarkdown(markdown).html
+  return (root.querySelector('h1')?.textContent || root.firstElementChild?.textContent || '').trim()
 }
 
 export function articleStatistics(markdown: string): {
@@ -199,7 +207,7 @@ export function readSelection(root: HTMLElement, revision: number): TextSelectio
     return undefined
   }
   for (const forbidden of root.querySelectorAll(
-    'code, pre, img, [data-decoration], [data-opening], [data-ending]',
+    'code, pre, img, [data-decoration], [data-card-brand], [data-opening], [data-ending]',
   )) {
     if (range.intersectsNode(forbidden)) {
       throw new Error('选区包含代码、图片或章节装饰，请只选择正文文字。')

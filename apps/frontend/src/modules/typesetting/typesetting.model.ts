@@ -14,6 +14,12 @@ export const chapterStyles = [
 ] as const
 export const fontSizeRange = { min: 11, max: 32, step: 1 } as const
 export const fontSizePresets = [11, 12, 14, 16, 18, 20, 24, 28, 32] as const
+export const cardSymbols = [
+  ['spark', '✦', '星芒'],
+  ['diamond', '◆', '菱形'],
+  ['none', '', '无符号'],
+] as const
+export type CardSymbol = (typeof cardSymbols)[number][0]
 export type ChapterStyle = (typeof chapterStyles)[number][0]
 export type ColorRole = 'body' | 'heading' | 'accent' | 'muted' | 'background'
 export interface ColorPreset {
@@ -36,4 +42,6 @@ export interface TypesettingConfig {
   letterSpacing: number
   font: 'default' | 'sans' | 'serif'
   backgroundEnabled: boolean
+  cardSymbol: CardSymbol
+  cardBrand: string
 }

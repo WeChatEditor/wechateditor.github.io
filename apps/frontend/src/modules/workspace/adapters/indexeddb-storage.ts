@@ -1,4 +1,5 @@
 import { storageName } from '../../../app.config'
+import { articleTitle } from '../../article/article.service'
 import type {
   DraftStorage,
   WorkspaceDraft,
@@ -130,12 +131,7 @@ export function createDraftStorage(): DraftStorage {
           const record = validateVersion(cursor.value, Number(cursor.key))
           items.push({
             timestamp: record.timestamp,
-            title:
-              record.draft.article.markdown
-                .split('\n')
-                .find((line) => line.trim())
-                ?.replace(/^#+\s*/, '')
-                .slice(0, 80) || '空白文章',
+            title: articleTitle(record.draft.article.markdown).slice(0, 80) || '空白文章',
             characters: record.draft.article.markdown.length,
           })
           cursor.continue()

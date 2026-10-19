@@ -6,7 +6,7 @@ import type {
 } from './draft-storage.port'
 import { isColor } from '../article/article.service'
 import { normalizeTypesetting, maxPalettes } from '../typesetting/typesetting.service'
-import { chapterStyles, fontSizeRange } from '../typesetting/typesetting.model'
+import { chapterStyles, fontSizeRange, cardSymbols } from '../typesetting/typesetting.model'
 import { maxMarkdownLength } from '../../app.config'
 import { normalizeEnding } from '../ending/ending.service'
 
@@ -68,6 +68,10 @@ export function validateSettings(value: unknown, allowLegacyPalettes = false): W
       typeof draft.config.chapterDecorationTight === 'boolean') &&
     (draft.config.chapterAlignment === undefined ||
       ['left', 'center', 'right'].includes(draft.config.chapterAlignment)) &&
+    (draft.config.cardSymbol === undefined ||
+      cardSymbols.some(([id]) => id === draft.config.cardSymbol)) &&
+    (draft.config.cardBrand === undefined ||
+      (typeof draft.config.cardBrand === 'string' && draft.config.cardBrand.length <= 40)) &&
     (draft.config.palettes === undefined ||
       (Array.isArray(draft.config.palettes) &&
         draft.config.palettes.length >= 1 &&
