@@ -1,5 +1,6 @@
 import type { TypesettingConfig, ChapterStyle, ColorPreset } from './typesetting.model'
 import { cardSymbols } from './typesetting.model'
+import { styleCompatibleBlocks } from './typesetting-blocks'
 
 export const defaultPresetId = 'editorial'
 
@@ -487,15 +488,6 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
       }
     } else if (tag === 'pre') {
       element.style.cssText = `padding:16px 18px 18px;margin:24px 0;background-color:${colors.background};color:${codeText};border:1px solid ${codeBorder};border-top:2px solid ${colors.accent};border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:24px;`
-      const chrome = document.createElement('span')
-      chrome.dataset.decoration = 'true'
-      chrome.style.cssText = 'display:block;margin-bottom:12px;line-height:12px;'
-      for (const color of [colors.accent, colors.heading, colors.muted]) {
-        const dot = document.createElement('span')
-        dot.style.cssText = `display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;background-color:${color};`
-        chrome.append(dot)
-      }
-      element.prepend(chrome)
     } else if (tag === 'code') {
       element.style.fontFamily = 'monospace'
       if (element.parentElement?.tagName === 'PRE') {
@@ -509,7 +501,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
     } else if (tag === 'table') {
       element.style.cssText = `width:100%;table-layout:fixed;border-collapse:collapse;font-size:${Math.max(14, fontSize - 1)}px;line-height:${fontSize * lineHeight}px;margin:20px 0;`
     } else if (tag === 'th' || tag === 'td') {
-      const align = element.style.textAlign || 'left'
+      const align = element.style.textAlign || 'center'
       element.style.cssText = `border-bottom:1px solid #d9dce5;padding:10px 8px;overflow-wrap:anywhere;text-align:${align};`
       if (tag === 'th') {
         element.style.color = colors.heading
@@ -524,7 +516,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
     } else if (tag === 'ul' || tag === 'ol') {
       element.style.cssText = 'padding-left:26px;margin:16px 0;'
     } else if (tag === 'li') {
-      element.style.cssText = `margin:8px 0;line-height:${fontSize * lineHeight}px;`
+      element.style.cssText = `margin:0 0 6px;padding:0;line-height:${fontSize * lineHeight}px;`
     } else if (tag === 'img') {
       element.style.cssText = 'max-width:100%;height:auto;display:block;margin:18px auto;'
     } else if (tag === 'a') {
@@ -541,6 +533,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
     paragraph.style.marginBottom = '0'
   }
   styleCards(root, config)
+  styleCompatibleBlocks(root, config)
 }
 
 function styleCards(root: HTMLElement, config: TypesettingConfig): void {
@@ -595,26 +588,14 @@ function styleCards(root: HTMLElement, config: TypesettingConfig): void {
       card.style.cssText += `padding:18px;background-color:${colors.background};color:${readableCodeColor(colors.body, colors.heading, colors.background)};`
       const title = card.querySelector<HTMLElement>(':scope > [data-card-part="summary-title"]')
       if (title) {
-        title.style.cssText = `margin:0 0 14px;color:${readableCodeColor(colors.heading, colors.body, colors.background)};font-size:${fontSize + 1}px;font-weight:800;line-height:1.6;`
+        title.style.cssText = `margin:0 0 10px;color:${readableCodeColor(colors.heading, colors.body, colors.background)};font-size:${fontSize + 1}px;font-weight:800;line-height:1.6;`
       }
       for (const list of card.querySelectorAll<HTMLElement>(':scope > ul,:scope > ol')) {
-        list.style.cssText = 'list-style:none;margin:12px 0 0;padding:0;'
-        const start = Number(list.getAttribute('start') || '1')
-        for (const [index, item] of [...list.children].entries()) {
+        list.dataset.markerInk = contrastRatio(colors.accent, surface) >= 4.5 ? surface : '#000000'
+        for (const item of [...list.children]) {
           if (!(item instanceof HTMLElement) || item.tagName !== 'LI') continue
-          item.style.cssText = `display:flex;align-items:flex-start;gap:10px;margin:0 0 9px;padding:11px 12px;border:1px solid ${border};border-radius:8px;background-color:${surface};color:${readableCodeColor(colors.body, colors.heading, surface)};line-height:1.8;list-style:none;`
-          const marker = document.createElement('span')
-          marker.dataset.decoration = 'true'
-          marker.textContent = list.tagName === 'OL' ? String(start + index) : '✓'
-          const markerInk = contrastRatio(colors.accent, surface) >= 4.5 ? surface : '#000000'
-          marker.style.cssText = `display:inline-block;flex-shrink:0;min-width:20px;padding:0 3px;box-sizing:border-box;margin-top:3px;text-align:center;border-radius:12px;background-color:${colors.accent};color:${markerInk};font-size:12px;line-height:20px;font-weight:bold;`
-          const content = document.createElement('section')
-          content.style.cssText = 'flex:1;min-width:0;overflow-wrap:anywhere;'
-          content.append(...item.childNodes)
-          item.append(marker, content)
+          item.style.cssText = `margin:0 0 6px;padding:8px 10px;border:1px solid ${border};border-radius:8px;background-color:${surface};color:${readableCodeColor(colors.body, colors.heading, surface)};line-height:${Math.min(config.lineHeight, 1.65)};`
         }
-        const last = list.lastElementChild as HTMLElement | null
-        if (last) last.style.marginBottom = '0'
       }
     }
   }

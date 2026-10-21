@@ -82,6 +82,7 @@ export function previewArticle(
       'rel',
       'loading',
       'referrerpolicy',
+      'role',
     ],
     ALLOW_DATA_ATTR: true,
     ALLOWED_URI_REGEXP: /^(?:https?:\/\/|blob:https?:\/\/)/i,
@@ -91,6 +92,9 @@ export function previewArticle(
 
 function readableText(root: HTMLElement): string {
   const clone = root.cloneNode(true) as HTMLElement
+  for (const marker of clone.querySelectorAll<HTMLElement>('[data-list-marker]')) {
+    marker.replaceWith(marker.dataset.listMarker || '')
+  }
   for (const decoration of clone.querySelectorAll('[data-decoration]')) {
     decoration.remove()
   }
@@ -106,14 +110,19 @@ function readableText(root: HTMLElement): string {
   for (const br of clone.querySelectorAll('br')) {
     br.replaceWith('\n')
   }
-  for (const block of clone.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,pre,blockquote,tr,hr')) {
-    block.append('\n')
-  }
-  for (const cell of clone.querySelectorAll('td,th')) {
-    cell.append('\t')
-  }
   for (const image of clone.querySelectorAll('img')) {
     image.replaceWith(image.alt ? `［${image.alt}］` : '［图片］')
+  }
+  for (const table of clone.querySelectorAll('table')) {
+    const rows = [...table.querySelectorAll('tr')].map(function rowText(row) {
+      return [...row.querySelectorAll('th,td')]
+        .map((cell) => cell.textContent?.trim() || '')
+        .join('\t')
+    })
+    table.replaceWith(rows.join('\n') + '\n')
+  }
+  for (const block of clone.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,pre,blockquote,hr')) {
+    block.append('\n')
   }
   return (clone.textContent || '').replace(/\n{3,}/g, '\n\n').trim()
 }

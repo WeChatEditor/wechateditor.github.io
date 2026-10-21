@@ -1,5 +1,7 @@
 # 现行设计
 
+- [公众号排版结构兼容修复](wechat-layout-compatibility.md)：标题字重、显式列表、表格对齐、代码窗口与紧凑总结，预览/复制/发送同源。
+
 - [插件转发职责与升级边界](extension-update-boundaries.md)：Web独立校验、稳定能力握手及剩余升级耦合审计。
 
 - [微信内容规范与传稿校验](wechat-content-rules.md)：官方建议、安全边界、静态诊断与实际布局验证范围。

@@ -8,6 +8,8 @@ owner: project maintainers
 
 # Markdown 封面与总结卡片
 
+2026-10-21[排版兼容修复](wechat-layout-compatibility.md)将总结直接列表改为显式徽章和section/p块布局，去掉flex/gap依赖，内边距8px×10px、条距6px、行距至多1.65，列表段落底距至多6px。嵌套列表、原序号和文本映射保留；纯文字由显式marker还原对应圆点/编号。此段取代原先独立flex列表行的实现描述。
+
 2026-10-21按[微信内容规范](wechat-content-rules.md)§4.1.2将总结卡渐变改为主题纯色，避免文字背景在Dark Mode转换时失去预期。封面阴影与列表样式保留，Web输出安全集合允许这些已生成样式及浏览器border-image:none序列化；插件不重复校验，不能把项目旧白名单误称为微信支持限制。
 
 ## 语法和范围

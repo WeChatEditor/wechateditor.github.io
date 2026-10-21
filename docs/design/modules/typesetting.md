@@ -8,6 +8,8 @@ owner: project maintainers
 
 # typesetting模块
 
+2026-10-21[结构兼容修复](../wechat-layout-compatibility.md)：基础与卡片排版后由私有typesetting-blocks.ts统一整理标题、列表、表格与代码窗口。标题正文有strong语义层与文字span显式继承；ul/ol/li转为section/p、实际圆点/编号与悬挂缩进，预览保留list/listitem可访问语义，嵌套/多段/起始编号和源行映射保留。总结行改为块布局、至多1.65行距、8px×10px内边距及6px条距，不叠加全文段距。表格外层居中、table左右auto、单元格零距段落显式保留列对齐（无标记时居中）。代码工具栏在pre之外，红黄绿非空圆点与可选语言标签保留，取代下述旧的主题空span三点；代码正文继续随主题配色，原文空格/换行保持。
+
 2026-10-21按[微信规范](../wechat-content-rules.md)§4.1.2将下述总结卡的主题渐变浅底改为主题纯色浅底；卡片结构和配置保持，预览、复制与传稿继续同源。
 
 2026-10-19新增[封面与总结卡片](../markdown-cards.md)：styleArticle 在基础规则后生成受控内联样式；卡片内部标题不影响章节级别和编号。hero 为浅色刊头/白底正文/可选落款，总结为主题纯色浅底和独立列表行；仅直接列表项添加对勾或有序号，嵌套列表保留。符号标记为装饰，正文位置映射不含装饰。标题样式抽屉增加刊头符号和0至40字符品牌落款，cardSymbol 默认 spark、cardBrand 默认空；读取缺失补相同值，损坏值拒绝。普通引用底色开关只控制普通引用，卡片保留自身底色。预览/复制/插件复用同一服务，原始HTML仍禁用，不增加图片、外部CSS或跨模块依赖。
@@ -67,7 +69,7 @@ owner: project maintainers
 
 ## 编辑式标题和阅读节奏
 
-2026-10-19[代码主题修复](../../plans/active/2026-10-19-themed-code-warm-workspace.md)：代码块背景取background，正文优先body、其次heading；行内代码背景取background，前景优先accent、其次body。候选色需对背景达到4.5，否则选对背景对比度更高的纯黑或纯白，不改写配置。代码边框为22%accent与78%background的RGB混色，顶边2px强调色，终端三圆点依次accent/heading/muted。PRE内CODE显式继承文字、字号、行距和换行并保持透明背景、零内外距，阻止独立样式冲掉外层主题。普通行内代码有3px圆角、2px×5px内边距；标题内代码继续继承标题色，以兼容色签标题。引用底色开关仍只控制引用，不关闭代码背景。
+2026-10-19[代码主题修复](../../plans/active/2026-10-19-themed-code-warm-workspace.md)：代码块背景取background，正文优先body、其次heading；行内代码背景取background，前景优先accent、其次body。候选色需对背景达到4.5，否则选对背景对比度更高的纯黑或纯白，不改写配置。代码边框为22%accent与78%background的RGB混色，顶边2px强调色；窗口工具栏的三圆点现按上述兼容修复使用红黄绿。PRE内CODE显式继承文字、字号、行距和换行并保持透明背景、零内外距，阻止独立样式冲掉外层主题。普通行内代码有3px圆角、2px×5px内边距；标题内代码继续继承标题色，以兼容色签标题。引用底色开关仍只控制引用，不关闭代码背景。
 
 上述规则由styleArticle生成具体HEX内联样式，预览、剪贴板、插件文字快照与固定头尾同源；不增加语法高亮、语言识别、新颜色角色、存储字段或模块依赖。源代码中的符号、缩进和data-source-line处理保持原样，终端圆点继续标记data-decoration供纯文本输出排除。
 
