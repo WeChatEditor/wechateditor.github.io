@@ -1,5 +1,7 @@
 # 现行设计
 
+- [微信内容规范与传稿校验](wechat-content-rules.md)：官方建议、安全边界、静态诊断与实际布局验证范围。
+
 - [Markdown 封面与总结卡片](markdown-cards.md)：简化 Callout、主题内联样式、插入与默认示例。
 
 - [网站与插件搜索发现](search-discovery.md)：静态产品/教程/插件/隐私页、元信息与收录边界。

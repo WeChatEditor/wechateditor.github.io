@@ -1,5 +1,7 @@
 # 参考资料
 
+- [微信内容规范核对记录](wechat-content-rules.md)：2026-10-21官方页面及权威规则版本和覆盖矩阵。
+
 - [编辑式标题与配色研究](editorial-color-study.md)
 - [十八套配色设计色票](palette-atlas.svg)：按现行数据绘制的设计板，不是页面截图。
 - [暖纸工作台与代码主题示意](warm-workspace-study.svg)：当前背景层次与六种代码配色的设计示意，不是页面截图。

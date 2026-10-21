@@ -1,5 +1,8 @@
 import { z } from 'zod'
 import { parseFragment, type DefaultTreeAdapterMap } from 'parse5'
+import { inlineDeclarations, inspectWechatHtml } from './wechat-content-rules.ts'
+export { inspectWechatHtml, wechatHtmlDiagnosticSchema } from './wechat-content-rules.ts'
+export type { WechatHtmlDiagnostic } from './wechat-content-rules.ts'
 z.config({ jitless: true })
 export const extensionId = 'neeljhohndegbhaaaclmcdeenlebhicj'
 export const developmentExtensionId = 'imiclghaaoleoggfhfdbanmaehamnpmg'
@@ -12,6 +15,18 @@ export function extensionIdForOrigin(origin: string): string {
 }
 
 export const protocolVersion = 2 as const
+export const minimumExtensionVersion = '0.1.14'
+
+export function supportsTextStyleProfile(version: string): boolean {
+  if (!/^\d{1,5}(?:\.\d{1,5}){2,3}$/.test(version)) return false
+  const current = version.split('.').map(Number)
+  const minimum = minimumExtensionVersion.split('.').map(Number)
+  for (let index = 0; index < 4; index++) {
+    const difference = (current[index] || 0) - (minimum[index] || 0)
+    if (difference) return difference > 0
+  }
+  return true
+}
 export const profile = 'wechat-editor-text@1-candidate' as const
 export const maxMessageBytes = 2 * 1024 * 1024
 export const taskTtl = 24 * 60 * 60 * 1000
@@ -213,6 +228,17 @@ const properties = new Set(
     ' ',
   ),
 )
+// Project safety profile, not an official WeChat CSS whitelist.
+for (const property of [
+  'box-shadow',
+  'background-image',
+  'list-style',
+  'border-image',
+  'caret-color',
+  'overflow-x',
+  'overflow-y',
+])
+  properties.add(property)
 export function validateTextHtml(html: string): void {
   const tree = parseFragment(html)
   function visit(node: DefaultTreeAdapterMap['node']): void {
@@ -230,7 +256,7 @@ export function validateTextHtml(html: string): void {
         if (attr.name === 'href' && !/^https:\/\/mp\.weixin\.qq\.com\//i.test(attr.value))
           throw new TransferError(errors.PAYLOAD_INVALID, '文章链接不符合文字传稿规则')
         if (attr.name === 'style') {
-          if (/url\s*\(|image-set\s*\(/i.test(attr.value))
+          if (/url\s*\(|(?:-webkit-)?image-set\s*\(|(?:cross-fade|image)\s*\(/i.test(attr.value))
             throw new TransferError(errors.IMAGE_UNSUPPORTED, '排版包含图片，请使用“复制到公众号”')
           if (
             /[\\@<>]|\/\*|expression\s*\(|var\s*\(|attr\s*\(/i.test(attr.value) ||
@@ -239,12 +265,35 @@ export function validateTextHtml(html: string): void {
             })
           )
             throw new TransferError(errors.PAYLOAD_INVALID, '文章包含不支持的样式')
-          for (const declaration of attr.value.split(';').filter(function nonempty(value) {
-            return value.trim()
-          })) {
-            const colon = declaration.indexOf(':')
-            if (colon < 1 || !properties.has(declaration.slice(0, colon).trim().toLowerCase()))
-              throw new TransferError(errors.PAYLOAD_INVALID, '文章包含不支持的样式属性')
+          const declarations = inlineDeclarations(attr.value)
+          if (!declarations)
+            throw new TransferError(
+              errors.PAYLOAD_INVALID,
+              `传稿安全校验：<${node.tagName}>的样式声明格式不合法`,
+            )
+          for (const declaration of declarations) {
+            if (!properties.has(declaration.property))
+              throw new TransferError(
+                errors.PAYLOAD_INVALID,
+                `传稿安全规则不允许样式属性：${declaration.property}（<${node.tagName}>）`,
+              )
+            if (
+              declaration.property === 'border-image' &&
+              declaration.value.toLowerCase() !== 'none'
+            )
+              throw new TransferError(
+                errors.PAYLOAD_INVALID,
+                '文字传稿仅允许border-image:none，请使用普通边框',
+              )
+            if (
+              declaration.property === 'background-image' &&
+              declaration.value.toLowerCase() !== 'none' &&
+              !/^(?:repeating-)?(?:linear|radial|conic)-gradient\(/i.test(declaration.value)
+            )
+              throw new TransferError(
+                errors.PAYLOAD_INVALID,
+                '文字传稿的background-image仅允许无资源的CSS渐变或none',
+              )
           }
         }
         if (
@@ -258,6 +307,10 @@ export function validateTextHtml(html: string): void {
   }
   visit(tree)
   if (!htmlVisibleText(html)) throw new TransferError(errors.PAYLOAD_INVALID, '正文为空，无法传稿')
+  const violation = inspectWechatHtml(html).find(function blocking(diagnostic) {
+    return diagnostic.level === 'error'
+  })
+  if (violation) throw new TransferError(errors.PAYLOAD_INVALID, violation.message)
 }
 export function htmlVisibleText(html: string): string {
   let text = ''

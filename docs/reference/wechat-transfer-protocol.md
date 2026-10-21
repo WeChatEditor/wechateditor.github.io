@@ -1,5 +1,7 @@
 # Web 与轻量插件消息协议
 
+2026-10-21内容规则修复最低插件版本为0.1.14，协议仍为2。PING返回版本结构不变；Web按数字段比较minimumExtensionVersion，旧版提示更新并拒绝同步/发送，复制仍可用。共享[官方规则诊断](../design/wechat-content-rules.md)以Zod Schema定义rule/level/message，属于本机检查结果，不增加消息字段。CSS允许集合为项目安全策略，不冒充微信返回错误。
+
 2026-10-21正式商店ID为neeljhohndegbhaaaclmcdeenlebhicj。共享extensionId及extensionStoreUrl服务正式检测和安装；extensionIdForOrigin仅在http://127.0.0.1:5175/4175返回developmentExtensionId，其余origin返回正式ID。身份选择不改变下述协议2结构或插件来源校验。
 
 2026-10-12交互简化规格，协议版本2。Zod Schema为结构来源，类型使用z.infer，入口为packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts。[插件设计](../design/wechat-transfer-extension.md)描述现行行为。Web和插件需同时更新，协议1明确拒绝。

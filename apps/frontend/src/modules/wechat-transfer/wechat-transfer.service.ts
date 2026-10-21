@@ -11,6 +11,8 @@ import {
   responseSchema,
   titleSchema,
   validateTextHtml,
+  minimumExtensionVersion,
+  supportsTextStyleProfile,
   type ExternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
 import type { PreparedText, TransferConnection } from './wechat-transfer.model'
@@ -73,7 +75,7 @@ async function request(message: ExternalRequest): Promise<unknown> {
             message.kind === 'PING'
               ? new ConnectionError(
                   'incompatible',
-                  '当前插件不支持连接检测，请更新至0.1.6或更新版本',
+                  `当前插件不支持连接检测，请更新至${minimumExtensionVersion}或更新版本`,
                 )
               : new Error(parsed.data.err || '插件未能接收文章'),
           )
@@ -126,6 +128,11 @@ export function createTransferConnection() {
         )
         if (!info.success)
           throw new ConnectionError('incompatible', '插件连接应答不兼容，请更新Web和插件')
+        if (!supportsTextStyleProfile(info.data.extensionVersion))
+          throw new ConnectionError(
+            'incompatible',
+            `当前插件${info.data.extensionVersion}的排版校验较旧，请更新至${minimumExtensionVersion}或更新版本`,
+          )
         state.availability = 'available'
         state.connectionMessage = `传稿插件已连接 · ${info.data.extensionVersion}`
       } catch (error) {
@@ -157,6 +164,9 @@ export function createTransferConnection() {
   ): Promise<void> {
     const operation = queue.then(async function sendSnapshot() {
       if (!isCurrent()) throw new Error('排版或正文已变化，请重新点击发送')
+      if (state.availability === 'checking') await detect()
+      if (state.availability === 'incompatible')
+        throw new ConnectionError('incompatible', state.connectionMessage)
       validateTextHtml(prepared.html)
       const title = titleSchema.safeParse(prepared.title)
       if (!title.success) throw new Error('公众号标题不能超过64个字符，请调整正文中的一级标题')

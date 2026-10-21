@@ -10,8 +10,17 @@ const props = defineProps<{
 const emit = defineEmits<{ dismiss: []; clear: [] }>()
 const opened = ref(false)
 const toastVisible = ref(false)
+const visibleDiagnostics = computed(function currentDiagnostics() {
+  const seen = new Set<string>()
+  return props.diagnostics.filter(function distinct(diagnostic) {
+    const key = JSON.stringify([diagnostic.rule, diagnostic.level, diagnostic.message])
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+})
 const count = computed(
-  () => props.diagnostics.length + (props.invalid ? 1 : 0) + (props.message ? 1 : 0),
+  () => visibleDiagnostics.value.length + (props.invalid ? 1 : 0) + (props.message ? 1 : 0),
 )
 let timer: ReturnType<typeof setTimeout> | undefined
 watch(
@@ -98,7 +107,7 @@ onBeforeUnmount(function cleanup() {
         </button>
       </div>
       <p
-        v-for="(diagnostic, i) in diagnostics"
+        v-for="(diagnostic, i) in visibleDiagnostics"
         :key="`${diagnostic.rule}-${i}`"
         :class="{ error: diagnostic.level === 'error' }"
       >

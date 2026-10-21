@@ -1,5 +1,7 @@
 # 历史归档
 
+- [2026-10-21微信内容规则共享依赖复核](plans/2026-10-21-wechat-rules-archive-review.md)：官方静态规则、安全集合与新增单向依赖技术复核完成；[协作记录](ai-logs/docs/2026/10/2026-10-21-wechat-rules-archive-review.md)，功能仍待人类验收。
+
 - [2026-10-19卡片交付与近期实现复核](plans/2026-10-19-cards-archive-review.md)：20次有效提交触发，插件/静态说明/主题/卡片与现行设计已复核；[协作记录](ai-logs/docs/2026/10/2026-10-19-cards-archive-review.md)，各产品人工验收计划继续活动。
 
 - [2026-10-12轻量插件跨工作区模块复核](plans/2026-10-12-extension-archive-review.md)：当前契约、模块、权限、组织来源及实现文档已复核；[协作记录](ai-logs/docs/2026/10/2026-10-12-extension-archive-review.md)，实际公众号实施计划仍待人类验收。

@@ -64,7 +64,13 @@
         "apps/frontend/src/modules/wechat-export/wechat-export.model.ts",
         "apps/frontend/src/modules/wechat-export/wechat-export.service.ts"
       ],
-      "dependencies": ["article", "typesetting", "ending", "assets"]
+      "dependencies": [
+        "article",
+        "typesetting",
+        "ending",
+        "assets",
+        "packages/wechat-transfer-contract:wechat-transfer"
+      ]
     },
     {
       "name": "workspace",

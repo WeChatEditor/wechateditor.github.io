@@ -1,10 +1,10 @@
 # 桀士排版·公众号助手
 
-Chrome MV3轻量传稿插件，0.1.13、协议2。Web自动保存后同步当前文字排版到插件，打开插件面板即可复制正文排版或标题。点击“发送到公众号”才调度打开后台，依次进入“草稿箱 → 新的创作 → 文章”，在平台新开的文章标签尝试插入。用户检查后手动保存。创作菜单读取可见名称，避免隐藏同名tooltip导致“文章”定位失败。
+Chrome MV3轻量传稿插件，工程版本0.1.14、协议2；0.1.14修复官方内容规则与CSS误拦截，尚待商店发布。Web自动保存后同步当前文字排版到插件，打开插件面板即可复制正文排版或标题。点击“发送到公众号”才调度打开后台，依次进入“草稿箱 → 新的创作 → 文章”，在平台新开的文章标签尝试插入。用户检查后手动保存。创作菜单读取可见名称，避免隐藏同名tooltip导致“文章”定位失败。
 
 维护者2026-10-21确认0.1.13已审核发布，普通用户从[Chrome应用商店安装](https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj)，安装/更新后刷新Web和公众号，在发送抽屉重新检测。正式站点只连接商店ID neeljhohndegbhaaaclmcdeenlebhicj。
 
-pnpm package:extension生成dist/production和dist/jlab-wechat-transfer-0.1.13.zip；pnpm build:extension:dev生成dist/development。本地包使用原公开key及ID imiclghaaoleoggfhfdbanmaehamnpmg，Web仅在127.0.0.1:5175/4175连接此ID；本地连接需development包。两种ID的数据不自动迁移，旧包迁移前保存需要的快照，再停用旧包并安装商店版本。Web原稿不受影响，连接后可重新同步。
+pnpm package:extension生成dist/production和dist/jlab-wechat-transfer-0.1.14.zip；pnpm build:extension:dev生成dist/development。本地包使用原公开key及ID imiclghaaoleoggfhfdbanmaehamnpmg，Web仅在127.0.0.1:5175/4175连接此ID；本地连接需development包。两种ID的数据不自动迁移，旧包迁移前保存需要的快照，再停用旧包并安装商店版本。Web原稿不受影响，连接后可重新同步。
 
 0.1.13按当前标签切换工具栏图标：https://wechateditor.github.io及https://mp.weixin.qq.com显示原蓝色logo，其他页面显示同形灰色logo，灰色仍可点击面板。新建、切换、导航、浏览器启动和worker唤醒自动更新，每个标签独立设置；不新增全局tabs权限、URL记录或轮询。开发包额外识别127.0.0.1:5175/4175，生产包不识别本机地址。图标只表示站点匹配，不表示登录或传稿成功，真实Chrome显示待人工验收。
 

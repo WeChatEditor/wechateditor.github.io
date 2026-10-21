@@ -592,7 +592,7 @@ function styleCards(root: HTMLElement, config: TypesettingConfig): void {
         card.append(footer)
       }
     } else {
-      card.style.cssText += `padding:18px;background-color:${colors.background};background-image:linear-gradient(180deg,${colors.background},${surface});color:${readableCodeColor(colors.body, colors.heading, colors.background)};`
+      card.style.cssText += `padding:18px;background-color:${colors.background};color:${readableCodeColor(colors.body, colors.heading, colors.background)};`
       const title = card.querySelector<HTMLElement>(':scope > [data-card-part="summary-title"]')
       if (title) {
         title.style.cssText = `margin:0 0 14px;color:${readableCodeColor(colors.heading, colors.body, colors.background)};font-size:${fontSize + 1}px;font-weight:800;line-height:1.6;`

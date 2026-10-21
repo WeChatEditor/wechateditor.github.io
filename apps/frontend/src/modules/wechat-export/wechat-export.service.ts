@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import { inspectWechatHtml } from '@jlab-wechat-editor/wechat-transfer-contract'
 import { renderMarkdown } from '../article/article.service'
 import { styleArticle } from '../typesetting/typesetting.service'
 import { renderEnding, renderOpening } from '../ending/ending.service'
@@ -85,7 +86,7 @@ export function previewArticle(
     ALLOW_DATA_ATTR: true,
     ALLOWED_URI_REGEXP: /^(?:https?:\/\/|blob:https?:\/\/)/i,
   })
-  return { html, diagnostics }
+  return { html, diagnostics: [...diagnostics, ...inspectWechatHtml(html)] }
 }
 
 function readableText(root: HTMLElement): string {
@@ -137,7 +138,9 @@ export function preflightTextArticle(snapshot: ExportSnapshot): {
   const hasImages =
     Boolean(root.querySelector('img,svg,video,audio,iframe,object,embed,picture,source')) ||
     [...root.querySelectorAll('[style]')].some(function imageStyle(element) {
-      return /url\s*\(|image-set\s*\(/i.test(element.getAttribute('style') || '')
+      return /url\s*\(|(?:-webkit-)?image-set\s*\(|(?:cross-fade|image)\s*\(/i.test(
+        element.getAttribute('style') || '',
+      )
     })
   return { title: article.querySelector('h1')?.textContent?.trim() || '', hasImages }
 }
@@ -180,13 +183,6 @@ function finishExport(
       message: '表格已设为换行显示，请在公众号后台检查长单元格和列宽。',
     })
   }
-  if (snapshot.config.font !== 'default') {
-    diagnostics.push({
-      rule: 'font-candidate',
-      level: 'warning',
-      message: '自定义字体取决于阅读设备，粘贴后请核对显示。',
-    })
-  }
   if (root.querySelector('img')) {
     diagnostics.push({
       rule: 'image-hosting',
@@ -210,6 +206,7 @@ function finishExport(
     ALLOW_DATA_ATTR: false,
   })
   const bytes = new TextEncoder().encode(html).length
+  diagnostics.push(...inspectWechatHtml(html))
   if (bytes > 20 * 1024 * 1024) {
     diagnostics.push({
       rule: 'clipboard-size',
@@ -236,8 +233,8 @@ export async function copyRichText(result: ExportResult | Promise<ExportResult>)
     throw new Error('富文本复制需要 HTTPS 或本机 localhost，以及支持剪贴板的桌面浏览器。')
   }
   const snapshot = Promise.resolve(result).then(function validate(prepared) {
-    if (prepared.diagnostics.some((d) => d.level === 'error'))
-      throw new Error('请先处理图片或内容问题，再复制。')
+    const blocking = prepared.diagnostics.find((d) => d.level === 'error')
+    if (blocking) throw new Error(blocking.message)
     return prepared
   })
   const formats = {

@@ -8,6 +8,10 @@ owner: project maintainers
 
 # Web 与 Chrome 轻量传稿插件
 
+## 官方内容规则与最低版本
+
+2026-10-21修复受控样式误报，插件工程版本0.1.14，Web最低要求0.1.14，两端需一起更新；商店已发布的0.1.13事实保留，0.1.14尚未上架。新增[官方静态诊断与安全集合](wechat-content-rules.md)：总结卡纯色、必要CSS放行、明确错误指出属性，推荐项不拦截。消息协议、host权限、账号/空页/租约保护和人工保存保持。
+
 ## 正式商店身份与安装入口
 
 2026-10-21维护者确认0.1.13已审核发布，正式ID为neeljhohndegbhaaaclmcdeenlebhicj。共享契约extensionId为正式ID，extensionStoreUrl由此生成Chrome应用商店详情链接，Web的PING、同步、发送和面板命令统一使用extensionIdForOrigin选择身份。仅http://127.0.0.1:5175和http://127.0.0.1:4175使用原本地key推导ID，其他origin使用正式ID；无旧ID轮询或回退，插件来源白名单继续独立校验。
@@ -124,4 +128,4 @@ PAGE_ACTIVITY仅报告可信页面输入/指针/键盘活动，worker按执行ta
 
 仅顶层文档，官方invoke对象参数、get_isready的isReady/isNew、get_content/set_content。isNew是编辑器版本标识，不能代替独立新建证据；要求article点击、新子tab及不同documentId、空标题/正文。标题原生setter和input/change后复核，正文读回核对规范化文本和主要结构。导航整体30秒、每次JSAPI10秒。不同frame和同document SPA新建当前阻断；不使用私有实例/HTTP、DOM正文赋值、保存或发布。
 
-pnpm build构建Web与插件；package:extension生成production及0.1.11 ZIP；build:extension:dev生成development。包包含本地脚本、logo、manifest、NOTICE和依赖许可。extension:check验证ID、权限、logo开放范围、生产来源和ZIP一致性。Pages只部署Web，插件独立分发；[安装与人工验收指南](../guides/wechat-transfer-extension.md)给出更新流程。计划/日志保留pending_human_acceptance，不运行前端自动化，不推送或上架。
+pnpm build构建Web与插件；package:extension生成production及0.1.14 ZIP；build:extension:dev生成development。包包含本地脚本、logo、manifest、NOTICE和依赖许可。extension:check验证ID、权限、logo开放范围、生产来源和ZIP一致性。Pages只部署Web，插件独立分发；[安装与人工验收指南](../guides/wechat-transfer-extension.md)给出更新流程。计划/日志保留pending_human_acceptance，不运行前端自动化，不推送或上架。
