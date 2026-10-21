@@ -10,11 +10,9 @@ import {
   developmentExtensionId,
   extensionStoreUrl,
   extensionIdForOrigin,
-  htmlVisibleText,
   internalRequestSchema,
   maxMessageBytes,
   payloadSchema,
-  profile,
   protocolVersion,
   articleResponseSchema,
   clipboardResponseSchema,
@@ -23,8 +21,12 @@ import {
   titleSchema,
   TransferError,
   responseSchema,
-  validateTextHtml,
 } from '../src/modules/wechat-transfer/wechat-transfer.schema.ts'
+import {
+  htmlVisibleText,
+  profile,
+  validateTextHtml,
+} from '../src/modules/wechat-transfer/wechat-transfer.content.ts'
 
 test('published extension identity is used except on the two local development origins', function () {
   assert.equal(extensionId, 'neeljhohndegbhaaaclmcdeenlebhicj')
@@ -105,7 +107,7 @@ test('schemas reject unknown fields and external write commands', function () {
   )
   assert.equal(externalRequestSchema.safeParse({ ...message, protocolVersion: 1 }).success, false)
 })
-test('connection probe carries no content or commands and returns only a version', function () {
+test('connection probe carries no content and returns version plus optional capabilities', function () {
   const probe = { protocolVersion, requestId: crypto.randomUUID(), kind: 'PING' }
   assert.ok(externalRequestSchema.safeParse(probe).success)
   for (const extra of [{ payload: payload() }, { tabId: 3 }, { start: true }])
@@ -160,10 +162,10 @@ test('autosave accepts a complete snapshot without execution or clipboard read c
   assert.equal(internalRequestSchema.safeParse(message).success, false)
 })
 
-test('title uses Unicode codepoints, trim, nonempty and 64 guard', function () {
-  assert.equal(titleSchema.parse(` ${'😀'.repeat(64)} `), '😀'.repeat(64))
-  assert.equal(titleSchema.safeParse('😀'.repeat(65)).success, false)
-  assert.equal(titleSchema.safeParse('  ').success, false)
+test('transport title preserves content without a fixed product limit', function () {
+  const title = ' ' + '😀'.repeat(80) + ' '
+  assert.equal(titleSchema.parse(title), title)
+  assert.equal(titleSchema.safeParse('').success, false)
 })
 
 test('copy payload retains formatted text and is limited to the trusted panel', function () {

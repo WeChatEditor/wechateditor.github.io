@@ -1,5 +1,7 @@
 # 有效决策
 
+- [插件作为不解释排版规则的HTML转发器](ADR-20261021-extension-opaque-html-relay.md)
+
 - [以 Callout 承载 Markdown 视觉卡片](ADR-20261019-markdown-cards.md)
 
 - [独立静态说明页承接网站与插件搜索](ADR-20261016-static-discovery-pages.md)

@@ -25,7 +25,7 @@ pnpm --filter @jlab-wechat-editor/frontend preview
 
 功能和公众号接收效果等待维护者人工验收；静态检查和构建不替代。源码同步到组织仓库后，GitHub Pages工作流自动检查并部署Web。维护者确认地址为[在线应用](https://wechateditor.github.io/)，执行边界见[静态部署](docs/guides/static-deployment.md)。
 
-可选Chrome轻量传稿插件工程版本0.1.14（商店已发布版本为0.1.13，规则修复尚待发布）；新版Web要求插件至少0.1.14。插件在Web自动保存后同步当前文字排版，可从插件面板复制排版或标题，无需手动发送。点击“发送到公众号”才打开后台尝试独立新建插入，自动同步不影响原发送任务。当前标签为桀士排版或公众号后台时工具栏图标呈蓝色，其他页面灰色；灰色仍可打开插件面板。插件默认首个可用公众号、紧凑导航及logo，不检测发送状态或要求二次确认/启动。用户检查后手动保存，含图沿用编辑器复制。维护者确认插件已发布，请[从Chrome应用商店安装](https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj)，安装后刷新网页，在发送抽屉点击“重新检测”。详见[安装与人工验收](docs/guides/wechat-transfer-extension.md)，其中保留本地开发打包说明。实际Chrome同步和公众号流程尚待人工验收。
+可选Chrome轻量传稿插件工程版本0.1.15（商店已发布版本为0.1.13，新版尚待发布）；新版Web按html-relay@1能力连接，旧校验版需一次更新，之后普通排版规则只更新Web。插件在Web自动保存后同步当前文字排版，可从插件面板复制排版或标题，无需手动发送。点击“发送到公众号”才打开后台尝试独立新建插入，自动同步不影响原发送任务。当前标签为桀士排版或公众号后台时工具栏图标呈蓝色，其他页面灰色；灰色仍可打开插件面板。插件默认首个可用公众号、紧凑导航及logo，不检测发送状态或要求二次确认/启动。用户检查后手动保存，含图沿用编辑器复制。维护者确认插件已发布，请[从Chrome应用商店安装](https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj)，安装后刷新网页，在发送抽屉点击“重新检测”。详见[安装与人工验收](docs/guides/wechat-transfer-extension.md)，其中保留本地开发打包说明。实际Chrome同步和公众号流程尚待人工验收。
 
 ## 搜索发现与发布
 

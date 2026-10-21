@@ -8,7 +8,7 @@ owner: project maintainers
 
 # wechat-transfer跨工作区模块
 
-2026-10-21插件0.1.14同步[微信内容规范与传稿校验](../wechat-content-rules.md)。公共Schema入口导出inspectWechatHtml及Zod诊断Schema/推导类型；声明解析与静态规则保留模块私有文件。validateTextHtml先执行项目安全集合，再阻断官方可静态确定的error，建议不阻断。新增box-shadow/background-image/list-style、border-image:none和光标/滚动属性，媒体URL/未知属性继续拒绝并指出具体属性。Web、worker接收及插件面板复制复用校验。Web通过minimumExtensionVersion/supportsTextStyleProfile检测最低0.1.14，旧版本显示更新提示并停止同步/提交；协议2和存储保持。wechat-export登记单向依赖本契约，不新增workspace依赖。各workspace仅类型检查/打包，base tsconfig允许显式.ts后缀供Node契约检查及Bundler共用。
+2026-10-21维护者要求删除插件格式校验，工程版本0.1.15，依据[转发边界](../extension-update-boundaries.md)。根公共入口wechat-transfer.schema.ts只包含Zod传输结构、来源/体积/摘要及稳定html-relay@1能力；新增wechat-transfer.content.ts（包/content）供Web使用profile、articleTitleSchema、validateTextHtml、inspectWechatHtml和Zod诊断Schema。插件不依赖或打包内容入口/parse5/entities。Web按能力识别，不按排版版本号；profile为1至200字符的不透明标签，传输标题仅有消息大小边界，原文不trim。当前64码点标题、媒体和输出清洗只在Web执行。页面读回不比较标签数量/媒体，只保留账号、标题、规范化文字和用户活动；页面实际标题限制仍遵守。协议2/仓储2/权限和依赖方向保持；显式.ts导入供Node检查与Bundler共用。
 
 2026-10-21共享契约公开正式extensionId、extensionStoreUrl、developmentExtensionId及extensionIdForOrigin。Web所有命令按精确origin使用正式商店身份或两个既有回环开发/预览地址的本地身份，不探测备用ID；来源白名单仍独立校验。panel未连接/不兼容时提供商店安装/更新和官网说明入口，用户点击后新标签打开，刷新后手动重新检测。身份文件的storeId与正式契约ID、静态安装页一致，本地key推导ID单独校验；无消息结构、权限、协议版本或模块依赖变更。
 
@@ -24,7 +24,7 @@ owner: project maintainers
 
 同名能力按workspace登记，schemaVersion2以workspace:name区分身份。依赖方向包契约→Web连接/插件任务，插件任务→wechat-page；公共文件见.module-boundaries.json，不访问其他workspace私有文件。
 
-契约包为Zod结构来源、z.infer类型及来源/尺寸/digest/parse5 HTML校验。协议2外部PING只返回插件版本，SUBMIT_TASK提交手动发送任务，SAVE_ARTICLE只同步独立可复制快照，另有打开固定界面；不提供发送状态查询、启动、取消和清理。ARTICLE只返回最新可复制快照标题/接收时间；COPY_ARTICLE仅可信popup读取对应HTML/纯文字，contentRequestAllowed禁止公众号content读取正文，Web无正文读取消息。TARGETS/SELECT_TARGET用于公众号选择，TRANSFER_NOTICE为后台一次性结果提示。
+契约根入口为Zod传输Schema和z.infer类型、来源/尺寸/digest及稳定能力协商；内容入口只供Web。协议2外部PING返回插件版本和可选capabilities；SUBMIT_TASK提交手动发送，SAVE_ARTICLE只同步独立快照，另有固定打开操作。插件不解释profile和HTML，不提供发送阶段查询、启动、取消或清理。ARTICLE仅元信息，COPY_ARTICLE仅可信popup读取正文；公众号content不读取正文，Web无正文读取消息。
 
 Web公共service/model/panel直接提交当前文字快照并打开反馈，worker优先调度打开后台尝试新建插入，用户按需打开插件复制。service.save仅同步插件，无打开后台/面板或剪贴板操作；两类请求共用串行队列、校验和迟到结果保护，自动同步结果与手动发送反馈分开。启动一次连接检测及手动重新检测，无发送状态/重试检测及额外标题确认。workspace调用wechat-export并在异步提交前复核generation和冲突/恢复；自动同步额外复核本机保存成功。原稿/配置/历史仍归Web。
 

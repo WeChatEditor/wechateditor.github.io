@@ -199,11 +199,10 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
     if (!ready || !empty || !input || !command.title || !command.html)
       return { ...result, message: '无法确认新建空编辑器，停止插入' }
     const maximum = input.backing
-      ? Number(input.backing.getAttribute('max-length'))
+      ? Number(input.backing.getAttribute('max-length') || input.backing.getAttribute('maxlength'))
       : (input.element as HTMLInputElement | HTMLTextAreaElement).maxLength
     const titleLength = input.backing ? [...command.title].length : command.title.length
-    const limit = input.backing && (!Number.isInteger(maximum) || maximum <= 0) ? 64 : maximum
-    if (limit > 0 && titleLength > limit)
+    if (Number.isInteger(maximum) && maximum > 0 && titleLength > maximum)
       return { ...result, message: '标题超过当前编辑器长度限制' }
     if (input.backing && command.titleEditAttribute !== 'data-jlab-native-title-edit')
       return { ...result, message: '原生标题输入保护未就绪，停止插入' }
@@ -285,34 +284,12 @@ export async function editorBridge(command: PageCommand): Promise<PageResult> {
       const readback = record(await invoke('mp_editor_get_content'))
       account = accountName()
       const actual = typeof readback.content === 'string' ? readback.content : ''
-      const expectedDom = new DOMParser().parseFromString(command.html, 'text/html')
-      const actualDom = new DOMParser().parseFromString(actual, 'text/html')
-      const structure = [
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'ul',
-        'ol',
-        'li',
-        'table',
-        'tr',
-        'td',
-        'th',
-        'blockquote',
-        'pre',
-      ]
       const matches =
-        !actualDom.querySelector('img,svg,video,audio,iframe,object,embed,picture,source') &&
+        Boolean(actual.trim()) &&
         !userEdited &&
         account === command.account &&
         titleMatches(input, command.title) &&
-        text(actual) === text(command.html) &&
-        structure.every(function count(tag) {
-          return actualDom.querySelectorAll(tag).length === expectedDom.querySelectorAll(tag).length
-        })
+        text(actual) === text(command.html)
       return {
         ...result,
         applied: true,

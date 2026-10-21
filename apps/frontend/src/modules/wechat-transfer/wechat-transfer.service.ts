@@ -6,15 +6,16 @@ import {
   connectionInfoSchema,
   extensionIdForOrigin,
   payloadSchema,
-  profile,
   protocolVersion,
   responseSchema,
-  titleSchema,
-  validateTextHtml,
-  minimumExtensionVersion,
-  supportsTextStyleProfile,
+  supportsHtmlRelay,
   type ExternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
+import {
+  profile,
+  articleTitleSchema,
+  validateTextHtml,
+} from '@jlab-wechat-editor/wechat-transfer-contract/content'
 import type { PreparedText, TransferConnection } from './wechat-transfer.model'
 
 interface ChromeRuntime {
@@ -73,10 +74,7 @@ async function request(message: ExternalRequest): Promise<unknown> {
         if (parsed.data.status !== 0) {
           reject(
             message.kind === 'PING'
-              ? new ConnectionError(
-                  'incompatible',
-                  `当前插件不支持连接检测，请更新至${minimumExtensionVersion}或更新版本`,
-                )
+              ? new ConnectionError('incompatible', '当前插件不支持连接检测，请更新传稿插件')
               : new Error(parsed.data.err || '插件未能接收文章'),
           )
           return
@@ -128,10 +126,10 @@ export function createTransferConnection() {
         )
         if (!info.success)
           throw new ConnectionError('incompatible', '插件连接应答不兼容，请更新Web和插件')
-        if (!supportsTextStyleProfile(info.data.extensionVersion))
+        if (!supportsHtmlRelay(info.data))
           throw new ConnectionError(
             'incompatible',
-            `当前插件${info.data.extensionVersion}的排版校验较旧，请更新至${minimumExtensionVersion}或更新版本`,
+            `当前插件${info.data.extensionVersion}仍有旧格式校验，请更新为支持HTML转发的插件（0.1.15起）`,
           )
         state.availability = 'available'
         state.connectionMessage = `传稿插件已连接 · ${info.data.extensionVersion}`
@@ -168,7 +166,7 @@ export function createTransferConnection() {
       if (state.availability === 'incompatible')
         throw new ConnectionError('incompatible', state.connectionMessage)
       validateTextHtml(prepared.html)
-      const title = titleSchema.safeParse(prepared.title)
+      const title = articleTitleSchema.safeParse(prepared.title)
       if (!title.success) throw new Error('公众号标题不能超过64个字符，请调整正文中的一级标题')
       const base = { ...prepared, title: title.data, createdAt: Date.now(), profile }
       const payload = payloadSchema.parse({ ...base, digest: await contentDigest(base) })

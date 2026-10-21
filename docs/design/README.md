@@ -1,5 +1,7 @@
 # 现行设计
 
+- [插件转发职责与升级边界](extension-update-boundaries.md)：Web独立校验、稳定能力握手及剩余升级耦合审计。
+
 - [微信内容规范与传稿校验](wechat-content-rules.md)：官方建议、安全边界、静态诊断与实际布局验证范围。
 
 - [Markdown 封面与总结卡片](markdown-cards.md)：简化 Callout、主题内联样式、插入与默认示例。

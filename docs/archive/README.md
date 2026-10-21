@@ -1,5 +1,7 @@
 # 历史归档
 
+- [2026-10-21插件纯转发公共边界复核](plans/2026-10-21-opaque-relay-archive-review.md)：Web内容入口与传输契约分离，插件包输入隔离及升级耦合已复核；[协作记录](ai-logs/docs/2026/10/2026-10-21-opaque-relay-archive-review.md)，功能待人工验收。
+
 - [2026-10-21微信内容规则共享依赖复核](plans/2026-10-21-wechat-rules-archive-review.md)：官方静态规则、安全集合与新增单向依赖技术复核完成；[协作记录](ai-logs/docs/2026/10/2026-10-21-wechat-rules-archive-review.md)，功能仍待人类验收。
 
 - [2026-10-19卡片交付与近期实现复核](plans/2026-10-19-cards-archive-review.md)：20次有效提交触发，插件/静态说明/主题/卡片与现行设计已复核；[协作记录](ai-logs/docs/2026/10/2026-10-19-cards-archive-review.md)，各产品人工验收计划继续活动。

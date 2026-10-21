@@ -1,5 +1,7 @@
 # 微信内容规范核对记录
 
+0.1.15起本记录仅约束Web输出。插件不做格式检查，职责与升级边界以[纯转发设计](../design/extension-update-boundaries.md)为准。
+
 核对日期：2026-10-21。依据维护者指定的[官方页面](https://developers.weixin.qq.com/doc/service/guide/product/plugin_spec.html#_4-1-2)，及页面明确指定为权威的[官方规则文件](https://github.com/wechatjs/verify-article-structure-spec/blob/ab0a16a0ae07cfc128c7f3fc2d061cf9c7dbff78/verify_article_structure.md)。文件最后变更提交为ab0a16a0ae07cfc128c7f3fc2d061cf9c7dbff78，日期2026-10-19；网页与仓库内容不完全同步。Jina读取失败后直接读取官方HTML，不使用第三方转载代替依据。
 
 | 规则                              | 项目处理                                  | 证据边界                                       |

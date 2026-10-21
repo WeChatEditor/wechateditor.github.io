@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify'
-import { inspectWechatHtml } from '@jlab-wechat-editor/wechat-transfer-contract'
+import { inspectWechatHtml } from '@jlab-wechat-editor/wechat-transfer-contract/content'
 import { renderMarkdown } from '../article/article.service'
 import { styleArticle } from '../typesetting/typesetting.service'
 import { renderEnding, renderOpening } from '../ending/ending.service'

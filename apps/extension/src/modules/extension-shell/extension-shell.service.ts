@@ -6,7 +6,6 @@ import {
   nativeTitleEditAttribute,
   targetsSchema,
   transferNoticeSchema,
-  validateTextHtml,
   type InternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
 
@@ -154,7 +153,6 @@ export function mountTransferShell(mode: 'popup' | 'content'): void {
         const current = clipboardResponseSchema.parse(raw).article
         if (!current)
           throw new Error('插件中暂无可复制内容，请在编辑器修改并等待自动保存，或点击发送文章')
-        validateTextHtml(current.html)
         article.textContent = `已保存内容：${current.title}`
         return current
       })

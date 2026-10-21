@@ -8,7 +8,9 @@ owner: project maintainers
 
 # wechat-export模块
 
-2026-10-21新增[官方内容规则](../wechat-content-rules.md)：通过契约公共入口inspectWechatHtml为预览和最终HTML提供同源静态诊断。明确违规为error并阻止复制；建议/待布局核验为warning，不阻止。复制失败回显具体诊断。原font-candidate提示由共享字体建议替代。总结卡使用纯色；文字profile仍整篇拒绝媒体，安全CSS集合不是微信官方白名单。
+0.1.15职责调整后，所有HTML/CSS/媒体/官方建议检查只在Web执行；inspectWechatHtml与validateTextHtml从共享包独立/content入口提供，不再经插件传输根入口导出。插件不做同样检查，见[升级边界](../extension-update-boundaries.md)。
+
+2026-10-21新增[官方内容规则](../wechat-content-rules.md)：通过独立/content公共入口inspectWechatHtml为预览和最终HTML提供同源静态诊断。明确违规为error并阻止复制；建议/待布局核验为warning，不阻止。复制失败回显具体诊断。原font-candidate提示由共享字体建议替代。总结卡使用纯色；文字profile仍整篇拒绝媒体，安全CSS集合不是微信官方白名单。
 
 2026-10-19[Markdown 卡片](../markdown-cards.md)继续走同一articleDom/styleArticle，无独立导出分支或白名单扩张；section/p/span/标题/列表均为既有允许标签。卡片类型和源行属性在最终导出剔除，data-decoration装饰不进入纯文字；品牌落款为可见内容，包含在HTML/纯文字中。文字插件预检可从封面内H1取标题，卡片没有图片，不改变文字profile。公众号粘贴/保存仍待人类验收。
 

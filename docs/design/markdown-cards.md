@@ -8,7 +8,7 @@ owner: project maintainers
 
 # Markdown 封面与总结卡片
 
-2026-10-21按[微信内容规范](wechat-content-rules.md)§4.1.2将总结卡渐变改为主题纯色，避免文字背景在Dark Mode转换时失去预期。封面阴影与列表样式保留，共享传稿安全集合同步允许这些已生成样式及浏览器border-image:none序列化；不能把项目旧白名单误称为微信支持限制。
+2026-10-21按[微信内容规范](wechat-content-rules.md)§4.1.2将总结卡渐变改为主题纯色，避免文字背景在Dark Mode转换时失去预期。封面阴影与列表样式保留，Web输出安全集合允许这些已生成样式及浏览器border-image:none序列化；插件不重复校验，不能把项目旧白名单误称为微信支持限制。
 
 ## 语法和范围
 

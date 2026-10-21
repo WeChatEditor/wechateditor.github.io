@@ -95,7 +95,8 @@
       "workspace": "packages/wechat-transfer-contract",
       "design": "docs/design/modules/wechat-transfer.md",
       "publicFiles": [
-        "packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts"
+        "packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.schema.ts",
+        "packages/wechat-transfer-contract/src/modules/wechat-transfer/wechat-transfer.content.ts"
       ],
       "dependencies": []
     },

@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/modules/wechat-transfer/wechat-transfer.schema.ts"
+    ".": "./src/modules/wechat-transfer/wechat-transfer.schema.ts",
+    "./content": "./src/modules/wechat-transfer/wechat-transfer.content.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

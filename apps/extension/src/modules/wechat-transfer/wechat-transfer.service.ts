@@ -8,7 +8,7 @@ import {
   internalRequestSchema,
   protocolVersion,
   TransferError,
-  validateTextHtml,
+  htmlRelayCapability,
   type ExternalRequest,
   type InternalRequest,
 } from '@jlab-wechat-editor/wechat-transfer-contract'
@@ -387,7 +387,11 @@ async function resumePendingTab(tabId: number): Promise<void> {
   }
 }
 async function external(request: ExternalRequest) {
-  if (request.kind === 'PING') return { extensionVersion: chrome.runtime.getManifest().version }
+  if (request.kind === 'PING')
+    return {
+      extensionVersion: chrome.runtime.getManifest().version,
+      capabilities: [htmlRelayCapability],
+    }
   if (request.kind === 'OPEN_PANEL') {
     await openPanel()
     return {}
@@ -396,7 +400,6 @@ async function external(request: ExternalRequest) {
     await openWechat()
     return {}
   }
-  validateTextHtml(request.payload.html)
   if ((await contentDigest(request.payload)) !== request.payload.digest)
     throw new TransferError(errors.PAYLOAD_INVALID, '内容摘要不匹配，请重新点击发送')
   const state = await repository()
@@ -416,7 +419,11 @@ async function external(request: ExternalRequest) {
   return { article: articleInfo(task) }
 }
 async function internal(request: InternalRequest, sender: chrome.runtime.MessageSender) {
-  if (request.kind === 'PING') return { extensionVersion: chrome.runtime.getManifest().version }
+  if (request.kind === 'PING')
+    return {
+      extensionVersion: chrome.runtime.getManifest().version,
+      capabilities: [htmlRelayCapability],
+    }
   if (request.kind === 'PAGE_ACTIVITY') {
     const state = await repository()
     if (

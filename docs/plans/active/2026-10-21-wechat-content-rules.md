@@ -8,6 +8,8 @@ owner: project maintainers
 
 # 微信官方内容规则同步与传稿样式修复
 
+后续职责变更见[删除插件格式校验](2026-10-21-extension-opaque-relay.md)：本计划记录0.1.14阶段的实现与验证，插件内校验和最低版本门槛已被纯转发/能力识别取代；官方规则与总结纯色等Web成果继续有效。
+
 ## 目标、授权与设计依据
 
 维护者明确要求按官方plugin_spec核对并更新项目规则和校验，修复发送失败。依据[现行设计](../../design/wechat-content-rules.md)和[官方来源核对](../../reference/wechat-content-rules.md)。起点d3b5e217c7e00f77072820c65acbc77cab39143b；工作区/暂存为空，无.codegraph，首次修改前暂存门禁通过、归档NOT_DUE。

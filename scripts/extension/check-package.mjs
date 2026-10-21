@@ -104,6 +104,17 @@ for (const script of ['worker.js', 'content.js', 'popup.js']) {
       })
     }),
   )
+  assert.ok(
+    Object.keys(metadata.inputs).every(function noContentRules(path) {
+      const normalized = path.replaceAll('\\', '/')
+      return (
+        !normalized.includes('wechat-transfer.content.ts') &&
+        !normalized.includes('wechat-content-rules.ts') &&
+        !/node_modules\/(?:parse5|entities)\//.test(normalized)
+      )
+    }),
+    `${script} must not bundle Web content validation`,
+  )
   const source = readFileSync(join(root, 'dist/production', script), 'utf8')
   assert.equal(source.includes('http://127.0.0.1:'), false)
   assert.equal(source.includes('prepareExportImages'), false)

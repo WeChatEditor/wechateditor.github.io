@@ -8,9 +8,9 @@ owner: project maintainers
 
 # Web 与 Chrome 轻量传稿插件
 
-## 官方内容规则与最低版本
+## Web内容规则与插件转发能力
 
-2026-10-21修复受控样式误报，插件工程版本0.1.14，Web最低要求0.1.14，两端需一起更新；商店已发布的0.1.13事实保留，0.1.14尚未上架。新增[官方静态诊断与安全集合](wechat-content-rules.md)：总结卡纯色、必要CSS放行、明确错误指出属性，推荐项不拦截。消息协议、host权限、账号/空页/租约保护和人工保存保持。
+2026-10-21按维护者后续指令改为[不解释排版规则的转发器](extension-update-boundaries.md)，工程版本0.1.15。插件删除格式校验、固定profile/标题64及读回标签计数；Web内容规则继续独立执行。PING声明稳定html-relay@1能力，Web不按排版发布版本判断，旧校验版需一次迁移更新。商店已发布0.1.13事实保留，0.1.15未上架。来源、消息/摘要、账号/空页/租约及人工保存边界保持。
 
 ## 正式商店身份与安装入口
 
@@ -70,7 +70,7 @@ extension-shell私有工具栏服务由已有公共service导出，worker入口�
 
 2026-10-12维护者要求自动保存也保留当前排版到插件，协议2增加SAVE_ARTICLE，当前0.1.13继续保留。正文/标注/素材的本机事务成功后，排版/头尾配置保存成功后450ms防抖，同步当前标题/受控HTML/纯文字。历史恢复成功后同步最终正文；初始化只恢复本机数据，不主动传示例稿。待保存/保存失败、冲突、恢复和卸载拒绝新的或迟到同步。发送串行并在摘要准备后复核generation，本机保存与插件保存不组成原子事务，插件失败不影响本机存储。保存状态显示插件同步结果，无弹窗/抽屉或发送状态检测。
 
-SAVE_ARTICLE只覆盖独立可复制快照，先持久化后ACK；不打开后台、选择账号、创建任务/回执、启动或重放插入，也不写系统剪贴板。插件面板复制仍由用户点击触发，读取最新快照。手动SUBMIT_TASK仍捕获点击时内容并更新可复制快照，自动执行持有独立payload，后续自动同步不影响当前执行或待登录任务。快照24小时TTL，重复自动保存不占100个发送回执；标题64码点、2MiB、来源/digest/HTML和图片整篇阻断沿用。无插件或失败时提示可复制内容未更新，旧快照保留。
+SAVE_ARTICLE只覆盖独立可复制快照，先持久化后ACK；不打开后台、选择账号、创建任务/回执、启动或重放插入，也不写系统剪贴板。插件面板复制仍由用户点击触发，读取最新快照。手动SUBMIT_TASK仍捕获点击时内容并更新可复制快照，自动执行持有独立payload，后续自动同步不影响当前执行或待登录任务。快照24小时TTL，重复自动保存不占100个发送回执；2MiB、来源/digest和仓储保护沿用；标题64码点及HTML/图片规则仅在Web，插件不重复执行。无插件或失败时提示可复制内容未更新，旧快照保留。
 
 schemaVersion2新增独立clipboard字段；旧格式2缺失时从task.payload迁移一次，格式1继续不恢复旧载荷。公众号content只能读元信息，完整快照仍只供可信popup读取。两端均需更新，旧0.1.4不支持自动同步消息。参见[自动同步计划](../plans/active/2026-10-12-wechat-autosave-snapshot.md)。
 
@@ -108,7 +108,7 @@ OPEN_PANEL优先Chrome action.openPopup；受Chrome版本/策略限制失败时�
 
 [协议2](../reference/wechat-transfer-protocol.md)先改契约再改调用方，外部提供PING、SUBMIT_TASK、SAVE_ARTICLE、OPEN_PANEL和OPEN_WECHAT。PING仅检测连接，保留删除GET_STATUS、CANCEL_TASK及内部STATUS/START_INSERT/CANCEL_TASK/CLEAR_STORAGE。成功接收只返回标题/接收时间，不暴露执行阶段。旧协议明确拒绝并提示同时更新Web/插件。
 
-来源仍仅生产组织Web根/index.html顶层页面；开发包额外支持127.0.0.1:5175及4175，生产包无本地地址。worker复核sender.url/origin、顶层frame和tab，严格拒绝未知字段，信封UTF8最大2MiB，复算SHA256，parse5验证受控文字HTML/CSS，拒绝脚本、危险URI和媒体。Zod禁用JIT，代码随包构建。
+来源仍仅生产组织Web根/index.html顶层页面；开发包额外支持127.0.0.1:5175及4175，生产包无本地地址。worker复核sender.url/origin、顶层frame和tab，严格拒绝未知消息字段，信封UTF8最大2MiB，复算SHA256。HTML/CSS/媒体安全与排版检查由Web完成，插件只将可信快照交给官方接口/剪贴板，不读取或执行任意网页代码。Zod禁用JIT，代码随包构建；插件bundle不含内容规则/parse5/entities。
 
 Chrome最低120，权限仍storage/scripting及公众号、组织Web两个host。只有logo.png以web_accessible_resources开放给公众号页面，用于浮层显示。extension.identity.json的key/id用于本地打包身份，storeId登记正式商店身份；本地production/development包共用本地ID，正式站点只连接商店ID，回环开发/预览使用本地ID。不记录凭据、正文或完整后台URL日志。
 
@@ -126,6 +126,6 @@ PAGE_ACTIVITY仅报告可信页面输入/指针/键盘活动，worker按执行ta
 
 账号识别包括维护者提供的首页weui-desktop_name、其他页面acount_box-nickname以及历史候选；仍要求可见名称唯一。标题和“草稿箱/新的创作/文章”入口为保守候选，完整流程待人类验收。
 
-仅顶层文档，官方invoke对象参数、get_isready的isReady/isNew、get_content/set_content。isNew是编辑器版本标识，不能代替独立新建证据；要求article点击、新子tab及不同documentId、空标题/正文。标题原生setter和input/change后复核，正文读回核对规范化文本和主要结构。导航整体30秒、每次JSAPI10秒。不同frame和同document SPA新建当前阻断；不使用私有实例/HTTP、DOM正文赋值、保存或发布。
+仅顶层文档，官方invoke对象参数、get_isready的isReady/isNew、get_content/set_content。isNew是编辑器版本标识，不能代替独立新建证据；要求article点击、新子tab及不同documentId、空标题/正文。标题原生setter和input/change后复核，正文读回只核对规范化文字，不比较标签数量或排版属性。导航整体30秒、每次JSAPI10秒。不同frame和同document SPA新建当前阻断；不使用私有实例/HTTP、DOM正文赋值、保存或发布。
 
-pnpm build构建Web与插件；package:extension生成production及0.1.14 ZIP；build:extension:dev生成development。包包含本地脚本、logo、manifest、NOTICE和依赖许可。extension:check验证ID、权限、logo开放范围、生产来源和ZIP一致性。Pages只部署Web，插件独立分发；[安装与人工验收指南](../guides/wechat-transfer-extension.md)给出更新流程。计划/日志保留pending_human_acceptance，不运行前端自动化，不推送或上架。
+pnpm build构建Web与插件；package:extension生成production及0.1.15 ZIP；build:extension:dev生成development。包包含本地脚本、logo、manifest、NOTICE和依赖许可。extension:check验证ID、权限、logo开放范围、生产来源和ZIP一致性。Pages只部署Web，插件独立分发；[安装与人工验收指南](../guides/wechat-transfer-extension.md)给出更新流程。计划/日志保留pending_human_acceptance，不运行前端自动化，不推送或上架。

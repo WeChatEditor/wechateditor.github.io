@@ -1,14 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { errors, TransferError } from '../src/modules/wechat-transfer/wechat-transfer.schema.ts'
 import {
   inspectWechatHtml,
-  minimumExtensionVersion,
-  supportsTextStyleProfile,
   validateTextHtml,
   wechatHtmlDiagnosticSchema,
-  TransferError,
-  errors,
-} from '../src/modules/wechat-transfer/wechat-transfer.schema.ts'
+  articleTitleSchema,
+} from '../src/modules/wechat-transfer/wechat-transfer.content.ts'
 
 // Regression sample uses Chrome-serialized styles from the reported article, without user content.
 const serializedArticle = `<section style="font-size:16px;line-height:30.4px;">
@@ -172,10 +170,8 @@ test('redundant nesting follows the current authoritative threshold without a un
   assert.equal(inspectWechatHtml(nested(20, true)).length, 0)
 })
 
-test('old extension builds cannot silently claim support for the updated text style profile', function () {
-  assert.equal(minimumExtensionVersion, '0.1.14')
-  for (const version of ['0.1.9', '0.1.13', '0.0.99', 'invalid', '0.1.14-beta'])
-    assert.equal(supportsTextStyleProfile(version), false, version)
-  for (const version of ['0.1.14', '0.1.14.0', '0.1.15', '0.2.0', '1.0.0'])
-    assert.equal(supportsTextStyleProfile(version), true, version)
+test('Web title policy retains Unicode, trimming and the current product limit', function () {
+  assert.equal(articleTitleSchema.parse(' ' + '😀'.repeat(64) + ' '), '😀'.repeat(64))
+  assert.equal(articleTitleSchema.safeParse('😀'.repeat(65)).success, false)
+  assert.equal(articleTitleSchema.safeParse('  ').success, false)
 })

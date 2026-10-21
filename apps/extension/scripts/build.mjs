@@ -33,14 +33,9 @@ for (const [name, path] of Object.entries(entries)) {
 const contractRequire = createRequire(
   resolve(root, '../../packages/wechat-transfer-contract/package.json'),
 )
-const parseRoot = resolve(await realpath(contractRequire.resolve('parse5')), '../..')
 const zodRoot = resolve(await realpath(contractRequire.resolve('zod')), '..')
 const licenses = [await readFile(resolve(root, '../../LICENSE'), 'utf8')]
-for (const [name, path] of [
-  ['Zod', resolve(zodRoot, 'LICENSE')],
-  ['parse5', resolve(parseRoot, 'LICENSE')],
-  ['entities', resolve(parseRoot, '../entities/LICENSE')],
-])
+for (const [name, path] of [['Zod', resolve(zodRoot, 'LICENSE')]])
   licenses.push(`\n## ${name}\n\n${await readFile(path, 'utf8')}`)
 await writeFile(resolve(directory, 'LICENSES.txt'), licenses.join('\n'))
 const devSources = ['http://127.0.0.1:5175/*', 'http://127.0.0.1:4175/*']

@@ -2,13 +2,15 @@
 title: wechat-page模块
 status: accepted
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-21
 owner: project maintainers
 ---
 
 # wechat-page模块
 
-0.1.11标题控件适配维护者提供的ProseMirror覆盖层：唯一可见、可编辑的#js_title_main .title-editor-overlay .title-editor__input > .ProseMirror优先于同容器旧textarea；无覆盖层时继续支持唯一原生输入控件。隐藏旧textarea不用于编辑，只核对同步后的值；其他独立标题候选冲突拒绝。覆盖层以浏览器原生insertText事务写入，长度取旧textarea的max-length（无有效值时64码点），原生控件继续遵守maxLength。可见文本与旧textarea值必须在2秒内一致，随后复核正文为空及账号一致，读回再次核对两者；不访问ProseMirror私有状态或DOM正文赋值。
+0.1.15按[纯转发边界](../extension-update-boundaries.md)删除读回标签计数与媒体排斥，正文不做格式审核，只核对账号/标题/规范化文字和用户活动。标题不再兜底64字，遵循页面实际控件长度及同步读回。正文判空中的媒体检测仍用于防止覆盖已有非文字内容，与格式校验职责不同。
+
+0.1.11标题控件适配维护者提供的ProseMirror覆盖层：唯一可见、可编辑的#js_title_main .title-editor-overlay .title-editor__input > .ProseMirror优先于同容器旧textarea；无覆盖层时继续支持唯一原生输入控件。隐藏旧textarea不用于编辑，只核对同步后的值；其他独立标题候选冲突拒绝。覆盖层以浏览器原生insertText事务写入，长度只取旧textarea的max-length/maxlength（无有效值不设固定兜底），原生控件继续遵守maxLength。可见文本与旧textarea值必须在2秒内一致，随后复核正文为空及账号一致，读回再次核对两者；不访问ProseMirror私有状态或DOM正文赋值。
 
 MAIN仅在同步原生标题事务内排除同节点的程序input，finally清除共享nativeTitleEditAttribute标记；外部输入仍受保护。页面service向apply传入共享固定属性名，PageCommand用该公开常量的类型约束，不能传任意属性/代码。空正文规则不变，维护者给出的空section/br和隐藏mp-style-type已满足既有判空；消息分开标题不可用、标题非空和正文非空。
 
@@ -28,10 +30,10 @@ apps/extension/src/modules/wechat-page隔离公众号适配，公共service/mode
 
 维护者继续确认其他后台页面名称class为acount_box-nickname；0.1.2同时支持两种当前结构以及历史候选。使用统一识别函数覆盖首页探测、导航、写入前后账号校验，不因页面变化丢失绑定。仅可见名称形成一个唯一值时接受，不选第一个冲突名称。
 
-正文调用官方对象参数invoke(apiName/apiParam/sucCb/errCb)，get_isready要求isReady及isNew（新编辑器版本标识，不能替代新建证据）。get_content重新确认正文/媒体为空及标题为空；标题原生setter派发input/change，再get_content复核无编辑活动，set_content后核对账号、标题、规范化文本和主要结构数量。不调用私有实例、HTTP、保存或发布。
+正文调用官方对象参数invoke(apiName/apiParam/sucCb/errCb)，get_isready要求isReady及isNew（新编辑器版本标识，不能替代新建证据）。get_content重新确认正文/媒体为空及标题为空；标题原生setter派发input/change，再get_content复核无编辑活动，0.1.15起set_content后只核对账号、标题及规范化文字，不检查标签数量/媒体/排版。不调用私有实例、HTTP、保存或发布。
 
 页面导航/就绪30秒，JSAPI调用10秒；超时可能已产生新建/写入，停止自动操作，向后台浮层发送一次性提示，由人类检查实际页面后决定是否重送。主要风险为候选入口改变、标题实际状态、格式保真与后台自身自动保存；读回不是持久化/视觉验收。静态检查允许，前端自动化需维护者明确授权。
 
 公众号content入口报告可信pointerdown/keydown/input活动，worker按tab/document匹配当前执行任务并转uncertain，失效租约阻断后续写入。MAIN也检测写入中的可信input，无法排除竞态时保持uncertain。
 
-新建需有文章点击、之后新增子tab及不同documentId的空编辑器三项证据；同document或同tab流程保守阻断并交人类校准。读回还确认没有媒体。任何活动执行租约存在时均禁止下一次新发送；没有公开取消/清空或状态检测流程。
+新建需有文章点击、之后新增子tab及不同documentId的空编辑器三项证据；同document或同tab流程保守阻断并交人类校准。格式与媒体由Web校验，插件读回不拒绝媒体或特定结构。任何活动执行租约存在时均禁止下一次新发送；没有公开取消/清空或状态检测流程。
