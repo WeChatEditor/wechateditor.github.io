@@ -1,6 +1,6 @@
 # Chrome Web Store 发布文案
 
-本文件是可复制到开发者后台的文案，不代表已经上传、审核或公开发布。对应插件0.1.13；更新商店前先完成[真实Chrome与公众号验收](../guides/wechat-transfer-extension.md)。名称和摘要来自manifest，详细介绍和链接在后台填写。
+维护者2026-10-21确认0.1.13已审核通过并公开发布，正式ID为neeljhohndegbhaaaclmcdeenlebhicj，[Chrome应用商店安装页](https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj)。发布状态依据维护者确认。本文件继续作为可复制到开发者后台的维护文案；后续更新仍按[真实Chrome与公众号验收](../guides/wechat-transfer-extension.md)核对，发布成功不代替功能验收。名称和摘要来自manifest，详细介绍和链接在后台填写。
 
 ## 名称
 

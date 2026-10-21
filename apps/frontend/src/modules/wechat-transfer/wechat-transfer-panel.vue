@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { extensionStoreUrl, productionWebUrl } from '@jlab-wechat-editor/wechat-transfer-contract'
 import type { TransferConnection } from './wechat-transfer.model'
 
 const props = defineProps<{ title: string; state: TransferConnection; disabled: boolean }>()
 const emit = defineEmits<{ copy: []; detect: []; panel: [] }>()
 const connected = computed(() => props.state.availability === 'available')
-const installationGuide =
-  'https://github.com/tanghaojie/JLabWeChatEditor/blob/master/docs/guides/wechat-transfer-extension.md'
+const installationGuide = `${productionWebUrl}extension/`
 </script>
 <template>
   <section class="transfer-panel" aria-label="公众号传稿">
@@ -38,10 +38,23 @@ const installationGuide =
       </div>
       <p role="status">{{ state.connectionMessage }}</p>
       <template v-if="!connected && state.availability !== 'checking'">
-        <p>安装或启用插件后，就能自动打开公众号并尝试插入文章。复制功能现在就可以使用。</p>
-        <a :href="installationGuide" target="_blank" rel="noopener noreferrer"
-          >查看安装说明 <span aria-hidden="true">↗</span></a
-        >
+        <p>
+          从 Chrome
+          应用商店安装或更新后，刷新本页，再点击“重新检测”。已安装时请确认插件已启用，并允许访问本站。
+        </p>
+        <div class="installation-actions">
+          <a class="store-link" :href="extensionStoreUrl" target="_blank" rel="noopener noreferrer"
+            >{{
+              state.availability === 'incompatible'
+                ? '前往 Chrome 应用商店更新'
+                : '前往 Chrome 应用商店安装'
+            }}
+            <span aria-hidden="true">↗</span></a
+          >
+          <a :href="installationGuide" target="_blank" rel="noopener noreferrer"
+            >查看安装说明 <span aria-hidden="true">↗</span></a
+          >
+        </div>
       </template>
     </div>
     <div class="results" aria-live="polite">
@@ -181,6 +194,18 @@ h3 {
   display: inline-block;
   margin-top: 9px;
   font-size: 13px;
+}
+.installation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+}
+.connection-card .store-link {
+  padding: 8px 12px;
+  border-radius: 7px;
+  color: #fff;
+  background: var(--ui-primary);
 }
 a {
   color: var(--ui-primary);

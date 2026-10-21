@@ -28,7 +28,29 @@ const contractSource = readFileSync(
   ),
   'utf8',
 )
-assert.equal(/export const extensionId = ['"]([a-p]{32})['"]/.exec(contractSource)?.[1], id)
+assert.equal(
+  /export const developmentExtensionId = ['"]([a-p]{32})['"]/.exec(contractSource)?.[1],
+  id,
+)
+assert.match(identity.storeId, /^[a-p]{32}$/)
+assert.notEqual(identity.storeId, id)
+assert.equal(
+  /export const extensionId = ['"]([a-p]{32})['"]/.exec(contractSource)?.[1],
+  identity.storeId,
+)
+const installationPage = readFileSync(
+  join(projectRoot, 'apps/frontend/public/extension/index.html'),
+  'utf8',
+)
+const storeLinks = [
+  ...installationPage.matchAll(/href="(https:\/\/chromewebstore\.google\.com\/detail\/[^"\s]+)"/g),
+]
+assert.ok(
+  storeLinks.length >= 2,
+  'Installation page must link to the store from its header and steps',
+)
+for (const [, url] of storeLinks)
+  assert.equal(url, `https://chromewebstore.google.com/detail/${identity.storeId}`)
 assert.equal(manifest.key, identity.key)
 assert.equal(manifest.manifest_version, 3)
 assert.equal(manifest.name, '桀士排版·公众号助手')
@@ -110,5 +132,5 @@ assert.deepEqual(
 for (const [name, bytes] of Object.entries(files))
   assert.deepEqual(Buffer.from(bytes), readFileSync(join(root, 'dist/production', name)))
 console.log(
-  `Extension package: PASS; version ${manifest.version}; ID ${id}; ZIP matches unpacked files`,
+  `Extension package: PASS; version ${manifest.version}; local ID ${id}; store ID ${identity.storeId}; ZIP matches unpacked files`,
 )

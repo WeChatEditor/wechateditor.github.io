@@ -2,11 +2,13 @@
 title: wechat-transfer跨工作区模块
 status: accepted
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-21
 owner: project maintainers
 ---
 
 # wechat-transfer跨工作区模块
+
+2026-10-21共享契约公开正式extensionId、extensionStoreUrl、developmentExtensionId及extensionIdForOrigin。Web所有命令按精确origin使用正式商店身份或两个既有回环开发/预览地址的本地身份，不探测备用ID；来源白名单仍独立校验。panel未连接/不兼容时提供商店安装/更新和官网说明入口，用户点击后新标签打开，刷新后手动重新检测。身份文件的storeId与正式契约ID、静态安装页一致，本地key推导ID单独校验；无消息结构、权限、协议版本或模块依赖变更。
 
 0.1.11共享契约公开nativeTitleEditAttribute固定DOM协作标记，供页面适配器和content活动监听识别同步原生标题事务；不属于授权令牌，不新增外部/内部消息或版本变更。worker在官方接口就绪但titleSupported=false时，保留具体标题提示并在原导航30秒内等待，不误报已有内容；empty=false且标题可用仍立即阻断。正文判空、新标签/账号保护和写入不重试保持。
 

@@ -6,6 +6,10 @@ import {
   contentDigest,
   errors,
   externalRequestSchema,
+  extensionId,
+  developmentExtensionId,
+  extensionStoreUrl,
+  extensionIdForOrigin,
   htmlVisibleText,
   internalRequestSchema,
   maxMessageBytes,
@@ -21,6 +25,24 @@ import {
   responseSchema,
   validateTextHtml,
 } from '../src/modules/wechat-transfer/wechat-transfer.schema.ts'
+
+test('published extension identity is used except on the two local development origins', function () {
+  assert.equal(extensionId, 'neeljhohndegbhaaaclmcdeenlebhicj')
+  assert.equal(extensionStoreUrl, `https://chromewebstore.google.com/detail/${extensionId}`)
+  assert.notEqual(developmentExtensionId, extensionId)
+  assert.equal(extensionIdForOrigin('http://127.0.0.1:5175'), developmentExtensionId)
+  assert.equal(extensionIdForOrigin('http://127.0.0.1:4175'), developmentExtensionId)
+  for (const origin of [
+    'https://wechateditor.github.io',
+    'https://wechateditor.github.io.evil',
+    'https://127.0.0.1:5175',
+    'http://127.0.0.1:5176',
+    'http://localhost:5175',
+    'http://127.0.0.1.evil:5175',
+    'invalid',
+  ])
+    assert.equal(extensionIdForOrigin(origin), extensionId)
+})
 
 function payload() {
   return {

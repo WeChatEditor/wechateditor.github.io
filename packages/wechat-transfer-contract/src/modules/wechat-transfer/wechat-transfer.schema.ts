@@ -1,7 +1,15 @@
 import { z } from 'zod'
 import { parseFragment, type DefaultTreeAdapterMap } from 'parse5'
 z.config({ jitless: true })
-export const extensionId = 'imiclghaaoleoggfhfdbanmaehamnpmg'
+export const extensionId = 'neeljhohndegbhaaaclmcdeenlebhicj'
+export const developmentExtensionId = 'imiclghaaoleoggfhfdbanmaehamnpmg'
+export const extensionStoreUrl = `https://chromewebstore.google.com/detail/${extensionId}`
+
+export function extensionIdForOrigin(origin: string): string {
+  return ['http://127.0.0.1:5175', 'http://127.0.0.1:4175'].includes(origin)
+    ? developmentExtensionId
+    : extensionId
+}
 
 export const protocolVersion = 2 as const
 export const profile = 'wechat-editor-text@1-candidate' as const

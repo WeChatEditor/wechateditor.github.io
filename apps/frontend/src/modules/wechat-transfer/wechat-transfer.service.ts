@@ -4,7 +4,7 @@ import {
   articleResponseSchema,
   contentDigest,
   connectionInfoSchema,
-  extensionId,
+  extensionIdForOrigin,
   payloadSchema,
   profile,
   protocolVersion,
@@ -34,6 +34,7 @@ async function request(message: ExternalRequest): Promise<unknown> {
   const chrome = runtime()
   if (!chrome?.sendMessage)
     throw new ConnectionError('unavailable', '未检测到插件，请安装或启用Chrome传稿插件')
+  const targetExtensionId = extensionIdForOrigin(window.location.origin)
   return new Promise(function transmit(resolve, reject) {
     const timer = setTimeout(function late() {
       reject(
@@ -48,7 +49,7 @@ async function request(message: ExternalRequest): Promise<unknown> {
       )
     }, 5000)
     try {
-      chrome.sendMessage(extensionId, message, function received(raw) {
+      chrome.sendMessage(targetExtensionId, message, function received(raw) {
         const connectionError = chrome.lastError
         clearTimeout(timer)
         if (connectionError) {

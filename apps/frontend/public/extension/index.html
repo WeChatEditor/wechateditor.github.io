@@ -6,7 +6,7 @@
     <title>微信公众号文字传稿 Chrome 插件：安装与使用｜桀士排版</title>
     <meta
       name="description"
-      content="安装桀士排版 Chrome 传稿插件，配合网页同步文字排版、复制正文与标题，并辅助在微信公众号后台新建文章和插入内容。提供手动安装、更新与失败处理说明。"
+      content="从 Chrome 应用商店安装桀士排版传稿插件，配合网页同步文字排版、复制正文与标题，并辅助在微信公众号后台新建文章和插入内容。提供安装、更新与连接检测说明。"
     />
     <link rel="canonical" href="https://wechateditor.github.io/extension/" />
     <meta property="og:type" content="website" />
@@ -95,7 +95,13 @@
               配合桀士排版网页，插件可以保留最新同步的文字排版，供你复制正文与标题；也可辅助在公众号后台新建文章并尝试插入。
             </p>
             <div class="actions">
-              <a class="button" href="#install">查看安装步骤</a
+              <a
+                class="button"
+                href="https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj"
+                target="_blank"
+                rel="noopener noreferrer"
+                >前往 Chrome 应用商店安装 ↗</a
+              ><a class="button secondary" href="#install">查看安装步骤</a
               ><a class="button secondary" href="../">打开写作工作台 ↗</a>
             </div>
           </header>
@@ -130,44 +136,41 @@
             </p>
           </section>
           <section id="install">
-            <h2>如何手动安装 Chrome 插件</h2>
-            <p>当前提供安装包手动加载方式。请从本项目的构建页面获取安装包：</p>
+            <h2>从 Chrome 应用商店安装</h2>
+            <p>插件已发布到 Chrome 应用商店，无需下载压缩包或打开开发者模式。</p>
             <p>
               <a
-                href="https://github.com/tanghaojie/JLabWeChatEditor/actions/workflows/verify.yml"
+                class="button"
+                href="https://chromewebstore.google.com/detail/neeljhohndegbhaaaclmcdeenlebhicj"
                 target="_blank"
                 rel="noopener noreferrer"
-                >前往 GitHub 构建页面获取安装包 ↗</a
+                >打开插件商店页面 ↗</a
               >
             </p>
             <ol>
+              <li>在桌面 Chrome 打开上方商店链接，核对名称为“桀士排版·公众号助手”。</li>
               <li>
-                登录 GitHub，选择最新一次检查成功的
-                <strong>master</strong> 分支运行，在运行详情底部的 Artifacts 下载
-                <code>jlab-wechat-transfer</code>。GitHub
-                工件有保留期限；若已过期，可按下方源码方式构建。
+                点击“添加至 Chrome”，按浏览器提示确认添加扩展程序。安装完成后可按需固定到工具栏。
               </li>
+              <li>刷新桀士排版网页及已打开的公众号后台，让新安装的插件生效。</li>
               <li>
-                解压下载文件；若里面还有
-                <code>jlab-wechat-transfer-版本号.zip</code>，继续解压，直到能直接看到
-                <code>manifest.json</code>。核对安装包版本为 0.1.13 或更新版本。
+                在工作台打开发送抽屉，点击“重新检测”。显示“插件已连接”后即可同步文字排版或发送。
               </li>
-              <li>在 Chrome 菜单进入“扩展程序 → 管理扩展程序”，打开“开发者模式”。</li>
-              <li>点击“加载已解压的扩展程序”，选择直接包含 <code>manifest.json</code> 的目录。</li>
-              <li>按需固定工具栏图标，然后刷新桀士排版网页和已打开的公众号后台。</li>
             </ol>
             <p>
-              如果通过源码构建，在项目中安装依赖后运行
-              <code>pnpm package:extension</code>，加载生成的
-              <code>apps/extension/dist/production</code> 目录。开发环境要求与详细说明见<a
-                href="https://github.com/tanghaojie/JLabWeChatEditor"
-                target="_blank"
-                rel="noopener noreferrer"
-                >项目源码与文档 ↗</a
-              >。
+              商店版本由 Chrome
+              管理更新。若网页提示不兼容，请在商店或扩展管理页面确认已更新，再刷新网页并重新检测。已安装但未连接时，检查插件是否启用，以及是否允许访问桀士排版与微信公众号后台。
             </p>
             <p>
-              更新手动安装的插件时，用新安装包替换原目录内容，在扩展管理页面点击重新加载，再刷新网页与公众号后台。手动安装不会从商店自动更新；仅保留一份安装，避免版本混用。
+              从旧手动安装包迁移时，先复制并保存仍需保留的插件内容，再停用或移除旧插件，安装商店版本。插件快照与偏好不会自动迁移；网页本地草稿仍保留，连接后修改正文或排版并等待保存即可重新同步。
+            </p>
+            <p>
+              本地开发与打包方式见<a
+                href="https://github.com/tanghaojie/JLabWeChatEditor/blob/master/docs/guides/wechat-transfer-extension.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                >开发安装指南 ↗</a
+              >。正式网站只连接商店版本。
             </p>
           </section>
           <section id="transfer">

@@ -2,11 +2,17 @@
 title: Web 与 Chrome 轻量传稿插件
 status: accepted
 created: 2026-10-11
-updated: 2026-10-19
+updated: 2026-10-21
 owner: project maintainers
 ---
 
 # Web 与 Chrome 轻量传稿插件
+
+## 正式商店身份与安装入口
+
+2026-10-21维护者确认0.1.13已审核发布，正式ID为neeljhohndegbhaaaclmcdeenlebhicj。共享契约extensionId为正式ID，extensionStoreUrl由此生成Chrome应用商店详情链接，Web的PING、同步、发送和面板命令统一使用extensionIdForOrigin选择身份。仅http://127.0.0.1:5175和http://127.0.0.1:4175使用原本地key推导ID，其他origin使用正式ID；无旧ID轮询或回退，插件来源白名单继续独立校验。
+
+未连接或不兼容时，发送抽屉展示商店安装/更新按钮、官网安装说明、刷新后重新检测提示。公开插件页以商店安装和更新为主，开发包说明移至开发指南。商店身份与本地公开key分别登记并校验，不从ID推断公钥。由旧手动包迁移前先处理未保存的插件快照；两种ID存储不自动迁移，Web原稿仍在原origin。商店安装、生产PING和真实传稿待人类验收，发布状态依据维护者确认。
 
 ## 工具栏图标按站点切换
 
@@ -16,7 +22,7 @@ extension-shell私有工具栏服务由已有公共service导出，worker入口�
 
 ## 搜索发现与官网说明
 
-0.1.12保留插件名称、稳定ID、权限、协议和传稿行为，仅把manifest摘要调整为微信公众号文字排版/复制/辅助插入用途，homepage_url指向https://wechateditor.github.io/extension/。网站独立静态安装页、隐私页与商店文案见[搜索发现设计](search-discovery.md)；商店发布与实际插入仍需独立验收。
+0.1.12保留插件名称、当时的本地ID、权限、协议和传稿行为，仅把manifest摘要调整为微信公众号文字排版/复制/辅助插入用途，homepage_url指向https://wechateditor.github.io/extension/。网站独立静态安装页、隐私页与商店文案见[搜索发现设计](search-discovery.md)；0.1.13商店发布状态依据上述维护者确认，实际连接与插入仍需独立验收。
 
 ## ProseMirror标题与空页判定
 
@@ -100,7 +106,7 @@ OPEN_PANEL优先Chrome action.openPopup；受Chrome版本/策略限制失败时�
 
 来源仍仅生产组织Web根/index.html顶层页面；开发包额外支持127.0.0.1:5175及4175，生产包无本地地址。worker复核sender.url/origin、顶层frame和tab，严格拒绝未知字段，信封UTF8最大2MiB，复算SHA256，parse5验证受控文字HTML/CSS，拒绝脚本、危险URI和媒体。Zod禁用JIT，代码随包构建。
 
-Chrome最低120，权限仍storage/scripting及公众号、组织Web两个host。只有logo.png以web_accessible_resources开放给公众号页面，用于浮层显示。稳定ID由extension.identity.json公开key推导，Web使用同一ID；不记录凭据、正文或完整后台URL日志。生产和开发包相同ID，只安装一份。
+Chrome最低120，权限仍storage/scripting及公众号、组织Web两个host。只有logo.png以web_accessible_resources开放给公众号页面，用于浮层显示。extension.identity.json的key/id用于本地打包身份，storeId登记正式商店身份；本地production/development包共用本地ID，正式站点只连接商店ID，回环开发/预览使用本地ID。不记录凭据、正文或完整后台URL日志。
 
 ## 内部执行约束与升级
 
