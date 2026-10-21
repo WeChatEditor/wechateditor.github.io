@@ -24,3 +24,5 @@ owner: project maintainers
 实际结果：9项新增契约检查连同原13项合计22/22，覆盖Chrome样式序列化、渐变建议与空背景例外、媒体/危险样式继续阻断、声明中的引号分号、具体错误、零高度/行内和百分比例外、行高/滚动提示、CSS优先级、15层简单冗余及旧插件版本；治理22/22。类型、生产构建、Lint（0错误/251条原有Vue排版警告）、模块/文档及插件生产/开发/ZIP校验通过。生产Web仍有既有大chunk提示。pnpm缓存及治理样例Git在沙箱内不可写，通过受审批准的离线冻结安装和提升权限治理测试完成；无新增依赖。类型检查曾发现相对.ts导入配置及一次收尾参数遗漏，均修复后重跑通过。
 
 商店上传包由已验证生产ZIP移除manifest.key派生，其余文件逐项核对；路径、大小及SHA256见[计划](../../../../plans/active/2026-10-21-wechat-content-rules.md)。没有上传商店、推送或部署。归档复核先完成技术记录，提交后以真实HEAD登记基线；最终格式/CI和提交由后续收尾补记。
+
+收尾：format/format:check、docs:check、modules:check、git diff --check通过。功能和技术复核已提交912150f39b99917349b1122fffeff1ae3221642f，实际trailer已核对；清洁HEAD上通过官方docs:archive:complete记录真实基线，最终归档CI为NOT_DUE。台账和记录另作docs提交；源码与安装包已交付，前端/公众号验收保留pending_human_acceptance。
