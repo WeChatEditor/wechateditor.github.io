@@ -8,6 +8,8 @@ owner: project maintainers
 
 # article模块
 
+2026-10-21[公众号排版兼容修复](../wechat-layout-compatibility.md)：空text token不再生成零长度映射span，避免强调前后的无内容节点进入平台转换；非空文本偏移和标注语义保持。
+
 2026-10-19新增[Markdown 卡片](../markdown-cards.md)：私有 article-cards.ts 在 block 后、inline 前识别顶层 hero/summary Callout，保留可见文字与源行映射，不完整或未知结构保留引用。原稿工具栏可插入模板/转换选中行，沿用IME、禁用、50万字符限制和原生撤销。卡片可见标题/要点支持局部标注，生成品牌与装饰拒绝混合选区。articleTitle 从同一受控渲染中提取首个H1或首块可见文字，供历史列表显示，避免以类型标记作为文章标题；不修改历史记录。
 
 2026-10-19背景层次改为workspace提供的暖纸tokens：编辑器/阅读纸面用ui-paper，标题条/编辑工具用ui-surface，预览画板用ui-bg至ui-canvas轻渐变，手机导航/电脑工具条用ui-chrome，外壳边框/阴影改为暖灰。开关外壳、手机/电脑及既有尺寸/滚动/缩放规则保留。只修改组件私有CSS，不向文章DOM写入画板或纸面颜色；代码主题继续由typesetting公共服务提供，见[UI设计](../jlab-wechat-editor-ui.md)。

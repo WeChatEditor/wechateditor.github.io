@@ -10,6 +10,8 @@ owner: project maintainers
 
 2026-10-21[结构兼容修复](../wechat-layout-compatibility.md)仍共用articleDom/styleArticle：预览允许受控role供转换后的列表保留可访问语义，最终HTML照常剔除role和内部data属性。readableText先将data-list-marker恢复为对应圆点/编号，再剔除其他装饰，防止丢失或重复编号；单元格内部为对齐而生成的段落不另加换行，保留制表符分列。代码工具栏非正文，不进入纯文字。共享清洗、内容检查与插件协议保持。
 
+维护者实际对照截图确认代码换行折叠后，代码换行输出为br而非原始换行；readableText将data-code-space恢复成原始空格/制表符，再将br还原换行。最终HTML剔除该内部属性，保留实际不换行空白字符。多行、空行和制表符的纯文字与原Markdown代码逐字核对。
+
 0.1.15职责调整后，所有HTML/CSS/媒体/官方建议检查只在Web执行；inspectWechatHtml与validateTextHtml从共享包独立/content入口提供，不再经插件传输根入口导出。插件不做同样检查，见[升级边界](../extension-update-boundaries.md)。
 
 2026-10-21新增[官方内容规则](../wechat-content-rules.md)：通过独立/content公共入口inspectWechatHtml为预览和最终HTML提供同源静态诊断。明确违规为error并阻止复制；建议/待布局核验为warning，不阻止。复制失败回显具体诊断。原font-candidate提示由共享字体建议替代。总结卡使用纯色；文字profile仍整篇拒绝媒体，安全CSS集合不是微信官方白名单。

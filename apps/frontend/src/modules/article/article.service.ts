@@ -32,6 +32,7 @@ export function renderMarkdown(markdown: string, annotations: Annotation[] = [])
   }
   md.renderer.rules.text = function mappedText(tokens, idx) {
     const content = tokens[idx].content
+    if (!content) return ''
     const start = text.length
     text += content
     const end = text.length

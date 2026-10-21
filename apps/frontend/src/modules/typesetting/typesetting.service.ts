@@ -447,7 +447,7 @@ export function styleArticle(root: HTMLElement, config: TypesettingConfig, numbe
   const codeText = readableCodeColor(colors.body, colors.heading, colors.background)
   const inlineCodeText = readableCodeColor(colors.accent, colors.body, colors.background)
   const codeBorder = mixCodeBorder(colors.accent, colors.background)
-  root.style.cssText = `color:${colors.body};font-size:${fontSize}px;line-height:${fontSize * lineHeight}px;letter-spacing:${letterSpacing}px;word-wrap:break-word;text-align:left;`
+  root.style.cssText = `color:${colors.body};font-size:${fontSize}px;font-weight:400;font-style:normal;line-height:${fontSize * lineHeight}px;letter-spacing:${letterSpacing}px;word-wrap:break-word;text-align:left;`
   if (config.font !== 'default') {
     root.style.fontFamily =
       config.font === 'sans'

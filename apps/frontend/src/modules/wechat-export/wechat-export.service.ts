@@ -95,6 +95,9 @@ function readableText(root: HTMLElement): string {
   for (const marker of clone.querySelectorAll<HTMLElement>('[data-list-marker]')) {
     marker.replaceWith(marker.dataset.listMarker || '')
   }
+  for (const space of clone.querySelectorAll<HTMLElement>('[data-code-space]')) {
+    space.replaceWith(space.dataset.codeSpace || '')
+  }
   for (const decoration of clone.querySelectorAll('[data-decoration]')) {
     decoration.remove()
   }

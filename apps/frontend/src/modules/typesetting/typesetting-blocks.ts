@@ -24,17 +24,40 @@ function preserveHeadingWeight(root: HTMLElement): void {
     weight.style.fontWeight = heading.style.fontWeight || '700'
     weight.append(...heading.childNodes)
     heading.append(weight)
-    for (const text of heading.querySelectorAll<HTMLElement>('[data-text-start]')) {
-      let parent = text.parentElement
-      while (parent && parent !== heading) {
-        if (parent.style.fontWeight && parent.style.fontWeight !== 'inherit') break
-        parent = parent.parentElement
+  }
+}
+
+function preserveTextWeight(root: HTMLElement): void {
+  for (const text of root.querySelectorAll<HTMLElement>('[data-text-start]')) {
+    let parent = text.parentElement
+    while (parent && parent !== root) {
+      if (parent.style.fontWeight && parent.style.fontWeight !== 'inherit') break
+      parent = parent.parentElement
+    }
+    const inherited = parent?.style.fontWeight || '400'
+    text.style.fontWeight =
+      inherited === 'bold' ? '700' : inherited === 'normal' ? '400' : inherited
+    text.style.fontSize = 'inherit'
+    text.style.lineHeight = 'inherit'
+  }
+}
+
+function preserveCodeLines(code: HTMLElement): void {
+  const source = code.textContent || ''
+  code.replaceChildren()
+  for (const [index, line] of source.split('\n').entries()) {
+    if (index) code.append(document.createElement('br'))
+    const pieces = line.split(/([ \t]+)/)
+    for (const piece of pieces) {
+      if (!piece) continue
+      if (/^[ \t]+$/.test(piece)) {
+        const space = document.createElement('span')
+        space.dataset.codeSpace = piece
+        space.textContent = piece.replace(/ /g, '\u00a0').replace(/\t/g, '\u00a0'.repeat(4))
+        code.append(space)
+      } else {
+        code.append(piece)
       }
-      const inherited = parent?.style.fontWeight || '700'
-      text.style.fontWeight =
-        inherited === 'bold' ? '700' : inherited === 'normal' ? '400' : inherited
-      text.style.fontSize = 'inherit'
-      text.style.lineHeight = 'inherit'
     }
   }
 }
@@ -57,6 +80,12 @@ function styleCodeWindows(root: HTMLElement, config: TypesettingConfig): void {
       toolbar.append(dot)
     }
     const code = pre.querySelector('code')
+    if (code) {
+      preserveCodeLines(code)
+      code.style.fontFamily = 'Consolas,Menlo,monospace'
+      code.style.whiteSpace = 'normal'
+      code.style.fontWeight = '400'
+    }
     const language = [...(code?.classList || [])].find((name) => name.startsWith('language-'))
     if (language) {
       const label = document.createElement('span')
@@ -69,6 +98,7 @@ function styleCodeWindows(root: HTMLElement, config: TypesettingConfig): void {
     pre.style.borderRadius = '0'
     pre.style.padding = '0 16px 16px'
     pre.style.fontWeight = 'normal'
+    pre.style.whiteSpace = 'normal'
     pre.style.letterSpacing = '0'
     pre.style.boxSizing = 'border-box'
     pre.before(window)
@@ -197,4 +227,5 @@ export function styleCompatibleBlocks(root: HTMLElement, config: TypesettingConf
   for (const list of [...root.querySelectorAll<HTMLElement>('ul,ol')].reverse()) {
     replaceList(list, config)
   }
+  preserveTextWeight(root)
 }
