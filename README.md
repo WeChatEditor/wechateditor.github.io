@@ -1,8 +1,10 @@
 # 桀士排版·公众号助手
 
-桀士排版是一款无需注册的微信公众号Markdown排版工具。支持实时预览、九组默认配色、八种标题装饰、固定头尾、本地草稿、主动文章版本和HTML/纯文字复制；可选Chrome插件辅助文字传稿，由用户检查后手动保存。
+桀士排版是一款免费、MIT开源、无需注册的微信公众号Markdown排版工具。支持实时预览、18套默认配色、12款标题样式、封面与总结卡片、固定头尾、本地草稿、主动文章版本和HTML/纯文字复制；可选Chrome插件辅助文字传稿，由用户检查后手动保存。
 
 [在线工作台](https://wechateditor.github.io/) · [产品介绍](https://wechateditor.github.io/about/) · [Markdown排版教程](https://wechateditor.github.io/guides/markdown-to-wechat/) · [Chrome传稿插件](https://wechateditor.github.io/extension/) · [隐私说明](https://wechateditor.github.io/privacy/)
+
+排版功能可直接免费使用，网页编辑器和插件源码均公开，许可证见[LICENSE](LICENSE)。适合用Markdown写作、希望统一公众号文章样式的个人创作者；无需安装插件即可编辑、预览和复制。草稿保存在当前浏览器，请自行备份重要原稿；当前不提供跨设备云同步与多人协作。
 
 Vue、Pinia、Element Plus纯前端实现，英文项目标识JLab WeChat Editor；由CoAIForge0.2.0工程迁入，保留2026 JTLab MIT声明。新增静态说明页随本轮代码部署后可访问，搜索收录另行核验。
 

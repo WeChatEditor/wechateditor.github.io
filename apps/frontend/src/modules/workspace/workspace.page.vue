@@ -385,7 +385,7 @@ onBeforeUnmount(function cleanup() {
           href="https://github.com/tanghaojie/JLabWeChatEditor"
           target="_blank"
           rel="noopener noreferrer"
-          >GitHub ↗</a
+          >开源代码 ↗</a
         >
       </nav>
     </footer>

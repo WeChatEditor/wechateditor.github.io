@@ -1,5 +1,7 @@
 # 活动AI协作记录
 
+- [免费与开源产品说明](feat/2026/10/2026-10-21-free-open-source-messaging.md)
+
 - [插件纯转发与升级耦合审计](refactor/2026/10/2026-10-21-extension-opaque-relay.md)
 
 - [微信官方内容规则同步与传稿修复](fix/2026/10/2026-10-21-wechat-content-rules.md)

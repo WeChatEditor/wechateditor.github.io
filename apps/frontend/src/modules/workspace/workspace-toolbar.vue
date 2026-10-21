@@ -72,6 +72,14 @@ const controls = [
         <circle cx="12" cy="13" r="2" fill="currentColor" /></svg
       ><strong>桀士排版</strong><small>公众号助手</small>
     </div>
+    <a
+      class="open-source-link"
+      href="./about/#open-source"
+      target="_blank"
+      rel="noopener noreferrer"
+      title="免费使用，无需注册；MIT 开源，查看功能与源码说明（新标签页）"
+      >免费 · 开源</a
+    >
     <div class="toolbar-divider" />
     <ColorPicker
       :color="config.colors.body"
@@ -240,6 +248,23 @@ const controls = [
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-sm);
   color: var(--ui-muted);
+}
+.open-source-link {
+  padding: 3px 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-active);
+  color: var(--ui-primary);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.open-source-link:hover {
+  text-decoration: underline;
+}
+.open-source-link:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
 }
 .toolbar-divider {
   width: 1px;
